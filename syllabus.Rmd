@@ -12,14 +12,14 @@ knitr::opts_chunk$set(echo = FALSE)
 
 - Course Number		: EDLD 654
 
-- Term            : Fall 2022
+- Term            : Fall 2023
 
 - Date/Time			  : Monday, 13:00 pm – 15:50 pm
 
-- Place				    : Lokey 176 [(Click for map)](https://map.uoregon.edu/ae909e0cf)
+- Place				    : 142 HEDCO Education Building [(Click for map)](https://map.uoregon.edu/0f9e5e738)
 
 - Instructor			: Dr. Cengiz Zopluoglu [(Click for pronunciation)](https://namedrop.io/cengizzopluoglu)
 
 - E-mail				  : cengiz@uoregon.edu
 
-[Download the complete course syllabus](https://github.com/uo-datasci-specialization/c4-ml-fall-2022/raw/main/Syllabus_EDUC654.pdf)
+[Download the complete course syllabus](https://github.com/uo-datasci-specialization/c4-ml-fall-2023/raw/main/Syllabus_EDUC654.pdf)

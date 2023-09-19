@@ -786,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1858,15 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2065,7 +2072,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2204,24 +2211,16 @@ Assignments
 
 <div class="d-article">
 <ul>
-<li><p>Course Title : Machine Learning for Educational Data
-Science</p></li>
+<li><p>Course Title : Machine Learning for Educational Data Science</p></li>
 <li><p>Course Number : EDLD 654</p></li>
-<li><p>Term : Fall 2022</p></li>
+<li><p>Term : Fall 2023</p></li>
 <li><p>Date/Time : Monday, 13:00 pm – 15:50 pm</p></li>
-<li><p>Place : Lokey 176 <a
-href="https://map.uoregon.edu/ae909e0cf">(Click for map)</a></p></li>
-<li><p>Instructor : Dr. Cengiz Zopluoglu <a
-href="https://namedrop.io/cengizzopluoglu">(Click for
-pronunciation)</a></p></li>
-<li><p>E-mail : <a href="mailto:cengiz@uoregon.edu"
-class="email">cengiz@uoregon.edu</a></p></li>
+<li><p>Place : 142 HEDCO Education Building <a href="https://map.uoregon.edu/0f9e5e738">(Click for map)</a></p></li>
+<li><p>Instructor : Dr. Cengiz Zopluoglu <a href="https://namedrop.io/cengizzopluoglu">(Click for pronunciation)</a></p></li>
+<li><p>E-mail : <a href="mailto:cengiz@uoregon.edu" class="email">cengiz@uoregon.edu</a></p></li>
 </ul>
-<p><a
-href="https://github.com/uo-datasci-specialization/c4-ml-fall-2022/raw/main/Syllabus_EDUC654.pdf">Download
-the complete course syllabus</a></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p><a href="https://github.com/uo-datasci-specialization/c4-ml-fall-2023/raw/main/Syllabus_EDUC654.pdf">Download the complete course syllabus</a></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

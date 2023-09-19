@@ -786,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1858,15 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2065,7 +2072,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2209,31 +2216,13 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#week-1-introduction" id="toc-week-1-introduction">Week 1:
-Introduction</a></li>
-<li><a href="#week-2-data-preprocessing"
-id="toc-week-2-data-preprocessing">Week 2: Data Preprocessing</a></li>
-<li><a
-href="#week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation"
-id="toc-week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation">Week
-3 &amp; Week 4: Introduction to Linear Regression, Bias/Variance
-Tradeoff, and Cross-validation</a></li>
-<li><a href="#week-5-regularized-linear-regression"
-id="toc-week-5-regularized-linear-regression">Week 5: Regularized Linear
-Regression</a></li>
-<li><a href="#week-6-7-regularized-logistic-regression"
-id="toc-week-6-7-regularized-logistic-regression">Week 6 &amp; 7:
-(Regularized) Logistic Regression</a></li>
-<li><a
-href="#week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms"
-id="toc-week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms">Week
-8: Introduction to K-Nearest Neighbors and Decision Tree
-Algorithms</a></li>
-<li><a
-href="#week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees"
-id="toc-week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees">Week
-9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting
-Trees</a></li>
+<li><a href="#week-1-introduction" id="toc-week-1-introduction">Week 1: Introduction</a></li>
+<li><a href="#week-2-data-preprocessing" id="toc-week-2-data-preprocessing">Week 2: Data Preprocessing</a></li>
+<li><a href="#week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation" id="toc-week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation">Week 3 &amp; Week 4: Introduction to Linear Regression, Bias/Variance Tradeoff, and Cross-validation</a></li>
+<li><a href="#week-5-regularized-linear-regression" id="toc-week-5-regularized-linear-regression">Week 5: Regularized Linear Regression</a></li>
+<li><a href="#week-6-7-regularized-logistic-regression" id="toc-week-6-7-regularized-logistic-regression">Week 6 &amp; 7: (Regularized) Logistic Regression</a></li>
+<li><a href="#week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms" id="toc-week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms">Week 8: Introduction to K-Nearest Neighbors and Decision Tree Algorithms</a></li>
+<li><a href="#week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees" id="toc-week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees">Week 9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting Trees</a></li>
 </ul>
 </nav>
 </div>
@@ -2271,20 +2260,16 @@ Assignments
 3-Oct
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-1.html" style="     ">Lecture-1</a>
+<a href="https://edld654-fall23.netlify.app/lecture-1.html" style="     ">Lecture-1</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="https://www.kaggle.com/code/uocoeeds/week-1-introduction/notebook" style="     ">Notebook-1</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide1.html" style="     ">Week
-1</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide1.html" style="     ">Week 1</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/c/commonlitreadabilityprize/" style="     ">Kaggle
-CommonLit Readability
-Competition</a><br><a href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge" style="     ">NIJ
-Recidivism Challenge</a>
+<a href="https://www.kaggle.com/c/commonlitreadabilityprize/" style="     ">Kaggle CommonLit Readability Competition</a><br><a href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge" style="     ">NIJ Recidivism Challenge</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="" style="     "></a>
@@ -2324,36 +2309,25 @@ Assignments
 10-Oct
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-2a.html" style="     ">Lecture-2a</a><br><a href="https://edld654-fall22.netlify.app/lecture-2b.html" style="     ">Lecture-2b</a>
+<a href="https://edld654-fall23.netlify.app/lecture-2a.html" style="     ">Lecture-2a</a><br><a href="https://edld654-fall23.netlify.app/lecture-2b.html" style="     ">Lecture-2b</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i" style="     ">Notebook-2a</a><br><a href="https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii" style="     ">Notebook-2b</a><br><a href="https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo" style="     ">
-The {recipes} demo</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i" style="     ">Notebook-2a</a><br><a href="https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii" style="     ">Notebook-2b</a><br><a href="https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo" style="     "> The {recipes} demo</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide2.html" style="     ">Week
-2</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide2.html" style="     ">Week 2</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="http://www.feat.engineering/engineering-numeric-predictors.html" style="     ">Kuhn
-&amp; Johnson, Ch.
-6</a><br><a href="http://www.feat.engineering/encoding-categorical-predictors.html" style="     ">Kuhn
-&amp; Johnson, Ch.
-5</a><br><a href="https://bradleyboehmke.github.io/HOML/engineering.html" style="     ">Boehmke
-&amp; Greenwell, Ch. 3</a>
+<a href="http://www.feat.engineering/engineering-numeric-predictors.html" style="     ">Kuhn &amp; Johnson, Ch. 6</a><br><a href="http://www.feat.engineering/encoding-categorical-predictors.html" style="     ">Kuhn &amp; Johnson, Ch. 5</a><br><a href="https://bradleyboehmke.github.io/HOML/engineering.html" style="     ">Boehmke &amp; Greenwell, Ch. 3</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/assignment-1/" style="     ">Assignment
-1</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-1/" style="     ">Assignment 1</a>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<h3
-id="week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation">Week
-3 &amp; Week 4: Introduction to Linear Regression, Bias/Variance
-Tradeoff, and Cross-validation</h3>
+<h3 id="week-3-week-4-introduction-to-linear-regression-biasvariance-tradeoff-and-cross-validation">Week 3 &amp; Week 4: Introduction to Linear Regression, Bias/Variance Tradeoff, and Cross-validation</h3>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-material lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2384,26 +2358,16 @@ Assignments
 17-Oct &amp; 24-Oct
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-3a.html" style="     ">Lecture-3a</a><br><a href="https://edld654-fall22.netlify.app/lecture-3b.html" style="     ">Lecture-3b</a>
+<a href="https://edld654-fall23.netlify.app/lecture-3a.html" style="     ">Lecture-3a</a><br><a href="https://edld654-fall23.netlify.app/lecture-3b.html" style="     ">Lecture-3b</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/lecture-3a-overview-of-linear-regression" style="     ">Notebook-3a</a><br><a href="https://www.kaggle.com/code/uocoeeds/lecture-3b-review-of-bias-variance-tradeoff" style="     ">
-Notebook-3b</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-with-cross-validation" style="     ">
-Building a Linear Model with <code>caret</code></a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-3a-overview-of-linear-regression" style="     ">Notebook-3a</a><br><a href="https://www.kaggle.com/code/uocoeeds/lecture-3b-review-of-bias-variance-tradeoff" style="     "> Notebook-3b</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-with-cross-validation" style="     "> Building a Linear Model with <code>caret</code></a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide3.html" style="     ">Week
-3 &amp; 4</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide3.html" style="     ">Week 3 &amp; 4</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://bradleyboehmke.github.io/HOML/process.html" style="     ">
-Boehmke &amp; Greenwell, Ch.
-2</a><br><a href="https://bradleyboehmke.github.io/HOML/linear-regression.html" style="     ">Boehmke
-&amp; Greenwell, Ch.
-4</a><br><a href="https://hastie.su.domains/ISLR2/ISLRv2_website.pdf" style="     ">
-James et
-al. Ch.3</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-Kuhn and Johnson, APM, Ch. 4, 5.1, and Ch.6</a>
+<a href="https://bradleyboehmke.github.io/HOML/process.html" style="     "> Boehmke &amp; Greenwell, Ch. 2</a><br><a href="https://bradleyboehmke.github.io/HOML/linear-regression.html" style="     ">Boehmke &amp; Greenwell, Ch. 4</a><br><a href="https://hastie.su.domains/ISLR2/ISLRv2_website.pdf" style="     "> James et al. Ch.3</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> Kuhn and Johnson, APM, Ch. 4, 5.1, and Ch.6</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="" style="     "></a>
@@ -2412,8 +2376,7 @@ Kuhn and Johnson, APM, Ch. 4, 5.1, and Ch.6</a>
 </tbody>
 </table>
 </div>
-<h3 id="week-5-regularized-linear-regression">Week 5: Regularized Linear
-Regression</h3>
+<h3 id="week-5-regularized-linear-regression">Week 5: Regularized Linear Regression</h3>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-material lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2444,27 +2407,16 @@ Assignments
 31-Oct
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-4.html" style="     ">Lecture-4</a>
+<a href="https://edld654-fall23.netlify.app/lecture-4.html" style="     ">Lecture-4</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/lecture-4-regularized-penalized-regression" style="     ">Notebook-4</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model" style="     ">
-Building a Ridge Regression
-Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model" style="     ">Building
-a Lasso Regression
-Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net" style="     ">
-Building an Elastic Net
-Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text" style="     ">
-Using the Prediction Models for a New Text</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-4-regularized-penalized-regression" style="     ">Notebook-4</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model" style="     "> Building a Ridge Regression Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model" style="     ">Building a Lasso Regression Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net" style="     "> Building an Elastic Net Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text" style="     "> Using the Prediction Models for a New Text</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide4.html" style="     ">Week
-5</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide4.html" style="     ">Week 5</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://bradleyboehmke.github.io/HOML/regularized-regression.html" style="     ">
-Boehmke &amp; Greenwell, Ch.
-6</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-James et al., Ch.6.2</a>
+<a href="https://bradleyboehmke.github.io/HOML/regularized-regression.html" style="     "> Boehmke &amp; Greenwell, Ch. 6</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> James et al., Ch.6.2</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="" style="     "></a>
@@ -2473,8 +2425,7 @@ James et al., Ch.6.2</a>
 </tbody>
 </table>
 </div>
-<h3 id="week-6-7-regularized-logistic-regression">Week 6 &amp; 7:
-(Regularized) Logistic Regression</h3>
+<h3 id="week-6-7-regularized-logistic-regression">Week 6 &amp; 7: (Regularized) Logistic Regression</h3>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-material lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2505,41 +2456,25 @@ Assignments
 7-Nov &amp; 14-Nov
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-5.html" style="     ">Lecture-5</a>
+<a href="https://edld654-fall23.netlify.app/lecture-5.html" style="     ">Lecture-5</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook" style="     ">Building
-a Logistic Regression
-Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/" style="     ">Building
-a Classification Model with Ridge
-Penalty</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty" style="     ">Building
-a Classification Model with Lasso
-Penalty</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net" style="     ">Building
-a Classification Model with Elastic Net</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook" style="     ">Building a Logistic Regression Model</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/" style="     ">Building a Classification Model with Ridge Penalty</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty" style="     ">Building a Classification Model with Lasso Penalty</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net" style="     ">Building a Classification Model with Elastic Net</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide5.html" style="     ">Week
-6 &amp; 7</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide5.html" style="     ">Week 6 &amp; 7</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://bradleyboehmke.github.io/HOML/logistic-regression.html" style="     ">Boehmke
-&amp; Greenwell, Ch.
-5</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-James et al., Ch.
-4.3</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-APM, Ch. 12.2 and 12.5</a>
+<a href="https://bradleyboehmke.github.io/HOML/logistic-regression.html" style="     ">Boehmke &amp; Greenwell, Ch. 5</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> James et al., Ch. 4.3</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> APM, Ch. 12.2 and 12.5</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/assignment-2" style="     ">Assignment
-2</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-2" style="     ">Assignment 2</a>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<h3
-id="week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms">Week
-8: Introduction to K-Nearest Neighbors and Decision Tree Algorithms</h3>
+<h3 id="week-8-introduction-to-k-nearest-neighbors-and-decision-tree-algorithms">Week 8: Introduction to K-Nearest Neighbors and Decision Tree Algorithms</h3>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-material lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2570,33 +2505,16 @@ Assignments
 21-Nov
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-6a.html" style="     ">Lecture-6a</a><br><a href="https://edld654-fall22.netlify.app/lecture-6b.html" style="     ">Lecture-6b</a>
+<a href="https://edld654-fall23.netlify.app/lecture-6a.html" style="     ">Lecture-6a</a><br><a href="https://edld654-fall23.netlify.app/lecture-6b.html" style="     ">Lecture-6b</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn" style="     ">Building
-a Prediction Model with K-nearest
-neighbors</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn" style="     ">Building
-a Classification Model with K-nearest
-neighbors</a><br><a href="https://www.kaggle.com/uocoeeds/building-a-prediction-model-using-a-decision-tree" style="     ">Building
-a Prediction Model with a Decision
-Tree</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm" style="     ">Building
-a Classification Model with a Decision Tree</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn" style="     ">Building a Prediction Model with K-nearest neighbors</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn" style="     ">Building a Classification Model with K-nearest neighbors</a><br><a href="https://www.kaggle.com/uocoeeds/building-a-prediction-model-using-a-decision-tree" style="     ">Building a Prediction Model with a Decision Tree</a><br><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm" style="     ">Building a Classification Model with a Decision Tree</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/slides/slide6a.html" style="     ">Week
-8_Part
-1</a><br><a href="https://edld654-fall22.netlify.app/slides/slide6b.html" style="     ">Week
-8_Part 2</a>
+<a href="https://edld654-fall23.netlify.app/slides/slide6a.html" style="     ">Week 8_Part 1</a><br><a href="https://edld654-fall23.netlify.app/slides/slide6b.html" style="     ">Week 8_Part 2</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://bradleyboehmke.github.io/HOML/knn.html" style="     ">Boehmke
-&amp; Greenwell, Ch.
-8</a><br><a href="https://bradleyboehmke.github.io/HOML/DT.html" style="     ">
-Boehmke &amp; Greenwell, Ch.
-9</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-APM Ch.
-13.5</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-James et al. Ch. 8.1</a>
+<a href="https://bradleyboehmke.github.io/HOML/knn.html" style="     ">Boehmke &amp; Greenwell, Ch. 8</a><br><a href="https://bradleyboehmke.github.io/HOML/DT.html" style="     "> Boehmke &amp; Greenwell, Ch. 9</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> APM Ch. 13.5</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> James et al. Ch. 8.1</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="" style="     "></a>
@@ -2605,10 +2523,7 @@ James et al. Ch. 8.1</a>
 </tbody>
 </table>
 </div>
-<h3
-id="week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees">Week
-9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting
-Trees</h3>
+<h3 id="week-9-introduction-to-bagged-trees-random-forests-and-gradient-boosting-trees">Week 9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting Trees</h3>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-material lightable-striped lightable-hover" style="font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
@@ -2639,7 +2554,7 @@ Assignments
 28-Nov
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://edld654-fall22.netlify.app/lecture-7a.html" style="     ">Lecture-7a</a><br><a href="https://edld654-fall22.netlify.app/lecture-7b.html" style="     ">Lecture-7b</a>
+<a href="https://edld654-fall23.netlify.app/lecture-7a.html" style="     ">Lecture-7a</a><br><a href="https://edld654-fall23.netlify.app/lecture-7b.html" style="     ">Lecture-7b</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
 <a href="" style="     "></a>
@@ -2648,27 +2563,16 @@ Assignments
 <a href="" style="     "></a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://bradleyboehmke.github.io/HOML/bagging.html" style="     ">Boehmke
-&amp; Greenwell, Ch.
-10</a><br><a href="https://bradleyboehmke.github.io/HOML/random-forest.html" style="     ">
-Boehmke &amp; Greenwell, Ch.
-11</a><br><a href="https://bradleyboehmke.github.io/HOML/gbm.html" style="     ">
-Boehmke &amp; Greenwell, Ch.
-12</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-APM Ch. 8 &amp;
-14</a><br><a href="https://edld654-fall22.netlify.app/schedule.html" style="     ">
-James et al. Ch. 8.2</a>
+<a href="https://bradleyboehmke.github.io/HOML/bagging.html" style="     ">Boehmke &amp; Greenwell, Ch. 10</a><br><a href="https://bradleyboehmke.github.io/HOML/random-forest.html" style="     "> Boehmke &amp; Greenwell, Ch. 11</a><br><a href="https://bradleyboehmke.github.io/HOML/gbm.html" style="     "> Boehmke &amp; Greenwell, Ch. 12</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> APM Ch. 8 &amp; 14</a><br><a href="https://edld654-fall23.netlify.app/schedule.html" style="     "> James et al. Ch. 8.2</a>
 </td>
 <td style="text-align:left;border-bottom: solid;border-top: solid;border-left: solid;border-right: solid;">
-<a href="https://www.kaggle.com/code/uocoeeds/assignment-3" style="     ">Assignment
-3</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-3" style="     ">Assignment 3</a>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
