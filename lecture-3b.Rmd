@@ -1,0 +1,786 @@
+---
+title: Bias - Variance Tradeoff and Cross-validation
+
+author:
+  - name: Cengiz Zopluoglu
+    affiliation: University of Oregon
+
+date: 10/05/2022
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+    theme: theme.css
+---
+
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "",fig.align='center')
+require(here)
+require(ggplot2)
+require(plot3D)
+require(kableExtra)
+require(knitr)
+require(gifski)
+require(magick)
+require(gridExtra)
+library(scales)
+library(lubridate)
+require(plotly)
+
+options(scipen=99)
+
+```
+
+`r paste('[Updated:',format(Sys.time(),'%a, %b %d, %Y - %H:%M:%S'),']')`
+
+# How many parameters does it take to draw an elephant?
+
+Once upon a time, two physicists met, and one convinced the other that the agreement between some model-based calculations and measured experimental numbers was only superficial. In that conversation, von Neumann was quoted as saying this famous phrase *"... with four parameters I can fit an elephant, and with five I can make him wiggle his trunk."* [You can read the full story here.](https://www.nature.com/articles/427297a)
+
+Since then, several people have tried to develop mathematical models that can draw an elephant with as few parameters as possible. It has become an exciting activity when people want to make a point about how complex of a model one would need to understand what we observe in the real world.
+
+Now, we will join them. See the following plot that has several data points. Would you say there is an elephant there? Can you develop a mathematical model to fit these data points? How complex would that model be? How many parameters would you need?
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+knitr::include_graphics('./figs/elephant.png')
+
+```
+
+Below is a web application with such a model. You can increase the number of parameters in this model from 1 to 70, and the model predictions will start to look like an elephant. Our quick exploration aims to find the number of parameters you would use to model an elephant. Start manipulating the **p** (number of parameters) and examine how the model predicted contour changes. Stop when you believe you can convince someone else that it looks like an elephant.
+
+https://kourentzes.shinyapps.io/FitElephant/
+
+# The Principle of Parsimony
+
+## Bias - Variance Tradeoff
+
+When we use a model to predict an outcome, there are two primary sources of error: model error and sampling error.
+
+**Model Error**: Given that no model is a complete representation of truth underlying observed data, every model is misspecified. Conceptually, we can define the model error as the distance between the model and the true generating mechanism underlying data. Technically, for a given set of predictors, it is the difference between the expected value predicted by the model and the true value underlying data. The term **bias** is also commonly used for model error.
+
+**Sampling Error**: Given that the amount of data is fixed during any modeling process, it will decrease the stability of parameter estimates for models with increasing complexity across samples drawn from the same population. Consequently, this will increase the variance of predictions (more variability of a predicted value across different samples) for a given set of the same predictors. The terms **estimation error** or **variance** is also used for sampling error.
+
+The essence of any modeling activity is to balance these two sources of error and find a stable model (generalizable across different samples) with the least amount of bias.
+
+## Bias and Variance of Model Predictions
+
+We will do a simple Monte Carlo experimentation to understand these two sources of error better. Suppose that there is a true generating model underlying some observed data. This model is
+
+$$
+y = e^{(x-0.3)^2} - 1 + \epsilon,
+$$
+
+where $x$ is a predictor variable equally spaced and ranges from 0 to 1, $\epsilon$ is a random error component. The errors follow a normal distribution with a mean of zero and a standard deviation of 0.1, and $y$ is the outcome variable. Suppose we simulate a small observed data following this model with a sample size of 20. Then, we use a straightforward linear model to represent the observed simulated data.
+
+$$
+y = \beta_0 + \beta_1x + \epsilon
+$$
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+set.seed(09282021)
+
+N = 20
+
+x <- seq(0,1,length=20)
+
+x
+
+e <- rnorm(20,0,.1)
+
+e
+
+y <- exp((x-0.3)^2) - 1 + e
+
+y
+
+
+mod <- lm(y ~ 1 + x)
+mod
+
+predict(mod)
+```
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  geom_point(aes(x=x,y=y))+
+  geom_line(aes(x=x,y=predict(mod)),lty=2,col='gray')+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))
+
+```
+
+
+The solid line in this plot represents the true nature of the relationship between $x$ and $y$. The observed data points do not lie on this line due to the random error component (noise). If we use a simple linear model, the gray dashed line represents the predicted relationship between $x$ and $y$. 
+
+This demonstration only represents a single dataset. Now, suppose that we repeat the same process ten times. We will produce ten different datasets with the same size (N=20) using the same predictor values ($x$) and true data generating model. Then, we will fit a simple linear model to each of these ten datasets. 
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+set.seed(09282021)
+
+E  <- vector('list',10)
+Y  <- vector('list',10)
+M1 <- vector('list',10)
+
+N = 20
+
+x <- seq(0,1,length=N)
+
+for(i in 1:10){
+  
+  E[[i]]  <- rnorm(N,0,.1)
+  Y[[i]]  <- exp((x-0.3)^2) - 1 + E[[i]]
+  
+  M1[[i]] <- lm(Y[[i]] ~ 1 + x)
+}
+```
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE,warning=FALSE,fig.width=6,fig.height=6}
+
+p.1 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))
+
+for(i in 1:10){
+  p.1 <- p.1 + geom_line(aes_string(x=x,y=predict(M1[[i]])),col='gray',lty=2)
+}
+
+p.1
+```
+
+The solid line again represents the true nature of the relationship between $x$ and $y$. There are ten lines (gray, dashed), and each line represents a simple linear model fitted to a different dataset simulated using the same data generating mechanism. The table below provides a more detailed look at the fitted values from each replication for every single $x$ value.
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_html_output()}
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M1[[i]])
+}
+
+y.true <- exp((x-.3)^2)-1
+Y.true <- matrix(y.true,nrow=20,ncol=30,byrow=FALSE)
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Average <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+
+colnames(yy) <- c('x','y (TRUE)',1:10,'Mean','SD')
+
+round(yy,3) %>%
+  kbl() %>%
+  kable_minimal() %>%
+  add_header_above(c(" " = 2,"Model Predicted Value Across 10 Replications" = 10," " =2)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 10) 
+
+yy.linear <- yy[,c('x','y (TRUE)','Mean','SD')]
+colnames(yy.linear) <- c('x','y','Mean','SD')
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_latex_output()}
+
+round(yy,3) %>%
+  kbl()
+```
+
+For instance, when the $x$ is equal to 0, the true value of $y$ based on the model would be 0.094. However, when we fit a linear model to 10 different datasets with the underlying true model, the average predicted value was -.107 with a standard deviation of 0.047 across ten replications. Similarly, when the $x$ is equal to 0.316, the true value of $y$ based on the model would be 0, but the average prediction was 0.059 with a standard deviation of 0.032 across ten replications. A linear model provides biased estimates such that there is an underestimation at the lower values of $x$ and higher values of $x$. At the same time, there is an overestimation in the middle of the range of $x$. 
+
+Let's do the same experiment by fitting a more complex 6th-degree polynomial to the same datasets with the same underlying true model.
+
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + \beta_6 x^6 + \epsilon
+$$
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+set.seed(09282021)
+
+E  <- vector('list',10)
+Y  <- vector('list',10)
+M6 <- vector('list',10)
+
+N = 20
+
+x <- seq(0,1,length=N)
+
+for(i in 1:10){
+  
+  E[[i]]  <- rnorm(N,0,.1)
+  Y[[i]]  <- exp((x-0.3)^2) - 1 + E[[i]]
+  
+  M6[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6))
+}
+```
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE,warning=FALSE,fig.width=6,fig.height=6}
+
+p.6 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))
+
+for(i in 1:10){
+  p.6 <- p.6 + geom_line(aes_string(x=x,y=predict(M6[[i]])),col='gray',lty=2)
+}
+
+p.6
+```
+
+
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_html_output()}
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M6[[i]])
+}
+
+y.true <- exp((x-.3)^2)-1
+Y.true <- matrix(y.true,nrow=20,ncol=30,byrow=FALSE)
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Average <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+
+colnames(yy) <- c('x','y (TRUE)',1:10,'Mean','SD')
+
+round(yy,3) %>%
+  kbl() %>%
+  kable_minimal() %>%
+  add_header_above(c(" " = 2,"Model Predicted Value Across 10 Replications" = 10," " =2)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 10) 
+
+yy.poly <- yy[,c('x','y (TRUE)','Mean','SD')]
+colnames(yy.poly) <- c('x','y','Mean','SD')
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_latex_output()}
+
+round(yy,3) %>%
+  kbl()
+```
+
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **DISCUSSION** </center>
+
+Compare the numbers in these two tables and discuss the differences you observe. What happened to predictions when you fit a more complex model (6th-degree polynomial) instead of a simple regression model? You can examine the following plot that displays the average and range of predictions across 10 replications for every value of $x$.
+</div>
+***
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=8,fig.height=4,eval=knitr::is_html_output()}
+
+p1 <- ggplot(data=yy.linear,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('Linear Model')
+
+p2 <- ggplot(data=yy.poly,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('6th Degree Polynomial Model')
+
+grid.arrange(p1,p2,nrow=1)
+```
+
+
+We can expand our experiment and examine a range of models from linear to the 6th-degree polynomial. The following plots display what you would see if you repeated this experiment by fitting a linear model, quadratic, cubic, quartic, quintic, and sextic model to the same simulated datasets with the same underlying model. A table follows these plots that present the bias and standard deviation of predictions across ten replications for comparisons.
+
+$$
+y = \beta_0 + \beta_1x + \epsilon
+$$
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \epsilon
+$$
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \epsilon
+$$
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \epsilon
+$$
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5  + \epsilon
+$$
+
+$$
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + \beta_6 x^6 + \epsilon
+$$
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+set.seed(09282021)
+
+E  <- vector('list',10)
+Y  <- vector('list',10)
+M1 <- vector('list',10)
+M2 <- vector('list',10)
+M3 <- vector('list',10)
+M4 <- vector('list',10)
+M5 <- vector('list',10)
+M6 <- vector('list',10)
+
+
+N = 20
+
+x <- seq(0,1,length=N)
+
+for(i in 1:10){
+  
+  E[[i]]  <- rnorm(N,0,.1)
+  Y[[i]]  <- exp((x-0.3)^2) - 1 + E[[i]]
+  
+  M1[[i]] <- lm(Y[[i]] ~ 1 + x)
+  M2[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2))
+  M3[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2) + I(x^3))
+  M4[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2) + I(x^3) + I(x^4))
+  M5[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2) + I(x^3) + I(x^4) + I(x^5))
+  M6[[i]] <- lm(Y[[i]] ~ 1 + x + I(x^2) + I(x^3) + I(x^4) + I(x^5) + I(x^6))
+}
+```
+
+
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_html_output()}
+
+N = 20
+x <- seq(0,1,length=N)
+y.true <- exp((x-.3)^2)-1
+Y.true <- matrix(y.true,nrow=20,ncol=30,byrow=FALSE)
+
+##################################################
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M1[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.1 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.1) <- c('x','y','Mean','SD')
+
+##################################################
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M2[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.2 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.2) <- c('x','y','Mean','SD')
+
+##################################################
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M3[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.3 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.3) <- c('x','y','Mean','SD')
+
+
+##################################################
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M4[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.4 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.4) <- c('x','y','Mean','SD')
+
+
+##################################################
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M5[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.5 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.5) <- c('x','y','Mean','SD')
+
+
+##################################################
+
+out <- matrix(nrow=20,ncol=10)
+for(i in 1:10){
+  out[,i] <- predict(M6[[i]])
+}
+
+yy <- as.data.frame(cbind(x,y.true,out))
+yy$Mean <- rowMeans(yy[,3:11])
+yy$SD <- apply(yy[,3:11],1,sd)
+
+yy.6 <- yy[,c('x','y.true','Mean','SD')]
+colnames(yy.6) <- c('x','y','Mean','SD')
+
+```
+
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=8,fig.height=24,eval=knitr::is_html_output()}
+
+p1 <- ggplot(data=yy.1,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('Linear Model')
+
+p2 <- ggplot(data=yy.2,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('Quadratic Model')
+
+p3 <- ggplot(data=yy.3,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('Qubic Model')
+
+p4 <- ggplot(data=yy.4,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('4th Degree Polynomial Model')
+
+p5 <- ggplot(data=yy.5,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('5th Degree Polynomial Model')
+
+p6 <- ggplot(data=yy.6,aes(x=x,y=y))+
+  geom_line()+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(-0.05,1.05))+
+  ylim(c(-0.25,1))+
+  geom_point(aes(x=x,y=Mean))+
+  geom_errorbar(aes(ymin=Mean - 2*SD, 
+                    ymax=Mean + 2*SD), width=.02)+
+  ggtitle('6th Degree Polynomial Model')
+
+
+p.1 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('Linear Model')
+
+for(i in 1:10){
+  p.1 <- p.1 + geom_line(aes_string(x=x,y=predict(M1[[i]])),col='gray',lty=2)
+}
+
+
+p.2 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('Quadratic Model')
+
+for(i in 1:10){
+  p.2 <- p.2 + geom_line(aes_string(x=x,y=predict(M2[[i]])),col='gray',lty=2)
+}
+
+p.3 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('Qubic Model')
+
+for(i in 1:10){
+  p.3 <- p.3 + geom_line(aes_string(x=x,y=predict(M3[[i]])),col='gray',lty=2)
+}
+
+p.4 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('4th Degree Polynomial Model')
+
+for(i in 1:10){
+  p.4 <- p.4 + geom_line(aes_string(x=x,y=predict(M4[[i]])),col='gray',lty=2)
+}
+
+p.5 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('5th Degree Polynomial Model')
+
+for(i in 1:10){
+  p.5 <- p.5 + geom_line(aes_string(x=x,y=predict(M5[[i]])),col='gray',lty=2)
+}
+
+p.6 <- ggplot()+
+  geom_function(fun = function(x) exp((x-.3)^2)-1)+
+  theme_bw()+
+  xlab('x')+
+  ylab('y')+
+  xlim(c(0,1))+
+  ylim(c(-0.25,1))+
+  ggtitle('6th Degree Polynomial Model')
+
+for(i in 1:10){
+  p.6 <- p.6 + geom_line(aes_string(x=x,y=predict(M6[[i]])),col='gray',lty=2)
+}
+
+grid.arrange(p.1,p1,p.2,p2,p.3,p3,p.4,p4,p.5,p5,p.6,p6,nrow=6)
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_html_output()}
+
+yy.1$Mean <- yy.1$Mean - yy.1$y
+yy.2$Mean <- yy.2$Mean - yy.2$y
+yy.3$Mean <- yy.3$Mean - yy.3$y
+yy.4$Mean <- yy.4$Mean - yy.4$y
+yy.5$Mean <- yy.5$Mean - yy.5$y
+yy.6$Mean <- yy.6$Mean - yy.6$y
+
+Ytab <- cbind(yy.1,yy.2[,3:4],yy.3[,3:4],yy.4[,3:4],yy.5[,3:4],yy.6[,3:4])
+
+colnames(Ytab) <- c('x','y (TRUE)',rep(c('Bias','SD'),6))
+
+round(Ytab,3) %>%
+  kbl() %>%
+  kable_minimal() %>%
+  add_header_above(c(" " = 2,
+                     "Linear Model" = 2,
+                     "Quadratic Model" = 2,
+                     "Qubic Model" = 2,
+                     "4th Deg. Poly." = 2,
+                     "5th Deg. Poly." = 2,
+                     "6th Deg. Poly." = 2)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                font_size = 10) 
+```
+
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_latex_output()}
+
+round(Ytab,3) %>%
+  kbl()
+```
+
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **DISCUSSION** </center>
+
+If you had to choose one of these models for one of the simulated datasets, which one would you choose? Why?
+</div>
+***
+
+## Moral of the Story: Underfitting vs. Overfitting
+
+Large model bias happens when we underfit and do not use all the information available in the dataset. An example of underfitting for the experimentation above would be using a linear model to represent the relationship between $x$ and $y$ for one of the sample datasets. Note that there is always a model bias to some degree for all these six models because none of them is the true model. However, it is the most obvious for the linear model that doesn't account for nonlinearity in the dataset. On the other hand, you can see that the linear model is the most robust to sampling variation. It is the most stable and provides the most consistent predictions for different datasets (more minor variation in predictions across ten replications).
+
+Large model variance happens when we overfit and try to extract more information than available in the dataset. An example of overfitting for the experimentation above would be using any model beyond the quadratic model. When this happens, we start modeling noise (error) in the sample dataset as if it provides some helpful information. In contrast, such information is unique to a specific sample dataset, and there is no guarantee that it will be replicable for other samples from the same population. Notice that the bias does not improve much for models beyond the quadratic model; however, the variance of predictions keeps increasing for more complex models. In other words, more complex models are less stable and not robust to sampling variation. The predictions from more complex models tend to vary more from sample to sample, although they are less biased. In other words, there is less confidence that the model will be generalizable for observations outside our sample.
+
+Could you find that sweet model that provides a reasonable representation of data and a reasonable amount of generalizability (consistent/stable predictions for observations other than the ones you used to develop the model)? 
+
+```{r, echo=FALSE,eval=knitr::is_html_output(),class.source='klippy',fig.align='center',fig.height=8,fig.width=8}
+
+knitr::include_graphics('./figs/bias-variance.png')
+
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=6,fig.height=6,eval=knitr::is_latex_output()}
+
+knitr::include_graphics('./figs/bias-variance_reduced.png')
+
+```
+
+## Facing the Reality
+
+When try to understand/predict a phenomenon measured in some way in social and behavioral sciences, there is probably not a true model we can use as a reference to understand the bias and variance of our predictions, as we had in our experimentation above. If there is such a thing that is a 'true model,' it is probably a very complex system with many, many variables that affect the measured outcome variable. It would be reasonable to acknowledge that there are some variables with relatively larger important effects, there are many variables with small effects, and many others with tapering smaller effects, and the interactions among all these variables. Our models are just approximations of this whole reality.
+
+Since we have a fixed amount of data, we only have limited information and can reveal these effects only to a certain degree. The more data we have, the more and smaller effects we can detect and separate from noise. So, the complexity of the model we can afford is limited to the amount of data and information available in the data. The most challenging part of any modeling activity is finding the amount of complexity we can afford with the sample data at hand and a model that can perform well enough for out-of-sample observations.
+
+# Use of Resampling Methods to Balance Model Bias and Model Variance
+
+Certain strategies are applied to avoid overfitting and find the sweet spot between model bias and model variance. This process is nicely illustrated in [Boehmke and Greenwell (2020, Figure 2.1)](https://bradleyboehmke.github.io/HOML/process.html)
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',fig.align='center',fig.height=3,fig.width=8}
+
+knitr::include_graphics('./figs//modeling_process2.png')
+
+```
+
+
+We first split data into two main components: the training and test datasets. While there is no particular rule for the size of training and test datasets, it is common to see 80-20 or 70-30 splits based on the size of the original dataset. The training dataset is mainly used for exploring and model development, while the test set is mainly used to validate a final model's performance. Different approaches may be used while doing the initial split of training and test datasets, such as **simple random sampling**, **stratified sampling**, or **down-sampling/up-sampling** for imbalanced data (typically happens for classification problems when there is a great imbalance among categories).
+
+Cross-validating the model performance within the training set during the exploration and model development is also a good strategy. It is typically done by creating multiple partitions within the training set and testing models on each partition while optimizing the parameters. There are different approaches for creating different partitions in the training dataset, such as ***k*-fold cross-validation** or **bootstrapping**, but *k*-fold cross-validation is the most common. In *k*-fold cross-validation, the training sample is randomly partitioned into *k* sets of equal size. A model is fitted to *k*-1 folds, and the remaining fold is used to test the model performance. It can be repeated *k* times by treating a different fold as a hold-out set. Finally, the performance evaluation metric is aggregated (e.g., average) across *k* replications to get a *k*-fold cross-validation estimate of the performance evaluation metric. Once the model is optimized, a final model is developed as a result of this cross-validation process. The final model is trained using the whole training data and evaluated one final time on the test dataset to measure the generalizability of model predictions.
+
+# Back to the Elephant
+
+If you are curious more about drawing an elephant, [a more recent paper by Mayer, Khairy, and Howard (2010)](https://aapt.scitation.org/doi/full/10.1119/1.3254017) provided a mathematical model that can draw an elephant with only four complex parameters (just like what von Neumann said). Below is an R code to reproduce their model using R.
+
+Even more, [this paper by Boué (2019)](https://arxiv.org/abs/1904.12320) argues that you can approximate any dataset of any modality with a single parameter. Go figure!
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=8,fig.height=8,eval=knitr::is_html_output()}
+
+# 4 complex parameters
+
+  p1 <- 50-30i
+  p2 <- 18+8i
+  p3 <- 12-10i
+  p4 <- -14-60i
+
+  Cx <- c(0,50i,18i,12,0,-14)
+  Cy <- c(0,-60-30i,8i,-10i,0,0)
+
+# t, a parameter that can be interpreted as the elapsed time while going along
+# the path of the contour
+  
+  t <- seq(0,2*pi,length.out = 1000)
+
+# X-coordinates
+  
+  x <- c()
+  
+  A <- c(0,0,0,12,0,-14)  # Real part of Cx
+  B <- c(0,50,18,0,0,0)   # Imaginary part of Cx
+  
+  for(i in 1:length(t)){
+    k <- 0:5
+    x[i] <- sum(A*cos(k*t[i]) + B*sin(k*t[i])) # Eq 1
+  }
+  
+# Y-coordinates
+  
+  y <- c()
+  
+  A <- c(0,-60,0,0,0,0)     # Real part of Cy
+  B <- c(0,-30,8,-10,0,0)   # Imaginary part of Cy
+  
+  for(i in 1:length(t)){
+    k <- 0:5
+    y[i] <- sum(A*cos(k*t[i]) + B*sin(k*t[i])) # Eq 2
+  }
+  
+# Function to draw the elephant
+
+  plot(y,-x,type='l')
+```
+

@@ -1,0 +1,888 @@
+---
+title: "Data Preprocessing I: Continuous and Categorical Data"
+
+author:
+  - name: Cengiz Zopluoglu
+    affiliation: University of Oregon
+
+date: 07/06/2022
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+    theme: theme.css
+---
+
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "",fig.align='center')
+require(here)
+require(ggplot2)
+require(plot3D)
+require(kableExtra)
+require(knitr)
+require(gifski)
+require(magick)
+require(gridExtra)
+options(scipen=99)
+
+```
+
+`r paste('[Updated:',format(Sys.time(),'%a, %b %d, %Y - %H:%M:%S'),']')`
+
+
+# 1. Scales of Measurement and Types of Variables
+
+It is important to understand the nature of variables and how they were measured and represented in a dataset. In social sciences, in particular psychology, there is a methodological consensus about the framework provided by [Stevens (1946)](https://www.jstor.org/stable/1671815), also see [Michell (2002)](https://doi.org/10.1080/00049530210001706563) for an in-depth discussion. According to Stevens' definition, there are four levels of measurement: nominal, ordinal, interval, and ratio. Whether a variable has a nominal, ordinal, interval, or ratio scale depends on the character of the empirical operations performed while constructing the variable. 
+
+- Nominal scale: Variables with a nominal scale cannot be meaningfully added, subtracted, divided, or multiplied. Also, there is no hierarchical order among the assigned values. Most variables containing labels for individual observations can be considered nominal, e.g., hair color, city, state, and ethnicity.
+
+- Ordinal scale: Variables with an ordinal scale also represent labels; however, there is a meaningful hierarchy among the assigned values. For instance, if a variable is coded as Low, Medium, and High, they are simply labels. Still, we know that High represents something more than Medium and Medium represents something higher than Low (High > Medium > Low). On the other hand, the distance between the assigned values does not necessarily represent the same amount of difference. Other examples of variables that can be considered as ordinal are letter grades (A-F), scores from Likert type items (Strongly agree, agree, disagree, strongly disagree), education status(high school, college, master's, Ph.D.), cancer stage (stage1, stage2, stage3), order of finish in a competition (1st, 2nd, 3rd).
+
+- Interval scale: Variables with an ordinal scale represent quantities with equal measurement units but don't have an absolute zero point. For instance, a typical example of an interval scale is temperature measured on the Fahrenheit scale. The difference between 20F and 30F is the same as between 60F and 70F. However, 0F does not indicate the absence of heat.
+
+- Ratio scale: Variables with a ratio scale represent quantities with equal measurement units and have an absolute zero. Due to the existence of an absolute zero point that represents 'nothing,' the ratio of measurements is also meaningful. Typical examples are height, mass, distance, and length.
+
+Below table provides a summary of properties for each scale.
+
+|          | Indicating Difference | Indicating Direction of Difference | Indicating Amount of Difference | Has absolute zero |
+|----------|:---------------------:|:----------------------------------:|:-------------------------------:|:-----------------:|
+| Nominal  | X                      |                                    |                                 |                   |
+| Ordinal  | X                     | X                                  |                                 |                   |
+| Interval | X                     | X                                  | X                               |                   |
+| Ratio    | X                     | X                                  | X                               | X                 |
+
+In this class, we classify the variables in two types: **Categorical** and **Continuous**. The variables with a nominal or ordinal scale are considered as **Categorical** and the variables with an interval or ratio scale are considered as **Continuous**.
+
+
+# 2. Processing Categorical Variables
+
+When categorical predictors are in a dataset, it is essential to transform them into numerical codes. When encoding categorical predictors, we try to preserve as much information as possible from their labels. Therefore, different strategies may be used for categorical variables with different ordinal scales.
+
+## 2.1 One-hot encoding (Dummy Variables)
+
+A dummy variable is a synthetic variable with two outcomes (0 and 1) representing a group membership. When there is a nominal variable with *N* levels, it is typical to create *N* dummy variables to represent the information in the nominal variable. Each dummy variable represents membership to one of the levels in the nominal variable. These dummy variables can be used as features in predictive models.
+
+In its simplest case, consider the variable `Race` in the Recidivism dataset with two levels: Black and White. We can create two dummy variables: the first dummy variable represents whether or not an individual is Black, and the second dummy variable represents whether or not the individual is White.
+
+|        | Dummy Variable 1 | Dummy Variable 2 |
+|--------|:----------------:|:----------------:|
+| Black  |     1            |       0
+| White  |     0            |       1          |
+
+Let's consider another example from the Recidivism dataset. Variable `Prison_Offense` has five categories: Violent/Sex, Violent/Non-Sex, Property, Drug, and Other. We can create five dummy variables using the following coding scheme. 
+
+|                  | Dummy Variable 1 | Dummy Variable 2 | Dummy Variable 3 | Dummy Variable 4 | Dummy Variable 5 |
+|------------------|:----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
+| Violent/Sex      |     1            |       0          |     0            |     0            |     0            |
+| Violent/Non-Sex  |     0            |       1          |     0            |     0            |     0            |
+| Property         |     0            |     0            |     1            |     0            |     0            |
+| Drug             |     0            |     0            |     0            |     1            |     0            |
+| Other            |     0            |     0            |     0            |     0            |     1            |
+
+Note that `Prison_Offence` is missing for several observations. You can fill in the missing values before creating dummy variables using one of the methods we will discuss later. Alternatively, we can define Missing as the sixth category to preserve that information.
+
+|                  | Dummy Variable 1 | Dummy Variable 2 | Dummy Variable 3 | Dummy Variable 4 | Dummy Variable 5 |Dummy Variable 6 |
+|------------------|:----------------:|:----------------:|:----------------:|:----------------:|:----------------:|:----------------:
+| Violent/Sex      |     1            |       0          |     0            |     0            |     0            |    0            |
+| Violent/Non-Sex  |     0            |       1          |     0            |     0            |     0            |    0            |
+| Property         |     0            |     0            |     1            |     0            |     0            |    0            |
+| Drug             |     0            |     0            |     0            |     1            |     0            |    0            |
+| Other            |     0            |     0            |     0            |     0            |     1            |    0            |
+| Missing          |     0            |     0            |     0            |     0            |     0            |    1            |
+
+In some cases, when you have a geographical location with a reasonable number of categories (e.g., counties or cities in a state, schools in a district), you can also create dummy variables to represent this information. In our case, the Recidivism dataset has a variable called `Residence_PUMA` indicating [Public Use Microdata Area (PUMA)](https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html) for the residence address at the time individual was released. This variable has 25 unique codes (1-25); however, these numbers are just labels. So, one can create 25 different dummy variables to represent 25 different PUMAs.
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE** </center>
+
+When you fit a typical regression model without regularization using ordinary least-squares (OLS), a typical practice is to drop a dummy variable for one of the levels. So, for instance, if there are *N* levels for a nominal variable, you only have to create *(N-1)* dummy variables, as the Nth one has redundant information. The information regarding the excluded category is represented in the intercept term. It creates a problem when you put all *N* dummy variables into the model because the OLS procedure tries to invert a singular matrix, and you will likely get an error message. 
+
+On the other hand, this is not an issue when you fit a regularized regression model, which will be the case in this class. Therefore, you do not need to drop one of the dummy variables and can include all of them in the analysis. In fact, it may be beneficial to keep the dummy variables for all categories in the model when regularization is used in the regression. Otherwise, the model may produce different predictions depending on which category is excluded.
+
+</div>
+***
+
+## 2.2. Label encoding
+
+When the variable of interest is ordinal, and there is a hierarchy among the levels, we can still use one-hot encoding to create a set of dummy variables to represent the information in the ordinal variable. However, dummy variables will not provide information regarding the categories' hierarchy. 
+
+For instance, consider the variable `Age_At_Release` in the Recidivism dataset. It is coded as 7 different age intervals in the dataset: 18-22, 23-27, 28-32, 33-37, 38-42, 43-47, 48 or older. One can create seven dummy variables to represent each category in this variable. Alternatively, one can assign a numeric variable to each category that may represent the information in these categories. For instance, one can assign numbers from 1 to 7, respectively. Or, one can choose the midpoint of each interval to represent each category (e.g., 20,25,31,35,40,45,60).
+
+Another example would be the variable `Education Level` in the Recidivism dataset. It has three levels: At least some college, High School Diploma, and Less than a High School diploma. One can create three dummy variables to represent each level. Alternatively, one can assign 1, 2, and 3, respectively. Or, one can assign a number for the approximate years of schooling for each level, such as 9, 12, and 15.
+
+## 2.3. Polynomial Contrasts
+
+Another way of encoding an ordinal variable is to use polynomial contrasts. The polynomial contrasts may be helpful if one wants to explore whether or not there is a linear, quadratic, cubic, etc., the relationship between the predictor variable and outcome variable. You can use the `stat::poly()` function in R to obtain the set of polynomial contrasts. If there are *N* levels in an ordinal variable, you can get polynomials up to degree *N-1*. 
+
+For instance, suppose you have an ordinal variable with three levels: Low, Medium, and High. Then, `stat::poly(x=1:3,degree=2)` will return the polynomial contrasts for the linear and quadratic terms. Notice that the input for the `poly` function is a vector of numeric values corresponding to the ordinal variable levels and the degree of the requested polynomial terms. For this example, it creates two sets of vectors to represent this ordinal variable. Note that the sum of the squares within each column equals 1, and the dot product of the contrast vectors equals 0. In other words, the polynomial terms represent a set of **orthonormal vectors**.
+
+
+|        | Linear           | Quadratic        |
+|--------|:----------------:|:----------------:|
+| Low    |     -0.707       |       0.408      |
+| Medium |       0          |       -0.816     |
+| High   |     0.707        |       0.408      |
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+ctr <- poly(1:3,2)
+round(ctr,3)
+
+sum(ctr[,1]^2)
+sum(ctr[,2]^2)
+
+sum(ctr[,1]*ctr[,2])
+
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source = 'fold-show',message=FALSE, warning=FALSE,fig.height=4}
+
+linear <- ggplot()+
+  geom_point(aes(x=1:3,y=ctr[,1]),cex=3)+
+  geom_line(aes(x=1:3,y=ctr[,1]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Linear Term')
+
+quad <- ggplot()+
+  geom_point(aes(x=1:3,y=ctr[,2]),cex=3)+
+  geom_line(aes(x=1:3,y=ctr[,2]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quadratic Term')
+
+grid.arrange(linear,quad,nrow=1)
+```
+
+If we consider the variable `Age_At_Release` with 7 different levels, then we can have polynomial terms up to the 6th degree. 
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+ctr <- poly(1:7,6)
+round(ctr,3)
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source = 'fold-show',message=FALSE, warning=FALSE,fig.height=12}
+
+linear <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,1]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,1]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Linear Term')+
+  scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+quad <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,2]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,2]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quadratic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+cubic <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,3]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,3]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Cubic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+fourth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,4]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,4]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quartic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+fifth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,5]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,5]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quintic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+
+sixth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,6]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,6]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Sextic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+
+grid.arrange(linear,quad,cubic,fourth,fifth,sixth,nrow=3,ncol=2)
+```
+
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE** </center>
+
+There are other ways of encoding nominal and ordinal variables (e.g., Helmert contrasts), or one can come up with their own set of contrast values. When the goal of analysis is inference and you run analysis to respond to a specific research question, your research question typically dictates the type of encoding to use. You choose a coding scheme that provides you the most interpretable coefficients to respond to your research question. 
+
+On the other hand, when the goal of analysis is prediction, how you encode your categorical variable does not make much difference. In fact, they provide very similar predictions. Below, I provide an example using Age_at_Release variable to predict the outcome using different coding schemes and report the average squared error of predictions from a logistic regression model. 
+
+<center>
+
+| Encoding             | Average Squared Error|
+|----------------------|:--------------------:|
+| Intercept-Only (NULL)|0.1885789             |                      
+| Dummy Variables      |0.1861276             | 
+| Label Encoding       |0.1861888             | 
+| Polynomial Contrasts |0.1861276             |
+| Helmert Contrasts    |0.1861276             | 
+
+</center>
+
+Notice that one-hot encoding, polynomial contrasts, and helmert contrasts have identical performance. In fact, they yield the exact same predicted value for observations. Moreover, a simple label encoding with a single constructed variable does (almost) as well as other encoding types with multiple constructed variables.  
+
+</div>
+***
+
+# 3. Processing Cyclic Variables
+
+There are sometimes variables that are cyclic by nature (e.g., months, days, hour), and a type of encoding that represents their cyclic nature may be the most meaningful way to represent them instead of numerical or categorical encoding. One way to achieve this is to create two new variables using a sine and cosine transformation as the following:
+
+$$x_{1} = sin(\frac{2 \pi x}{max(x)}),$$
+$$x_{2} = cos(\frac{2 \pi x}{max(x)}).$$
+
+For instance, suppose one of the variables in a dataset is the day of the week. We can represent its cyclic nature using the two variables as defined the following. Once the corresponding coordinates are calculated for each day of the week, the single variable that represents days in the data can be replaced with these two variables representing their coordinates in a unit circle.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+d <- data.frame(days = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun'),
+                x = 1:7)
+
+d$x1 <- sin((2*pi*d$x)/7)
+d$x2 <- cos((2*pi*d$x)/7)
+
+d
+```
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+ggplot(data = d, aes(x=x1,y=x2))+
+  geom_point(cex=3)+
+  annotate("path",
+   x=cos(seq(0,2*pi,length.out=100)),
+   y=sin(seq(0,2*pi,length.out=100)))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  annotate("text", x = 0, y = 0.95, label = "Sun")+
+  annotate("text", x = 0.72, y = 0.6, label = "Mon")+
+  annotate("text", x = 0.9, y = -0.2, label = "Tue")+
+  annotate("text", x = 0.39, y = -0.85, label = "Wed")+
+  annotate("text", x = -0.39, y = -0.85, label = "Thu")+
+  annotate("text", x = -.9, y = -0.2, label = "Fri")+
+  annotate("text", x = -.72, y = 0.6, label = "Sat")
+  
+```
+
+
+We can apply the same concept to any cyclic variable. Here is another example for the time of day.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+d <- data.frame(hour = 1:24)
+
+d$x1 <- sin((2*pi*d$hour)/24)
+d$x2 <- cos((2*pi*d$hour)/24)
+
+d
+```
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+ggplot(data = d, aes(x=x1,y=x2,label = 1:24))+
+  geom_point(cex=3)+
+  annotate("path",
+   x=cos(seq(0,2*pi,length.out=100)),
+   y=sin(seq(0,2*pi,length.out=100)))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  geom_text(nudge_y = c(rep(-0.05,6),rep(0.05,6),rep(0.05,6),rep(-0.05,6)), 
+            nudge_x = c(rep(-0.02,6),rep(-0.02,6),rep(0.02,6),rep(0.02,6)))
+  
+```
+
+
+# 4. Processing Continuous Variables
+
+## 4.1. Centering and Scaling (Standardization)
+
+Centering a variable is done by subtracting the variable's mean from every variable's value, ensuring that the mean of the centered variable equals zero. Scaling a variable is dividing the value of each observation by the variable's standard deviation. When centering and scaling are both applied, it is called standardization. 
+
+When we standardize a variable, we ensure that its mean is equal to zero and variance is equal to 1. Standardizing outcome and predictor variables may be critical and necessary for specific models (e.g., K-nearest neighbor, support vector machines, penalized regression), but it is not always necessary for other models (e.g., decision tree models).
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE** </center>
+
+Standardizing a variable only changes the first and second moments of a distribution (mean and variance); however, it doesn't change the third and fourth moments of a distribution (skewness and kurtosis). Notice that the skewness and kurtosis for both the original and the standardized variable are 3.64 and 18.24, respectively. We only change the mean to zero and variance to one by standardizing a variable.
+
+</div>
+***
+
+## 4.2. Box-Cox transformation
+
+Variables with extreme skewness and kurtosis may deteriorate the model performance for certain types of models. Therefore, it may sometimes be useful to transform a variable with extreme skewness and kurtosis such that its distribution approximates to a normal distribution. Box-Cox transformation is a method to find an optimal parameter of $\lambda$ to apply the following transformation:
+
+$$y^{(\lambda)}=\left\{\begin{matrix}
+\frac{y^{\lambda}-1}{\lambda} & , \lambda \neq 0 \\
+ & \\ 
+ln(y) & , \lambda = 0 
+\end{matrix}\right.$$  
+
+
+Below is an example of transforming the a right-skewed variable using the `boxcox` function from the `bestNormalize` package. Notice that the skewness and the kurtosis for the transformed variable are 0 and -0.02, respectively.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+require(bestNormalize)
+require(psych)
+
+
+old <- rbeta(1000,1,1000)
+
+fit <- boxcox(old,standardize=FALSE)
+fit
+
+new <- predict(fit)
+ 
+describe(old)
+describe(new)
+
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=10}
+
+p1 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=old))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Original')
+
+p2 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=new))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Box-Cox Transformation')
+
+grid.arrange(p1,p2,nrow=1)
+
+```
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE** </center>
+
+Box-Cox transformation can be used only for variables with positive values. Therefore, it is a good idea to first implement the Box-Cox transformation, and then standardize a variable if both procedures will be applied to a variable. If there is a variable with negative values or a mix of both positive and negative values, the Yeo-Johnson transformation is available as an extension of the Box-Cox transformation. See [this link](https://www.stat.umn.edu/arc/yjpower.pdf) for more information. The function `yeojohnson` is available in the `bestNormalizer` package to implement the Yeo-Johnson transformation (See, [?bestNormalizer::yeojohnson](https://rdrr.io/cran/bestNormalize/man/yeojohnson.html)).
+</div>
+***
+
+## 4.3. Logit Transformation
+
+When a variable is a proportion bounded between 0 and 1, the logit transformation can be applied such that
+
+$$\pi^{*} = ln(\frac{\pi}{1-\pi}),$$
+
+where $\pi$ represents a proportion. This may be particularly useful when your outcome variable is a proportion bounded between 0 and 1. When a linear model is used to model an outcome bounded between 0 and 1, the model predictions may exceed the reasonable range of values (predictions equal to less than zero or greater than one). Logit transformation scales variables such that the range of values becomes $-\infty$ and $\infty$ on the logit scale. One can build a model to predict logit ($\pi^*$) instead of proportion ($\pi$) and then ensure that the model predictions are bounded between 0 and 1 on the original proportion scale after a simple reverse operation for predicted values. 
+
+$$\pi = \frac{e^{\pi^*}}{1+e^{\pi^*}} $$
+
+One caveat of using logit transformation is that it is not defined for 0 and 1. So, when you have values in the dataset exactly equal to 0 or 1, logit transformation will return either $-\infty$ and $\infty$. In these situations, we may add or substract a very tiny constant (e.g., .0001) to force the transformation to return a numerical value. 
+
+$$\pi^{*} = ln(\frac{\pi}{1-\pi}) = ln(\frac{0}{1-0}) = -\infty$$
+$$\pi^{*} = ln(\frac{\pi}{1-\pi}) = ln(\frac{1}{1-1}) = \infty$$
+
+Below is an example of logit transformation for a randomly generated variable.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+old <- rbeta(1000,1,1000)
+
+new <- log(old/(1-old))
+
+```
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE,fig.width=10}
+
+
+p1 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=old))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Original')
+
+p2 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=new))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Logit Transformation')
+
+grid.arrange(p1,p2,nrow=1)
+
+```
+
+## 4.4. Basis Expansions
+
+Basis expansions are useful to address nonlinearity between a continuous predictor variable and outcome variable. Using the basis expansions, one can create a set of feature variables using a nonlinear function of a variable *x*, $\phi(x)$. One simply replaces the original variable *x* with the new variables obtained from $\phi(x)$. For continuous predictors, the most commonly used expansions are polynomial basis expansions. The $n^{th}$ degree polynomial basis expansion can be represented by
+
+$$\phi(x) = \beta_1x + \beta_2x^2 + \beta_3x^3 + ... + \beta_nx^n .$$
+
+Suppose we have 100 observation from a random normal variable *x*. The third degree polynomial basis expansion (cubic basis expansion) can be found using the `poly` function as the following.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+set.seed(654)
+
+x <- rnorm(100,0,1)
+
+head(x)
+
+head(poly(x,degree=3))
+
+```
+
+So, one can use these three new variables representing a linear, quadratic, and cubic trend in our prediction model instead of the original variable *x*. See below the relationship between the original variable *x* and the new polynomial features to replace it. 
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE, fig.width=10}
+
+x1 <- poly(x,degree=3)
+
+linear <- ggplot()+
+  geom_point(aes(x=x,y=x1[,1]),cex=1)+
+  geom_line(aes(x=x,y=x1[,1]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Linear Term')+
+  ggtitle('Linear Term')
+
+quad <- ggplot()+
+  geom_point(aes(x=x,y=x1[,2]),cex=1)+
+  geom_line(aes(x=x,y=x1[,2]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Quadratic Term')+
+  ggtitle('Quadratic Term')
+
+cubic <- ggplot()+
+  geom_point(aes(x=x,y=x1[,3]),cex=1)+
+  geom_line(aes(x=x,y=x1[,3]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Cubic Term')+
+  ggtitle('Cubic Term')
+
+grid.arrange(linear,quad,cubic,nrow=1,ncol=3)
+```
+
+For continuous predictors, there is no limit for the degree of polynomial. The higher the degree of polynomial, the more flexible the model becomes, and there is a higher chance of overfitting. Typically, polynomial terms up to the 3rd or 4th degree are more than enough.
+
+
+# 5. Handling Missing Data
+
+Missing data deserves a course of its own. For a comprehensive review of how to handle and impute missing data. For certain types of models such as gradient boosting, missing data is not a problem, and one can leave them as is without any processing. On the other hand, some models such as regularized regression models require complete data and one have to deal with missing data before modeling data. It is always a good idea to run some simple descriptive analysis to understand the scope of missing values in your dataset.
+
+The `ff_glimpse()` function from the `finalfit` package is a useful to get a quick look at the missing values in your dataset. See an example for the recidivism dataset
+
+
+```{r, echo=FALSE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+```
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE, fig.width=10}
+
+require(finalfit)
+
+ff_glimpse(recidivism)$Continuous[,c('n','missing_percent')]
+
+
+ff_glimpse(recidivism)$Categorical[,c('n','missing_percent')]
+
+```
+
+We will focus a few ideas about how to handle missing data.
+
+## 5.1. Creating an indicator variable for missingness
+
+We can create a binary indicator variable for every variable to indicate missingness (0: not missing, 1: missing). It doesn't solve the missing data problem because we may still have to impute the missing values for modeling; however, an indicator variable about whether or not a variable is missing may sometimes provide some information in predicting the outcome. Suppose the missingness is not random, and there is a systematic relationship between outcome and whether or not values are missing for a variable. In that case, this may provide vital information to bring into the model. This indicator variable would be meaningless for variables that don't have any missing value. Therefore, one can remove them from any further consideration.
+
+## 5.2. Imputation
+
+A common approach to missing data is to impute missing values. Each predictor becomes an outcome of interest in imputation, and then the remaining predictors are used to build an imputation model to predict the missing values. Below is a very naive example of how it would work if we have an outcome variable (Y) and three predictors (X1, X2, X3). First, missing values are estimated and replaced for each predictor using an imputation model, and then the primary outcome of interest is predicted using the imputed X1, X2, and X3.
+
+| Imputation Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|        X1        |    X2,X3   |
+|        X2        |    X1,X3   |
+|        X3        |    X1,X2   |
+
+| Prediction Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|         Y        | X1, X2, X3 |
+
+An imputation model can be as simple as an intercept-only model (mean imputation). For numeric variables, missing values can be replaced with a simple mean, median, or mode of the observed data. For categorical variables, missing values can be replaced with a value randomly drawn from a binomial or multinomial distribution with the observed probabilities.
+
+An imputation model can also be as complex as desired using a regularized regression model, a decision tree model, or a K-nearest neighbors model. The main idea of a more complex prediction model is to find other observations similar to observations with a missing value in terms of other predictors and use data from these similar observations to predict the missing values. We will rely on some built-in functions in R to impute values using such complex models. For more information about its theoretical foundations, [Applied Missing Data Analysis by Craig Enders](http://www.appliedmissingdata.com/) provides comprehensive coverage of this topic.
+
+
+# 6. Wrapping-up using the `recipes` package
+
+We can manually pre-process all the variables in the dataset using the approaches discussed earlier. However, this would be a tedious job. It may be overwhelming to apply all the procedures simultaneously to different versions of the datasets (e.g., training, test, future). Instead, we can use the `recipes` package to implement these approaches in a more organized and efficient way. 
+
+Before using the `recipes` package, there are a few things to do for this dataset.
+
+1) Read the original data
+
+2) Make a list of variables with different characteristics (categorical, continuous, proportions, etc.)
+
+3) Make sure the type of all categorical variables is either `character` or `factor`.
+
+4) For variables that represent proportions, add/subtract a small number to 0s/1s for logit transformation
+
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+# 1) Read the original data
+
+  recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+
+  str(recidivism)
+
+# 2) List of variable types
+  
+  outcome <- c('Recidivism_Arrest_Year2')
+  
+  id      <- c('ID')
+  
+  categorical <- c('Residence_PUMA',
+                   'Prison_Offense',
+                   'Age_at_Release',
+                   'Supervision_Level_First',
+                   'Education_Level',
+                   'Prison_Years',
+                   'Gender',
+                   'Race',
+                   'Gang_Affiliated',
+                   'Prior_Arrest_Episodes_DVCharges',
+                   'Prior_Arrest_Episodes_GunCharges',
+                   'Prior_Conviction_Episodes_Viol',
+                   'Prior_Conviction_Episodes_PPViolationCharges',
+                   'Prior_Conviction_Episodes_DomesticViolenceCharges',
+                   'Prior_Conviction_Episodes_GunCharges',
+                   'Prior_Revocations_Parole',
+                   'Prior_Revocations_Probation',
+                   'Condition_MH_SA',
+                   'Condition_Cog_Ed',
+                   'Condition_Other',
+                   'Violations_ElectronicMonitoring',
+                   'Violations_Instruction',
+                   'Violations_FailToReport',
+                   'Violations_MoveWithoutPermission',
+                   'Employment_Exempt') 
+
+  numeric   <- c('Supervision_Risk_Score_First',
+                 'Dependents',
+                 'Prior_Arrest_Episodes_Felony',
+                 'Prior_Arrest_Episodes_Misd',
+                 'Prior_Arrest_Episodes_Violent',
+                 'Prior_Arrest_Episodes_Property',
+                 'Prior_Arrest_Episodes_Drug',
+                 'Prior_Arrest_Episodes_PPViolationCharges',
+                 'Prior_Conviction_Episodes_Felony',
+                 'Prior_Conviction_Episodes_Misd',
+                 'Prior_Conviction_Episodes_Prop',
+                 'Prior_Conviction_Episodes_Drug',
+                 'Delinquency_Reports',
+                 'Program_Attendances',
+                 'Program_UnexcusedAbsences',
+                 'Residence_Changes',
+                 'Avg_Days_per_DrugTest',
+                 'Jobs_Per_Year')
+  
+  props      <- c('DrugTests_THC_Positive',
+                  'DrugTests_Cocaine_Positive',
+                  'DrugTests_Meth_Positive',
+                  'DrugTests_Other_Positive',
+                  'Percent_Days_Employed')
+  
+# 3) Convert all nominal, ordinal, and binary variables to factors
+  # Leave the rest as is
+  
+  for(i in categorical){
+    
+    recidivism[,i] <- as.factor(recidivism[,i])
+    
+  }
+  
+# 4) For variables that represent proportions, add/substract a small number
+  # to 0s/1s for logit transformation
+  
+  for(i in props){
+    recidivism[,i] <- ifelse(recidivism[,i]==0,.0001,recidivism[,i])
+    recidivism[,i] <- ifelse(recidivism[,i]==1,.9999,recidivism[,i])
+  }
+```
+
+Now, we can apply certain transformations to different types of variables. We will use the `step_***()` functions from the `recipes` package to implement different procedures. Below is a list of functions for most procedures discussed earlier in this lecture. A more detailed list of `step_***()` functions can be found the in [the package manual](https://cran.r-project.org/web/packages/recipes/recipes.pdf).
+
+- `step_dummy()`: creates dummy variables for one-hot encoding of categorical variables
+- `step_indicate_na()` creates an indicator variable for missingness 
+- `step_impute_bag()`, `step_impute_knn()`, `step_impute_linear()`, and `step_impute_mean()`: imputes missing values using an imputation model
+- `step_BoxCox()`: transforms non-negative data using Box-Cox method
+- `step_poly`,`step_bs()`, and `step_ns()` : creates basis expansions
+- `step_logit`: applies logit transformation
+- `step_zv`: removes variables with zero variance
+- `step_normalize`: standardize variables to have a mean of zero and standard deviation of one
+
+Note that the order of procedures applied to variables is important. For instance, there would be no meaning of using `step_indicate_na()` after using `step_impute_bag()` (Why?). Or, there will be a problem when you first standardize variables using 'step_normalize()` and then apply a Box-Cox transformation (Why?).
+
+For this dataset, we will implement the following steps:
+
+1) Create an indicator variable of missingness for all predictors (`step_indicate_na`)
+2) Remove the variables with zero variance (`step_zv`)
+2) Impute the missing values for all predictor variables using a mean or mode (`step_impute_mean` and `step_impute_mode`)
+3) Logit transform the variables that represent proportions(`step_logit`)
+4) Create polynomial terms up to the 2nf degree term for all numeric variables (`step_poly`)
+5) Standardize numeric features
+6) One-hot encoding of all categorical variables (`step_dummy`)
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+require(recipes)
+
+blueprint <- recipe(x  = recidivism,
+                    vars  = c(categorical,numeric,props,outcome,id),
+                    roles = c(rep('predictor',48),'outcome','ID')) %>%
+  
+  # for all 48 predictors, create an indicator variable for missingness
+
+  step_indicate_na(all_of(categorical),all_of(numeric),all_of(props)) %>%
+  
+  # Remove the variable with zero variance, this will also remove the missingness 
+  # variables if there is no missingess
+
+  step_zv(all_numeric()) %>%
+  
+  # Impute the missing values using mean and mode. You can instead use a 
+  # more advanced imputation model such as bagged trees. I haven't used it due
+  # to time concerns
+  
+  step_impute_mean(all_of(numeric),all_of(props)) %>%
+  step_impute_mode(all_of(categorical)) %>%
+  
+  #Logit transformation of proportions
+  
+  step_logit(all_of(props)) %>%
+  
+  # 2nd degree polynomial terms for numeric variables and proportions
+  
+  step_poly(all_of(numeric),all_of(props),degree=2) %>%
+  
+  # Standardize the polynomial terms of numeric variables and proportions
+  
+  step_normalize(paste0(numeric,'_poly_1'),
+                 paste0(numeric,'_poly_2'),
+                 paste0(props,'_poly_1'),
+                 paste0(props,'_poly_2')) %>%
+  
+  # One-hot encoding for all categorical variables
+  
+  step_dummy(all_of(categorical),one_hot=TRUE)
+
+
+
+blueprint
+
+```
+
+Once the recipe is ready, we can train the blueprint on training data. When we say 'train', it means that weights or statistics for certain types of operations (e.g., standardization) are calculated based on training data and saved for later use. For instance, the mean and standard deviation of variable X from training data is calculated and later used to standardize the same variable X in testing data or future datasets. For now, we will train the blueprint using the whole dataset. In future lectures, we will split data into different subsets (training vs. test), and use the training dataset to apply the blueprint. 
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+prepare <- prep(blueprint, 
+                training = recidivism)
+prepare
+
+```
+
+Finally, we can apply this recipe to our dataset to obtain processed variables according to the recipe.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+baked_recidivism <- bake(prepare, new_data = recidivism)
+
+baked_recidivism
+
+```
+
+Notice that there are 144 variables (one outcome, one ID, and 142 predictors) in the new processed dataset. In the original dataset, there were 48 predictors. Below is a breakdown of where these 142 variables come from.
+
+| Variable Name                                      | Encoding | Number of Categories | Process         | Number of Constructed Variables |
+|:--------------------------------------------------:|:--------:|:--------------------:|:---------------:|:-------------------------------:|
+| Gender                                             |Binary    |        2             |One-hot encoding |               2                 |
+| Race                                               |Binary    |        2             |One-hot encoding |               2                 |
+| Gang affiliation                                   |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Arrest_Episodes_DVCharges                    |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Arrest_Episodes_GunCharges                   |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Conviction_Episodes_Viol                     |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Conviction_Episodes_PPViolationCharges       |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Conviction_Episodes_DomesticViolenceCharges  |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Conviction_Episodes_GunCharges               |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Revocations_Parole                           |Binary    |        2             |One-hot encoding |               2                 |
+| Prior_Revocations_Probation                        |Binary    |        2             |One-hot encoding |               2                 |
+| Condition_MH_SA                                    |Binary    |        2             |One-hot encoding |               2                 |
+| Condition_Cog_Ed                                   |Binary    |        2             |One-hot encoding |               2                 |
+| Condition_Other                                    |Binary    |        2             |One-hot encoding |               2                 |
+| Violations_ElectronicMonitoring                    |Binary    |        2             |One-hot encoding |               2                 |
+| Violations_Instruction                             |Binary    |        2             |One-hot encoding |               2                 |
+| Violations_FailToReport                            |Binary    |        2             |One-hot encoding |               2                 |
+| Violations_MoveWithoutPermission                   |Binary    |        2             |One-hot encoding |               2                 |
+| Employment_Exempt                                  |Binary    |        2             |One-hot encoding |               2                 |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |                 |                                 |
+| Age_at_Release                                     |Ordinal   |        7             |One-hot encoding |               7                 |
+| Supervision_Level_First                            |Ordinal   |        3             |One-hot encoding |               3                 |
+| Education_Level                                    |Ordinal   |        3             |One-hot encoding |               3                 |
+| Prison_Years                                       |Ordinal   |        4             |One-hot encoding |               4                 |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |                 |                                 |
+| Residence_PUMA                                     |Nominal   |       25             |One-hot encoding |              25                 |
+| Prison_Offense                                     |Nominal   |        5             |One-hot encoding |               5                 |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |                 |                                 |                
+| Supervision_Risk_Score_First                       |Numeric   |                      | Polynomials, Standardization |    2           |
+| Dependents                                         |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_Felony                       |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_Misd                         |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_Violent                      |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_Property                     |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_Drug                         |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Arrest_Episodes_PPViolationCharges           |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Conviction_Episodes_Felony                   |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Conviction_Episodes_Misd                     |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Conviction_Episodes_Prop                     |Numeric   |                      | Polynomials, Standardization |    2           |
+| Prior_Conviction_Episodes_Drug                     |Numeric   |                      | Polynomials, Standardization |    2           |
+| Delinquency_Reports                                |Numeric   |                      | Polynomials, Standardization |    2           |
+| Program_Attendances                                |Numeric   |                      | Polynomials, Standardization |    2           |
+| Program_UnexcusedAbsences                          |Numeric   |                      | Polynomials, Standardization |    2           |
+| Residence_Changes                                  |Numeric   |                      | Polynomials, Standardization |    2           |
+| Avg_Days_per_DrugTest                              |Numeric   |                      | Polynomials, Standardization |    2           |
+| Jobs_Per_Year                                      |Numeric   |                      | Polynomials, Standardization |    2           |
+| DrugTests_THC_Positive                             |Numeric   |                      | Polynomials, Standardization |    2           |
+| DrugTests_Cocaine_Positive                         |Numeric   |                      | Polynomials, Standardization |    2           |
+| DrugTests_Meth_Positive                            |Numeric   |                      | Polynomials, Standardization |    2           |
+| DrugTests_Other_Positive                           |Numeric   |                      | Polynomials, Standardization |    2           |
+| Percent_Days_Employed                              |Numeric   |                      | Polynomials, Standardization |    2           |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |                 |                                 |
+| Missing value indicator variables                  |Binary    |                      |                 |               11                |
+|                                                    |          |                      |                 |                                 |
+|                                                    |          |                      |      Total      |              142               |
+
+
+
+
+

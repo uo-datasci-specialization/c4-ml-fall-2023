@@ -1,0 +1,3345 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { color: #00769e; background-color: #f1f3f5; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #00769e; } /* Normal */
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { color: #657422; } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #00769e; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #00769e; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #00769e; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+
+  <!--radix_placeholder_meta_tags-->
+  <title>Applied Machine Learning for Educational Data Science: Regularized (Penalized) Linear Regression</title>
+
+
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
+
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2022-10-11"/>
+  <meta property="article:created" itemprop="dateCreated" content="2022-10-11"/>
+  <meta name="article:author" content="Cengiz Zopluoglu"/>
+
+  <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+  <meta property="og:title" content="Applied Machine Learning for Educational Data Science: Regularized (Penalized) Linear Regression"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:locale" content="en_US"/>
+  <meta property="og:site_name" content="Applied Machine Learning for Educational Data Science"/>
+
+  <!--  https://dev.twitter.com/cards/types/summary -->
+  <meta property="twitter:card" content="summary"/>
+  <meta property="twitter:title" content="Applied Machine Learning for Educational Data Science: Regularized (Penalized) Linear Regression"/>
+
+  <!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+  <script type="text/json" id="radix-rmarkdown-metadata">
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Regularized (Penalized) Linear Regression"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Cengiz Zopluoglu"]},{"type":"character","attributes":{},"value":["University of Oregon"]}]}]},{"type":"character","attributes":{},"value":["10/11/2022"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc","toc_float","theme"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["theme.css"]}]}]}]}
+  </script>
+  <!--/radix_placeholder_rmarkdown_metadata-->
+  <!--radix_placeholder_navigation_in_header-->
+  <meta name="distill:offset" content=""/>
+
+  <script type="application/javascript">
+
+    window.headroom_prevent_pin = false;
+
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+
+      // initialize headroom for banner
+      var header = $('header').get(0);
+      var headerHeight = header.offsetHeight;
+      var headroom = new Headroom(header, {
+        tolerance: 5,
+        onPin : function() {
+          if (window.headroom_prevent_pin) {
+            window.headroom_prevent_pin = false;
+            headroom.unpin();
+          }
+        }
+      });
+      headroom.init();
+      if(window.location.hash)
+        headroom.unpin();
+      $(header).addClass('headroom--transition');
+
+      // offset scroll location for banner on hash change
+      // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
+      window.addEventListener("hashchange", function(event) {
+        window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
+      });
+
+      // responsive menu
+      $('.distill-site-header').each(function(i, val) {
+        var topnav = $(this);
+        var toggle = topnav.find('.nav-toggle');
+        toggle.on('click', function() {
+          topnav.toggleClass('responsive');
+        });
+      });
+
+      // nav dropdowns
+      $('.nav-dropbtn').click(function(e) {
+        $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
+        $(this).parent().siblings('.nav-dropdown')
+           .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
+      });
+      $("body").click(function(e){
+        $('.nav-dropdown-content').removeClass('nav-dropdown-active');
+      });
+      $(".nav-dropdown").click(function(e){
+        e.stopPropagation();
+      });
+    });
+  </script>
+
+  <style type="text/css">
+
+  /* Theme (user-documented overrideables for nav appearance) */
+
+  .distill-site-nav {
+    color: rgba(255, 255, 255, 0.8);
+    background-color: #0F2E3D;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  .distill-site-nav a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .distill-site-nav a:hover {
+    color: white;
+  }
+
+  @media print {
+    .distill-site-nav {
+      display: none;
+    }
+  }
+
+  .distill-site-header {
+
+  }
+
+  .distill-site-footer {
+
+  }
+
+
+  /* Site Header */
+
+  .distill-site-header {
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+
+  .distill-site-header .nav-left {
+    display: inline-block;
+    margin-left: 8px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header .nav-left {
+      margin-left: 0;
+    }
+  }
+
+
+  .distill-site-header .nav-right {
+    float: right;
+    margin-right: 8px;
+  }
+
+  .distill-site-header a,
+  .distill-site-header .title {
+    display: inline-block;
+    text-align: center;
+    padding: 14px 10px 14px 10px;
+  }
+
+  .distill-site-header .title {
+    font-size: 18px;
+    min-width: 150px;
+  }
+
+  .distill-site-header .logo {
+    padding: 0;
+  }
+
+  .distill-site-header .logo img {
+    display: none;
+    max-height: 20px;
+    width: auto;
+    margin-bottom: -4px;
+  }
+
+  .distill-site-header .nav-image img {
+    max-height: 18px;
+    width: auto;
+    display: inline-block;
+    margin-bottom: -3px;
+  }
+
+
+
+  @media screen and (min-width: 1000px) {
+    .distill-site-header .logo img {
+      display: inline-block;
+    }
+    .distill-site-header .nav-left {
+      margin-left: 20px;
+    }
+    .distill-site-header .nav-right {
+      margin-right: 20px;
+    }
+    .distill-site-header .title {
+      padding-left: 12px;
+    }
+  }
+
+
+  .distill-site-header .nav-toggle {
+    display: none;
+  }
+
+  .nav-dropdown {
+    display: inline-block;
+    position: relative;
+  }
+
+  .nav-dropdown .nav-dropbtn {
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 16px 10px;
+    background-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+    margin-top: 1px;
+    z-index: 2;
+  }
+
+  .nav-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 200px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 4px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+    z-index: 1;
+    margin-top: 2px;
+    white-space: nowrap;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .nav-dropdown-content hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-dropdown-active {
+    display: block;
+  }
+
+  .nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
+    color: black;
+    padding: 6px 24px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+
+  .nav-dropdown-content .nav-dropdown-header {
+    display: block;
+    padding: 5px 24px;
+    padding-bottom: 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: #999999;
+    white-space: nowrap;
+  }
+
+  .nav-dropdown:hover .nav-dropbtn {
+    color: white;
+  }
+
+  .nav-dropdown-content a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+  .nav-right .nav-dropdown-content {
+    margin-left: -45%;
+    right: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
+    .distill-site-header a.nav-toggle {
+      float: right;
+      display: block;
+    }
+    .distill-site-header .title {
+      margin-left: 0;
+    }
+    .distill-site-header .nav-right {
+      margin-right: 0;
+    }
+    .distill-site-header {
+      overflow: hidden;
+    }
+    .nav-right .nav-dropdown-content {
+      margin-left: 0;
+    }
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header.responsive {position: relative; min-height: 500px; }
+    .distill-site-header.responsive a.nav-toggle {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .distill-site-header.responsive a,
+    .distill-site-header.responsive .nav-dropdown {
+      display: block;
+      text-align: left;
+    }
+    .distill-site-header.responsive .nav-left,
+    .distill-site-header.responsive .nav-right {
+      width: 100%;
+    }
+    .distill-site-header.responsive .nav-dropdown {float: none;}
+    .distill-site-header.responsive .nav-dropdown-content {position: relative;}
+    .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  /* Site Footer */
+
+  .distill-site-footer {
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    z-index: 3;
+    margin-top: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    text-align: center;
+  }
+
+  /* Headroom */
+
+  d-title {
+    padding-top: 6rem;
+  }
+
+  @media print {
+    d-title {
+      padding-top: 4rem;
+    }
+  }
+
+  .headroom {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .headroom--transition {
+    transition: all .4s ease-in-out;
+  }
+
+  .headroom--unpinned {
+    top: -100px;
+  }
+
+  .headroom--pinned {
+    top: 0;
+  }
+
+  /* adjust viewport for navbar height */
+  /* helps vertically center bootstrap (non-distill) content */
+  .min-vh-100 {
+    min-height: calc(100vh - 100px) !important;
+  }
+
+  </style>
+
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
+  <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
+  <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
+
+  <script type="application/javascript">
+
+  function getMeta(metaName) {
+    var metas = document.getElementsByTagName('meta');
+    for (let i = 0; i < metas.length; i++) {
+      if (metas[i].getAttribute('name') === metaName) {
+        return metas[i].getAttribute('content');
+      }
+    }
+    return '';
+  }
+
+  function offsetURL(url) {
+    var offset = getMeta('distill:offset');
+    return offset ? offset + '/' + url : url;
+  }
+
+  function createFuseIndex() {
+
+    // create fuse index
+    var options = {
+      keys: [
+        { name: 'title', weight: 20 },
+        { name: 'categories', weight: 15 },
+        { name: 'description', weight: 10 },
+        { name: 'contents', weight: 5 },
+      ],
+      ignoreLocation: true,
+      threshold: 0
+    };
+    var fuse = new window.Fuse([], options);
+
+    // fetch the main search.json
+    return fetch(offsetURL('search.json'))
+      .then(function(response) {
+        if (response.status == 200) {
+          return response.json().then(function(json) {
+            // index main articles
+            json.articles.forEach(function(article) {
+              fuse.add(article);
+            });
+            // download collections and index their articles
+            return Promise.all(json.collections.map(function(collection) {
+              return fetch(offsetURL(collection)).then(function(response) {
+                if (response.status === 200) {
+                  return response.json().then(function(articles) {
+                    articles.forEach(function(article) {
+                      fuse.add(article);
+                    });
+                  })
+                } else {
+                  return Promise.reject(
+                    new Error('Unexpected status from search index request: ' +
+                              response.status)
+                  );
+                }
+              });
+            })).then(function() {
+              return fuse;
+            });
+          });
+
+        } else {
+          return Promise.reject(
+            new Error('Unexpected status from search index request: ' +
+                        response.status)
+          );
+        }
+      });
+  }
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+
+    // get search element (bail if we don't have one)
+    var searchEl = window.document.getElementById('distill-search');
+    if (!searchEl)
+      return;
+
+    createFuseIndex()
+      .then(function(fuse) {
+
+        // make search box visible
+        searchEl.classList.remove('hidden');
+
+        // initialize autocomplete
+        var options = {
+          autoselect: true,
+          hint: false,
+          minLength: 2,
+        };
+        window.autocomplete(searchEl, options, [{
+          source: function(query, callback) {
+            const searchOptions = {
+              isCaseSensitive: false,
+              shouldSort: true,
+              minMatchCharLength: 2,
+              limit: 10,
+            };
+            var results = fuse.search(query, searchOptions);
+            callback(results
+              .map(function(result) { return result.item; })
+            );
+          },
+          templates: {
+            suggestion: function(suggestion) {
+              var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
+                ? `<img src="${offsetURL(suggestion.preview)}"</img>`
+                : '';
+              var html = `
+                <div class="search-item">
+                  <h3>${suggestion.title}</h3>
+                  <div class="search-item-description">
+                    ${suggestion.description || ''}
+                  </div>
+                  <div class="search-item-preview">
+                    ${img}
+                  </div>
+                </div>
+              `;
+              return html;
+            }
+          }
+        }]).on('autocomplete:selected', function(event, suggestion) {
+          window.location.href = offsetURL(suggestion.path);
+        });
+        // remove inline display style on autocompleter (we want to
+        // manage responsive display via css)
+        $('.algolia-autocomplete').css("display", "");
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+
+  });
+
+  </script>
+
+  <style type="text/css">
+
+  .nav-search {
+    font-size: x-small;
+  }
+
+  /* Algolioa Autocomplete */
+
+  .algolia-autocomplete {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: sub;
+    background-color: white;
+    color: black;
+    padding: 6px;
+    padding-top: 8px;
+    padding-bottom: 0;
+    border-radius: 6px;
+    border: 1px #0F2E3D solid;
+    width: 180px;
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .distill-site-nav .algolia-autocomplete {
+      display: none;
+      visibility: hidden;
+    }
+    .distill-site-nav.responsive .algolia-autocomplete {
+      display: inline-block;
+      visibility: visible;
+    }
+    .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
+      margin-left: 0;
+      width: 400px;
+      max-height: 400px;
+    }
+  }
+
+  .algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+    width: 90%;
+    outline: none;
+    border: none;
+  }
+
+  .algolia-autocomplete .aa-hint {
+    color: #999;
+  }
+  .algolia-autocomplete .aa-dropdown-menu {
+    width: 550px;
+    max-height: 70vh;
+    overflow-x: visible;
+    overflow-y: scroll;
+    padding: 5px;
+    margin-top: 3px;
+    margin-left: -150px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #999;
+    border-top: none;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+    cursor: pointer;
+    padding: 5px 4px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
+    border-bottom: none;
+    margin-bottom: 2px;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
+    overflow: hidden;
+    font-size: 0.8em;
+    line-height: 1.4em;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
+    font-size: 1rem;
+    margin-block-start: 0;
+    margin-block-end: 5px;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
+    display: inline-block;
+    overflow: hidden;
+    height: 2.8em;
+    width: 80%;
+    margin-right: 4%;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
+    display: inline-block;
+    width: 15%;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
+    height: 3em;
+    width: auto;
+    display: none;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
+    display: initial;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+    background-color: #eee;
+  }
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  </style>
+
+
+  <!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+  <style type="text/css">
+
+  body {
+    background-color: white;
+  }
+
+  .pandoc-table {
+    width: 100%;
+  }
+
+  .pandoc-table>caption {
+    margin-bottom: 10px;
+  }
+
+  .pandoc-table th:not([align]) {
+    text-align: left;
+  }
+
+  .pagedtable-footer {
+    font-size: 15px;
+  }
+
+  d-byline .byline {
+    grid-template-columns: 2fr 2fr;
+  }
+
+  d-byline .byline h3 {
+    margin-block-start: 1.5em;
+  }
+
+  d-byline .byline .authors-affiliations h3 {
+    margin-block-start: 0.5em;
+  }
+
+  .authors-affiliations .orcid-id {
+    width: 16px;
+    height:16px;
+    margin-left: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+    padding-bottom: 2px;
+  }
+
+  d-title .dt-tags {
+    margin-top: 1em;
+    grid-column: text;
+  }
+
+  .dt-tags .dt-tag {
+    text-decoration: none;
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0em 0.4em;
+    margin-right: 0.5em;
+    margin-bottom: 0.4em;
+    font-size: 70%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  d-article table.gt_table td,
+  d-article table.gt_table th {
+    border-bottom: none;
+  }
+
+  .html-widget {
+    margin-bottom: 2.0em;
+  }
+
+  .l-screen-inset {
+    padding-right: 16px;
+  }
+
+  .l-screen .caption {
+    margin-left: 10px;
+  }
+
+  .shaded {
+    background: rgb(247, 247, 247);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .html-widget {
+    margin-bottom: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .shaded-content {
+    background: white;
+  }
+
+  .text-output {
+    margin-top: 0;
+    line-height: 1.5em;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  d-article {
+    padding-top: 2.5rem;
+    padding-bottom: 30px;
+  }
+
+  d-appendix {
+    padding-top: 30px;
+  }
+
+  d-article>p>img {
+    width: 100%;
+  }
+
+  d-article h2 {
+    margin: 1rem 0 1.5rem 0;
+  }
+
+  d-article h3 {
+    margin-top: 1.5rem;
+  }
+
+  d-article iframe {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.0em;
+    width: 100%;
+  }
+
+  /* Tweak code blocks */
+
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: auto;
+  }
+
+  d-article div.sourceCode {
+    background-color: white;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 10px;
+    font-size: 12px;
+    border-left: 2px solid rgba(0,0,0,0.1);
+  }
+
+  d-article pre {
+    font-size: 12px;
+    color: black;
+    background: none;
+    margin-top: 0;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  d-article pre a {
+    border-bottom: none;
+  }
+
+  d-article pre a:hover {
+    border-bottom: none;
+    text-decoration: underline;
+  }
+
+  d-article details {
+    grid-column: text;
+    margin-bottom: 0.8em;
+  }
+
+  @media(min-width: 768px) {
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: visible !important;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 18px;
+    font-size: 14px;
+  }
+
+  d-article pre {
+    font-size: 14px;
+  }
+
+  }
+
+  figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  /* CSS for d-contents */
+
+  .d-contents {
+    grid-column: text;
+    color: rgba(0,0,0,0.8);
+    font-size: 0.9em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding-left: 0.25em;
+    justify-self: start;
+  }
+
+  @media(min-width: 1000px) {
+    .d-contents.d-contents-float {
+      height: 0;
+      grid-column-start: 1;
+      grid-column-end: 4;
+      justify-self: center;
+      padding-right: 3em;
+      padding-left: 2em;
+    }
+  }
+
+  .d-contents nav h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+
+  .d-contents li {
+    list-style-type: none
+  }
+
+  .d-contents nav > ul {
+    padding-left: 0;
+  }
+
+  .d-contents ul {
+    padding-left: 1em
+  }
+
+  .d-contents nav ul li {
+    margin-top: 0.6em;
+    margin-bottom: 0.2em;
+  }
+
+  .d-contents nav a {
+    font-size: 13px;
+    border-bottom: none;
+    text-decoration: none
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .d-contents nav a:hover {
+    text-decoration: underline solid rgba(0, 0, 0, 0.6)
+  }
+
+  .d-contents nav > ul > li > a {
+    font-weight: 600;
+  }
+
+  .d-contents nav > ul > li > ul {
+    font-weight: inherit;
+  }
+
+  .d-contents nav > ul > li > ul > li {
+    margin-top: 0.2em;
+  }
+
+
+  .d-contents nav ul {
+    margin-top: 0;
+    margin-bottom: 0.25em;
+  }
+
+  .d-article-with-toc h2:nth-child(2) {
+    margin-top: 0;
+  }
+
+
+  /* Figure */
+
+  .figure {
+    position: relative;
+    margin-bottom: 2.5em;
+    margin-top: 1.5em;
+  }
+
+  .figure .caption {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 1.5em;
+  }
+
+  .figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  .figure .caption a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .figure .caption b,
+  .figure .caption strong, {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 1.0);
+  }
+
+  /* Citations */
+
+  d-article .citation {
+    color: inherit;
+    cursor: inherit;
+  }
+
+  div.hanging-indent{
+    margin-left: 1em; text-indent: -1em;
+  }
+
+  /* Citation hover box */
+
+  .tippy-box[data-theme~=light-border] {
+    background-color: rgba(250, 250, 250, 0.95);
+  }
+
+  .tippy-content > p {
+    margin-bottom: 0;
+    padding: 2px;
+  }
+
+
+  /* Tweak 1000px media break to show more text */
+
+  @media(min-width: 1000px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 16px;
+    }
+
+    .grid {
+      grid-column-gap: 16px;
+    }
+
+    d-article {
+      font-size: 1.06rem;
+      line-height: 1.7em;
+    }
+    figure .caption, .figure .caption, figure figcaption {
+      font-size: 13px;
+    }
+  }
+
+  @media(min-width: 1180px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 32px;
+    }
+
+    .grid {
+      grid-column-gap: 32px;
+    }
+  }
+
+
+  /* Get the citation styles for the appendix (not auto-injected on render since
+     we do our own rendering of the citation appendix) */
+
+  d-appendix .citation-appendix,
+  .d-appendix .citation-appendix {
+    font-size: 11px;
+    line-height: 15px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 18px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 10px 18px;
+    border-radius: 3px;
+    color: rgba(150, 150, 150, 1);
+    overflow: hidden;
+    margin-top: -12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Include appendix styles here so they can be overridden */
+
+  d-appendix {
+    contain: layout style;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-top: 60px;
+    margin-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0,0,0,0.5);
+    padding-top: 60px;
+    padding-bottom: 48px;
+  }
+
+  d-appendix h3 {
+    grid-column: page-start / text-start;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 1em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.65);
+  }
+
+  d-appendix h3 + * {
+    margin-top: 1em;
+  }
+
+  d-appendix ol {
+    padding: 0 0 0 15px;
+  }
+
+  @media (min-width: 768px) {
+    d-appendix ol {
+      padding: 0 0 0 30px;
+      margin-left: -30px;
+    }
+  }
+
+  d-appendix li {
+    margin-bottom: 1em;
+  }
+
+  d-appendix a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  d-appendix > * {
+    grid-column: text;
+  }
+
+  d-appendix > d-footnote-list,
+  d-appendix > d-citation-list,
+  d-appendix > distill-appendix {
+    grid-column: screen;
+  }
+
+  /* Include footnote styles here so they can be overridden */
+
+  d-footnote-list {
+    contain: layout style;
+  }
+
+  d-footnote-list > * {
+    grid-column: text;
+  }
+
+  d-footnote-list a.footnote-backlink {
+    color: rgba(0,0,0,0.3);
+    padding-left: 0.5em;
+  }
+
+
+
+  /* Anchor.js */
+
+  .anchorjs-link {
+    /*transition: all .25s linear; */
+    text-decoration: none;
+    border-bottom: none;
+  }
+  *:hover > .anchorjs-link {
+    margin-left: -1.125em !important;
+    text-decoration: none;
+    border-bottom: none;
+  }
+
+  /* Social footer */
+
+  .social_footer {
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.67);
+  }
+
+  .disqus-comments {
+    margin-right: 30px;
+  }
+
+  .disqus-comment-count {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+
+  #disqus_thread {
+    margin-top: 30px;
+  }
+
+  .article-sharing a {
+    border-bottom: none;
+    margin-right: 8px;
+  }
+
+  .article-sharing a:hover {
+    border-bottom: none;
+  }
+
+  .sidebar-section.subscribe {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .subscribe p {
+    margin-bottom: 0.5em;
+  }
+
+
+  .article-footer .subscribe {
+    font-size: 15px;
+    margin-top: 45px;
+  }
+
+
+  .sidebar-section.custom {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .custom p {
+    margin-bottom: 0.5em;
+  }
+
+  /* Styles for listing layout (hide title) */
+  .layout-listing d-title, .layout-listing .d-title {
+    display: none;
+  }
+
+  /* Styles for posts lists (not auto-injected) */
+
+
+  .posts-with-sidebar {
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
+  .posts-list .description h2,
+  .posts-list .description p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .posts-list .description h2 {
+    font-weight: 700;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .posts-list h2.post-tag {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding-bottom: 12px;
+  }
+  .posts-list {
+    margin-top: 60px;
+    margin-bottom: 24px;
+  }
+
+  .posts-list .post-preview {
+    text-decoration: none;
+    overflow: hidden;
+    display: block;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 24px 0;
+  }
+
+  .post-preview-last {
+    border-bottom: none !important;
+  }
+
+  .posts-list .posts-list-caption {
+    grid-column: screen;
+    font-weight: 400;
+  }
+
+  .posts-list .post-preview h2 {
+    margin: 0 0 6px 0;
+    line-height: 1.2em;
+    font-style: normal;
+    font-size: 24px;
+  }
+
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.4em;
+    font-size: 16px;
+  }
+
+  .posts-list .post-preview .thumbnail {
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    position: relative;
+    max-width: 500px;
+  }
+  .posts-list .post-preview img {
+    width: 100%;
+    display: block;
+  }
+
+  .posts-list .metadata {
+    font-size: 12px;
+    line-height: 1.4em;
+    margin-bottom: 18px;
+  }
+
+  .posts-list .metadata > * {
+    display: inline-block;
+  }
+
+  .posts-list .metadata .publishedDate {
+    margin-right: 2em;
+  }
+
+  .posts-list .metadata .dt-authors {
+    display: block;
+    margin-top: 0.3em;
+    margin-right: 2em;
+  }
+
+  .posts-list .dt-tags {
+    display: block;
+    line-height: 1em;
+  }
+
+  .posts-list .dt-tags .dt-tag {
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0.3em 0.4em;
+    margin-right: 0.2em;
+    margin-bottom: 0.4em;
+    font-size: 60%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .posts-list img {
+    opacity: 1;
+  }
+
+  .posts-list img[data-src] {
+    opacity: 0;
+  }
+
+  .posts-more {
+    clear: both;
+  }
+
+
+  .posts-sidebar {
+    font-size: 16px;
+  }
+
+  .posts-sidebar h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .sidebar-section {
+    margin-bottom: 30px;
+  }
+
+  .categories ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .categories li {
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 0;
+  }
+
+  .categories li>a {
+    border-bottom: none;
+  }
+
+  .categories li>a:hover {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  }
+
+  .categories .active {
+    font-weight: 600;
+  }
+
+  .categories .category-count {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+
+  @media(min-width: 768px) {
+    .posts-list .post-preview h2 {
+      font-size: 26px;
+    }
+    .posts-list .post-preview .thumbnail {
+      float: right;
+      width: 30%;
+      margin-bottom: 0;
+    }
+    .posts-list .post-preview .description {
+      float: left;
+      width: 45%;
+    }
+    .posts-list .post-preview .metadata {
+      float: left;
+      width: 20%;
+      margin-top: 8px;
+    }
+    .posts-list .post-preview p {
+      margin: 0 0 12px 0;
+      line-height: 1.5em;
+      font-size: 16px;
+    }
+    .posts-with-sidebar .posts-list {
+      float: left;
+      width: 75%;
+    }
+    .posts-with-sidebar .posts-sidebar {
+      float: right;
+      width: 20%;
+      margin-top: 60px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+  }
+
+
+  /* Improve display for browsers without grid (IE/Edge <= 15) */
+
+  .downlevel {
+    line-height: 1.6em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+  }
+
+  .downlevel .d-title {
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .downlevel .d-title h1 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.1em;
+    margin: 0 0 0.5rem;
+  }
+
+  .downlevel .d-title p {
+    font-weight: 300;
+    font-size: 1.2rem;
+    line-height: 1.55em;
+    margin-top: 0;
+  }
+
+  .downlevel .d-byline {
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+    font-size: 0.8rem;
+    line-height: 1.8em;
+  }
+
+  .downlevel .section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .downlevel .d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+
+  .downlevel .d-appendix {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: none;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.5);
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+
+  .downlevel .footnotes ol {
+    padding-left: 13px;
+  }
+
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  @media(min-width: 768px) {
+    .downlevel .base-grid,
+    .downlevel .distill-header,
+    .downlevel .d-title,
+    .downlevel .d-abstract,
+    .downlevel .d-article,
+    .downlevel .d-appendix,
+    .downlevel .distill-appendix,
+    .downlevel .d-byline,
+    .downlevel .d-footnote-list,
+    .downlevel .d-citation-list,
+    .downlevel .distill-footer,
+    .downlevel .appendix-bottom,
+    .downlevel .posts-container {
+    padding-left: 150px;
+    padding-right: 150px;
+    max-width: 900px;
+  }
+  }
+
+  .downlevel pre code {
+    display: block;
+    border-left: 2px solid rgba(0, 0, 0, .1);
+    padding: 0 0 0 20px;
+    font-size: 14px;
+  }
+
+  .downlevel code, .downlevel pre {
+    color: black;
+    background: none;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  .downlevel .posts-list .post-preview {
+    color: inherit;
+  }
+
+
+
+  </style>
+
+  <script type="application/javascript">
+
+  function is_downlevel_browser() {
+    if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                   window.navigator.userAgent)) {
+      return true;
+    } else {
+      return window.load_distill_framework === undefined;
+    }
+  }
+
+  // show body when load is complete
+  function on_load_complete() {
+
+    // add anchors
+    if (window.anchors) {
+      window.anchors.options.placement = 'left';
+      window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+    }
+
+
+    // set body to visible
+    document.body.style.visibility = 'visible';
+
+    // force redraw for leaflet widgets
+    if (window.HTMLWidgets) {
+      var maps = window.HTMLWidgets.findAll(".leaflet");
+      $.each(maps, function(i, el) {
+        var map = this.getMap();
+        map.invalidateSize();
+        map.eachLayer(function(layer) {
+          if (layer instanceof L.TileLayer)
+            layer.redraw();
+        });
+      });
+    }
+
+    // trigger 'shown' so htmlwidgets resize
+    $('d-article').trigger('shown');
+  }
+
+  function init_distill() {
+
+    init_common();
+
+    // create front matter
+    var front_matter = $('<d-front-matter></d-front-matter>');
+    $('#distill-front-matter').wrap(front_matter);
+
+    // create d-title
+    $('.d-title').changeElementType('d-title');
+
+    // create d-byline
+    var byline = $('<d-byline></d-byline>');
+    $('.d-byline').replaceWith(byline);
+
+    // create d-article
+    var article = $('<d-article></d-article>');
+    $('.d-article').wrap(article).children().unwrap();
+
+    // move posts container into article
+    $('.posts-container').appendTo($('d-article'));
+
+    // create d-appendix
+    $('.d-appendix').changeElementType('d-appendix');
+
+    // flag indicating that we have appendix items
+    var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+    // replace footnotes with <d-footnote>
+    $('.footnote-ref').each(function(i, val) {
+      appendix = true;
+      var href = $(this).attr('href');
+      var id = href.replace('#', '');
+      var fn = $('#' + id);
+      var fn_p = $('#' + id + '>p');
+      fn_p.find('.footnote-back').remove();
+      var text = fn_p.html();
+      var dtfn = $('<d-footnote></d-footnote>');
+      dtfn.html(text);
+      $(this).replaceWith(dtfn);
+    });
+    // remove footnotes
+    $('.footnotes').remove();
+
+    // move refs into #references-listing
+    $('#references-listing').replaceWith($('#refs'));
+
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      var id = $(this).attr('id');
+      $('.d-contents a[href="#' + id + '"]').parent().remove();
+      appendix = true;
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+    });
+
+    // show d-appendix if we have appendix content
+    $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+    // localize layout chunks to just output
+    $('.layout-chunk').each(function(i, val) {
+
+      // capture layout
+      var layout = $(this).attr('data-layout');
+
+      // apply layout to markdown level block elements
+      var elements = $(this).children().not('details, div.sourceCode, pre, script');
+      elements.each(function(i, el) {
+        var layout_div = $('<div class="' + layout + '"></div>');
+        if (layout_div.hasClass('shaded')) {
+          var shaded_content = $('<div class="shaded-content"></div>');
+          $(this).wrap(shaded_content);
+          $(this).parent().wrap(layout_div);
+        } else {
+          $(this).wrap(layout_div);
+        }
+      });
+
+
+      // unwrap the layout-chunk div
+      $(this).children().unwrap();
+    });
+
+    // remove code block used to force  highlighting css
+    $('.distill-force-highlighting-css').parent().remove();
+
+    // remove empty line numbers inserted by pandoc when using a
+    // custom syntax highlighting theme
+    $('code.sourceCode a:empty').remove();
+
+    // load distill framework
+    load_distill_framework();
+
+    // wait for window.distillRunlevel == 4 to do post processing
+    function distill_post_process() {
+
+      if (!window.distillRunlevel || window.distillRunlevel < 4)
+        return;
+
+      // hide author/affiliations entirely if we have no authors
+      var front_matter = JSON.parse($("#distill-front-matter").html());
+      var have_authors = front_matter.authors && front_matter.authors.length > 0;
+      if (!have_authors)
+        $('d-byline').addClass('hidden');
+
+      // article with toc class
+      $('.d-contents').parent().addClass('d-article-with-toc');
+
+      // strip links that point to #
+      $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+      // add orcid ids
+      $('.authors-affiliations').find('.author').each(function(i, el) {
+        var orcid_id = front_matter.authors[i].orcidID;
+        if (orcid_id) {
+          var a = $('<a></a>');
+          a.attr('href', 'https://orcid.org/' + orcid_id);
+          var img = $('<img></img>');
+          img.addClass('orcid-id');
+          img.attr('alt', 'ORCID ID');
+          img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+          a.append(img);
+          $(this).append(a);
+        }
+      });
+
+      // hide elements of author/affiliations grid that have no value
+      function hide_byline_column(caption) {
+        $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+      }
+
+      // affiliations
+      var have_affiliations = false;
+      for (var i = 0; i<front_matter.authors.length; ++i) {
+        var author = front_matter.authors[i];
+        if (author.affiliation !== "&nbsp;") {
+          have_affiliations = true;
+          break;
+        }
+      }
+      if (!have_affiliations)
+        $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+      // published date
+      if (!front_matter.publishedDate)
+        hide_byline_column("Published");
+
+      // document object identifier
+      var doi = $('d-byline').find('h3:contains("DOI")');
+      var doi_p = doi.next().empty();
+      if (!front_matter.doi) {
+        // if we have a citation and valid citationText then link to that
+        if ($('#citation').length > 0 && front_matter.citationText) {
+          doi.html('Citation');
+          $('<a href="#citation"></a>')
+            .text(front_matter.citationText)
+            .appendTo(doi_p);
+        } else {
+          hide_byline_column("DOI");
+        }
+      } else {
+        $('<a></a>')
+           .attr('href', "https://doi.org/" + front_matter.doi)
+           .html(front_matter.doi)
+           .appendTo(doi_p);
+      }
+
+       // change plural form of authors/affiliations
+      if (front_matter.authors.length === 1) {
+        var grid = $('.authors-affiliations');
+        grid.children('h3:contains("Authors")').text('Author');
+        grid.children('h3:contains("Affiliations")').text('Affiliation');
+      }
+
+      // remove d-appendix and d-footnote-list local styles
+      $('d-appendix > style:first-child').remove();
+      $('d-footnote-list > style:first-child').remove();
+
+      // move appendix-bottom entries to the bottom
+      $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+      $('.appendix-bottom').remove();
+
+      // hoverable references
+      $('span.citation[data-cites]').each(function() {
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
+        window.tippy(this, {
+          allowHTML: true,
+          content: refHtml,
+          maxWidth: 500,
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start'
+        });
+      });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
+
+      // clear polling timer
+      clearInterval(tid);
+
+      // show body now that everything is ready
+      on_load_complete();
+    }
+
+    var tid = setInterval(distill_post_process, 50);
+    distill_post_process();
+
+  }
+
+  function init_downlevel() {
+
+    init_common();
+
+     // insert hr after d-title
+    $('.d-title').after($('<hr class="section-separator"/>'));
+
+    // check if we have authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+    // manage byline/border
+    if (!have_authors)
+      $('.d-byline').remove();
+    $('.d-byline').after($('<hr class="section-separator"/>'));
+    $('.d-byline a').remove();
+
+    // remove toc
+    $('.d-contents').remove();
+
+    // move appendix elements
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+    });
+
+
+    // inject headers into references and footnotes
+    var refs_header = $('<h3></h3>');
+    refs_header.text('References');
+    $('#refs').prepend(refs_header);
+
+    var footnotes_header = $('<h3></h3');
+    footnotes_header.text('Footnotes');
+    $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // remove appendix if it's empty
+    if ($('.d-appendix').children().length === 0)
+      $('.d-appendix').remove();
+
+    // prepend separator above appendix
+    $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+    // trim code
+    $('pre>code').each(function(i, val) {
+      $(this).html($.trim($(this).html()));
+    });
+
+    // move posts-container right before article
+    $('.posts-container').insertBefore($('.d-article'));
+
+    $('body').addClass('downlevel');
+
+    on_load_complete();
+  }
+
+
+  function init_common() {
+
+    // jquery plugin to change element types
+    (function($) {
+      $.fn.changeElementType = function(newType) {
+        var attrs = {};
+
+        $.each(this[0].attributes, function(idx, attr) {
+          attrs[attr.nodeName] = attr.nodeValue;
+        });
+
+        this.replaceWith(function() {
+          return $("<" + newType + "/>", attrs).append($(this).contents());
+        });
+      };
+    })(jQuery);
+
+    // prevent underline for linked images
+    $('a > img').parent().css({'border-bottom' : 'none'});
+
+    // mark non-body figures created by knitr chunks as 100% width
+    $('.layout-chunk').each(function(i, val) {
+      var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
+      if ($(this).attr('data-layout') !== "l-body") {
+        figures.css('width', '100%');
+      } else {
+        figures.css('max-width', '100%');
+        figures.filter("[width]").each(function(i, val) {
+          var fig = $(this);
+          fig.css('width', fig.attr('width') + 'px');
+        });
+
+      }
+    });
+
+    // auto-append index.html to post-preview links in file: protocol
+    // and in rstudio ide preview
+    $('.post-preview').each(function(i, val) {
+      if (window.location.protocol === "file:")
+        $(this).attr('href', $(this).attr('href') + "index.html");
+    });
+
+    // get rid of index.html references in header
+    if (window.location.protocol !== "file:") {
+      $('.distill-site-header a[href]').each(function(i,val) {
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
+      });
+    }
+
+    // add class to pandoc style tables
+    $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+    $('.kable-table').children('table').addClass('pandoc-table');
+
+    // add figcaption style to table captions
+    $('caption').parent('table').addClass("figcaption");
+
+    // initialize posts list
+    if (window.init_posts_list)
+      window.init_posts_list();
+
+    // implmement disqus comment link
+    $('.disqus-comment-count').click(function() {
+      window.headroom_prevent_pin = true;
+      $('#disqus_thread').toggleClass('hidden');
+      if (!$('#disqus_thread').hasClass('hidden')) {
+        var offset = $(this).offset();
+        $(window).resize();
+        $('html, body').animate({
+          scrollTop: offset.top - 35
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (is_downlevel_browser())
+      init_downlevel();
+    else
+      window.addEventListener('WebComponentsReady', init_distill);
+  });
+
+  </script>
+
+  <style type="text/css">
+  /* base variables */
+
+  /* Edit the CSS properties in this file to create a custom
+     Distill theme. Only edit values in the right column
+     for each row; values shown are the CSS defaults.
+     To return any property to the default,
+     you may set its value to: unset
+     All rows must end with a semi-colon.                      */
+
+  /* Optional: embed custom fonts here with `@import`          */
+  /* This must remain at the top of this file.                 */
+
+
+
+  html {
+    /*-- Main font sizes --*/
+    --title-size:      50px;
+    --body-size:       1.06rem;
+    --code-size:       14px;
+    --aside-size:      12px;
+    --fig-cap-size:    13px;
+    /*-- Main font colors --*/
+    --title-color:     #000000;
+    --header-color:    rgba(0, 0, 0, 0.8);
+    --body-color:      rgba(0, 0, 0, 0.8);
+    --aside-color:     rgba(0, 0, 0, 0.6);
+    --fig-cap-color:   rgba(0, 0, 0, 0.6);
+    /*-- Specify custom fonts ~~~ must be imported above   --*/
+    --heading-font:    sans-serif;
+    --mono-font:       monospace;
+    --body-font:       sans-serif;
+    --navbar-font:     sans-serif;  /* websites + blogs only */
+  }
+
+  /*-- ARTICLE METADATA --*/
+  d-byline {
+    --heading-size:    0.6rem;
+    --heading-color:   rgba(0, 0, 0, 0.5);
+    --body-size:       0.8rem;
+    --body-color:      rgba(0, 0, 0, 0.8);
+  }
+
+  /*-- ARTICLE TABLE OF CONTENTS --*/
+  .d-contents {
+    --heading-size:    18px;
+    --contents-size:   13px;
+  }
+
+  /*-- ARTICLE APPENDIX --*/
+  d-appendix {
+    --heading-size:    15px;
+    --heading-color:   rgba(0, 0, 0, 0.65);
+    --text-size:       0.8em;
+    --text-color:      rgba(0, 0, 0, 0.5);
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  /* These properties only apply to Distill sites and blogs  */
+
+  .distill-site-header {
+    --title-size:       18px;
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  .distill-site-footer {
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  /*-- Additional custom styles --*/
+  /* Add any additional CSS rules below                      */
+  </style>
+  <style type="text/css">
+  /* base variables */
+
+  /* Edit the CSS properties in this file to create a custom
+     Distill theme. Only edit values in the right column
+     for each row; values shown are the CSS defaults.
+     To return any property to the default,
+     you may set its value to: unset
+     All rows must end with a semi-colon.                      */
+
+  /* Optional: embed custom fonts here with `@import`          */
+  /* This must remain at the top of this file.                 */
+
+
+
+  html {
+    /*-- Main font sizes --*/
+    --title-size:      50px;
+    --body-size:       1.06rem;
+    --code-size:       14px;
+    --aside-size:      12px;
+    --fig-cap-size:    13px;
+    /*-- Main font colors --*/
+    --title-color:     #000000;
+    --header-color:    rgba(0, 0, 0, 0.8);
+    --body-color:      rgba(0, 0, 0, 0.8);
+    --aside-color:     rgba(0, 0, 0, 0.6);
+    --fig-cap-color:   rgba(0, 0, 0, 0.6);
+    /*-- Specify custom fonts ~~~ must be imported above   --*/
+    --heading-font:    sans-serif;
+    --mono-font:       monospace;
+    --body-font:       sans-serif;
+    --navbar-font:     sans-serif;  /* websites + blogs only */
+  }
+
+  /*-- ARTICLE METADATA --*/
+  d-byline {
+    --heading-size:    0.6rem;
+    --heading-color:   rgba(0, 0, 0, 0.5);
+    --body-size:       0.8rem;
+    --body-color:      rgba(0, 0, 0, 0.8);
+  }
+
+  /*-- ARTICLE TABLE OF CONTENTS --*/
+  .d-contents {
+    --heading-size:    18px;
+    --contents-size:   13px;
+  }
+
+  /*-- ARTICLE APPENDIX --*/
+  d-appendix {
+    --heading-size:    15px;
+    --heading-color:   rgba(0, 0, 0, 0.65);
+    --text-size:       0.8em;
+    --text-color:      rgba(0, 0, 0, 0.5);
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  /* These properties only apply to Distill sites and blogs  */
+
+  .distill-site-header {
+    --title-size:       18px;
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  .distill-site-footer {
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  /*-- Additional custom styles --*/
+  /* Add any additional CSS rules below                      */
+
+  /* Code chunks */
+
+  d-article pre { /* Chunk output */
+    border-radius: 5px; /* Rounded edges */
+    font-size: 12px;
+    color: black;
+    background-color: #c1daf0;
+    padding: 5px 5px 5px 18px;
+  }
+
+  d-article div.sourceCode pre { /* Chunk code */
+    border-radius: 5px; /* Rounded edges */
+    background-color: #fff2cc;
+    color: black;
+    padding: 5px 5px 5px 18px;
+  }
+
+  d-article div.sourceCode {
+    background-color: transparent;
+  }</style>
+  <style type="text/css">
+  /* base style */
+
+  /* FONT FAMILIES */
+
+  :root {
+    --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body,
+  .posts-list .post-preview p,
+  .posts-list .description p {
+    font-family: var(--body-font), var(--body-default);
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  .posts-list .post-preview h2,
+  .posts-list .description h2 {
+    font-family: var(--heading-font), var(--heading-default);
+  }
+
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: var(--mono-font), var(--mono-default);
+  }
+
+
+  /*-- TITLE --*/
+  d-title h1,
+  .posts-list > h1 {
+    color: var(--title-color, black);
+  }
+
+  d-title h1 {
+    font-size: var(--title-size, 50px);
+  }
+
+  /*-- HEADERS --*/
+  d-article h1,
+  d-article h2,
+  d-article h3,
+  d-article h4,
+  d-article h5,
+  d-article h6 {
+    color: var(--header-color, rgba(0, 0, 0, 0.8));
+  }
+
+  /*-- BODY --*/
+  d-article > p,  /* only text inside of <p> tags */
+  d-article > ul, /* lists */
+  d-article > ol {
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+    font-size: var(--body-size, 1.06rem);
+  }
+
+
+  /*-- CODE --*/
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-size: var(--code-size, 14px);
+  }
+
+  /*-- ASIDE --*/
+  d-article aside {
+    font-size: var(--aside-size, 12px);
+    color: var(--aside-color, rgba(0, 0, 0, 0.6));
+  }
+
+  /*-- FIGURE CAPTIONS --*/
+  figure .caption,
+  figure figcaption,
+  .figure .caption {
+    font-size: var(--fig-cap-size, 13px);
+    color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+  }
+
+  /*-- METADATA --*/
+  d-byline h3 {
+    font-size: var(--heading-size, 0.6rem);
+    color: var(--heading-color, rgba(0, 0, 0, 0.5));
+  }
+
+  d-byline {
+    font-size: var(--body-size, 0.8rem);
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+  }
+
+  d-byline a,
+  d-article d-byline a {
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+  }
+
+  /*-- TABLE OF CONTENTS --*/
+  .d-contents nav h3 {
+    font-size: var(--heading-size, 18px);
+  }
+
+  .d-contents nav a {
+    font-size: var(--contents-size, 13px);
+  }
+
+  /*-- APPENDIX --*/
+  d-appendix h3 {
+    font-size: var(--heading-size, 15px);
+    color: var(--heading-color, rgba(0, 0, 0, 0.65));
+  }
+
+  d-appendix {
+    font-size: var(--text-size, 0.8em);
+    color: var(--text-color, rgba(0, 0, 0, 0.5));
+  }
+
+  d-appendix d-footnote-list a.footnote-backlink {
+    color: var(--text-color, rgba(0, 0, 0, 0.5));
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  .distill-site-header .title {
+    font-size: var(--title-size, 18px);
+    font-family: var(--navbar-font), var(--heading-default);
+  }
+
+  .distill-site-header a,
+  .nav-dropdown .nav-dropbtn {
+    font-family: var(--navbar-font), var(--heading-default);
+  }
+
+  .nav-dropdown .nav-dropbtn {
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    font-size: var(--text-size, 15px);
+  }
+
+  .distill-site-header a:hover,
+  .nav-dropdown:hover .nav-dropbtn {
+    color: var(--hover-color, white);
+  }
+
+  .distill-site-header {
+    font-size: var(--text-size, 15px);
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    background-color: var(--bkgd-color, #0F2E3D);
+  }
+
+  .distill-site-footer {
+    font-size: var(--text-size, 15px);
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    background-color: var(--bkgd-color, #0F2E3D);
+  }
+
+  .distill-site-footer a:hover {
+    color: var(--hover-color, white);
+  }</style>
+  <!--/radix_placeholder_distill-->
+  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/popper-2.6.0/popper.min.js"></script>
+  <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="site_libs/anchor-4.2.2/anchor.min.js"></script>
+  <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
+  <script src="site_libs/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="site_libs/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+  <script type="text/javascript" cookie-consent="tracking" async src="https://www.googletagmanager.com/gtag/js?id=G-1RQZJC7E05"></script>
+  <script type="text/javascript" cookie-consent="tracking">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1RQZJC7E05');
+  </script>
+  <!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Regularized (Penalized) Linear Regression","authors":[{"author":"Cengiz Zopluoglu","authorURL":"#","affiliation":"University of Oregon","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-10-11T00:00:00.000-07:00","citationText":"Zopluoglu, 2022"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<header class="header header--fixed" role="banner">
+<nav class="distill-site-nav distill-site-header">
+<div class="nav-left">
+<a href="index.html" class="title">Applied Machine Learning for Educational Data Science</a>
+</div>
+<div class="nav-right">
+<a href="index.html">Home</a>
+<a href="syllabus.html">Syllabus</a>
+<a href="schedule.html">Schedule</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Lecture Notes
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="lecture-1.html">Lecture-1</a>
+<a href="lecture-2a.html">Lecture-2a</a>
+<a href="lecture-2b.html">Lecture-2b</a>
+<a href="lecture-3a.html">Lecture-3a</a>
+<a href="lecture-3b.html">Lecture-3b</a>
+<a href="lecture-4.html">Lecture-4</a>
+<a href="lecture-5.html">Lecture-5</a>
+<a href="lecture-6a.html">Lecture-6a</a>
+<a href="lecture-6b.html">Lecture-6b</a>
+<a href="lecture-7a.html">Lecture-7a</a>
+<a href="lecture-7b.html">Lecture-7b</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Kaggle Notebooks
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="https://www.kaggle.com/code/uocoeeds/week-1-introduction/notebook">Notebook-1</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i">Notebook-2a</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii">Notebook-2b</a>
+<a href="https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo">The {recipes} demo</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-3a-overview-of-linear-regression">Notebook-3a</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-3b-review-of-bias-variance-tradeoff">Notebook-3b</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-with-cross-validation">Building Linear Models with `caret`</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-4-regularized-penalized-regression">Notebook-4</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model">Building a Ridge Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model">Building a Lasso Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net">Building an Elastic Net Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text">Using the Existing Models to Predict Outcome for New Observations</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook">Building a Logistic Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/">Building a Classification Model with Ridge Penalty</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty">Building a Classification Model with Lasso Penalty</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net">Building a Classification Model with Elastic Net</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn">Building a Prediction Model with K-nearest neighbors</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn">Building a Classification Model with K-nearest neighbors</a>
+<a href="https://www.kaggle.com/uocoeeds/building-a-prediction-model-using-a-decision-tree">Building a Prediction Model with a Decision Tree</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm">Building a Classification Model with a Decision Tree</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Slides
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="slides/slide1.html">Week 1</a>
+<a href="slides/slide2.html">Week 2</a>
+<a href="slides/slide3.html">Week 3 &amp; 4</a>
+<a href="slides/slide4.html">Week 5</a>
+<a href="slides/slide5.html">Week 6 &amp; 7</a>
+<a href="slides/slide6a.html">Week 8_Part 1</a>
+<a href="slides/slide6b.html">Week 8_Part 2</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Assignments
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-1">Assignment1</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-2">Assignment2</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-3">Assignment3</a>
+</div>
+</div>
+<a href="https://github.com/uo-datasci-specialization/c4-ml-fall-2022">
+<i class="fa fa-github" aria-hidden="true"></i>
+</a>
+<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
+</div>
+</nav>
+</header>
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Regularized (Penalized) Linear Regression</h1>
+<!--radix_placeholder_categories-->
+<!--/radix_placeholder_categories-->
+
+</div>
+
+<div class="d-byline">
+  Cengiz Zopluoglu  (University of Oregon)
+  
+<br/>10/11/2022
+</div>
+
+<div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#regularization" id="toc-regularization">Regularization</a>
+<ul>
+<li><a href="#ridge-regression" id="toc-ridge-regression">Ridge
+Regression</a>
+<ul>
+<li><a href="#ridge-penalty" id="toc-ridge-penalty">Ridge
+Penalty</a></li>
+<li><a href="#model-estimation" id="toc-model-estimation">Model
+Estimation</a></li>
+<li><a href="#using-ridge-regression-to-predict-readability-scores"
+id="toc-using-ridge-regression-to-predict-readability-scores">Using
+Ridge Regression to Predict Readability Scores</a></li>
+</ul></li>
+<li><a href="#lasso-regression" id="toc-lasso-regression">Lasso
+Regression</a>
+<ul>
+<li><a href="#model-estimation-1" id="toc-model-estimation-1">Model
+Estimation</a></li>
+<li><a href="#using-lasso-regression-to-predict-the-readability-scores"
+id="toc-using-lasso-regression-to-predict-the-readability-scores">Using
+Lasso Regression to Predict the Readability Scores</a></li>
+</ul></li>
+<li><a href="#elastic-net" id="toc-elastic-net">Elastic Net</a>
+<ul>
+<li><a href="#using-elastic-net-to-predict-the-readability-scores"
+id="toc-using-elastic-net-to-predict-the-readability-scores">Using
+Elastic Net to Predict the Readability Scores</a></li>
+</ul></li>
+<li><a href="#using-the-prediction-model-for-a-new-text"
+id="toc-using-the-prediction-model-for-a-new-text">Using the Prediction
+Model for a New Text</a></li>
+</ul></li>
+</ul>
+</nav>
+</div>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+
+</style>
+<p>[Updated: Sun, Nov 27, 2022 - 14:05:46 ]</p>
+<h1 id="regularization">Regularization</h1>
+<p>Regularization is a general strategy to incorporate additional
+penalty terms into the model fitting process and is used not just for
+regression but a variety of other models. The idea behind the
+regularization is to constrain the size of regression coefficients to
+reduce their sampling variation and, hence, reduce the variance of model
+predictions. These constraints are typically incorporated into the loss
+function to be optimized. There are two commonly used regularization
+strategies: <strong>ridge penalty</strong> and <strong>lasso
+penalty</strong>. In addition, there is also <strong>elastic
+net</strong>, a mixture of these two strategies.</p>
+<h2 id="ridge-regression">Ridge Regression</h2>
+<h3 id="ridge-penalty">Ridge Penalty</h3>
+<p>Remember that we formulated the loss function for the linear
+regression as the sum of squared residuals across all observations. For
+ridge regression, we add a penalty term to this loss function, which is
+a function of all the regression coefficients in the model. Assuming
+that there are P regression coefficients in the model, the penalty term
+for the ridge regression would be <span class="math display">\[\lambda
+\sum_{i=1}^{P}\beta_p^2,\]</span> where <span
+class="math inline">\(\lambda\)</span> is a parameter that penalizes the
+regression coefficients when they get larger. Therefore, when we fit a
+regression model with ridge penalty, the loss function to minimize
+becomes</p>
+<p><span class="math display">\[Loss = \sum_{i=1}^{N}\epsilon_{(i)}^2 +
+\lambda \sum_{p=1}^{P}\beta_p^2,\]</span></p>
+<p><span class="math display">\[Loss = SSR + \lambda
+\sum_{i=1}^{P}\beta_p^2.\]</span></p>
+<p>Let’s consider the same example from the previous class. Suppose we
+fit a simple linear regression model such that the readability score is
+the outcome (<span class="math inline">\(Y\)</span>) and the Feature 220
+is the predictor(<span class="math inline">\(X\)</span>). Our regression
+model is</p>
+<p><span class="math display">\[Y = \beta_0  + \beta_1X +
+\epsilon,\]</span></p>
+<p>let’s assume the set of coefficients are {<span
+class="math inline">\(\beta_0,\beta_1\)</span>} = {-1.5,2}, so my model
+is <span class="math display">\[Y = -1.5  + 2X + \epsilon.\]</span>
+Then, the value of the loss function when <span
+class="math inline">\(\lambda=0.2\)</span> would be equal to 19.02.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>'./data/readability_sub.csv'</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>d</span> <span class='op'>&lt;-</span>  <span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V220'</span>,<span class='st'>'target'</span><span class='op'>)</span><span class='op'>]</span></span>
+<span></span>
+<span><span class='va'>b0</span> <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1.5</span></span>
+<span><span class='va'>b1</span> <span class='op'>=</span> <span class='fl'>2</span></span>
+<span></span>
+<span><span class='va'>d</span><span class='op'>$</span><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='va'>b0</span> <span class='op'>+</span> <span class='va'>b1</span><span class='op'>*</span><span class='va'>d</span><span class='op'>$</span><span class='va'>V220</span></span>
+<span><span class='va'>d</span><span class='op'>$</span><span class='va'>error</span>     <span class='op'>&lt;-</span> <span class='va'>d</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>d</span><span class='op'>$</span><span class='va'>predicted</span></span>
+<span></span>
+<span><span class='va'>d</span></span></code></pre>
+</div>
+<pre><code>          V220      target  predicted       error
+1  -0.13908258 -2.06282395 -1.7781652 -0.28465879
+2   0.21764143  0.58258607 -1.0647171  1.64730321
+3   0.05812133 -1.65313060 -1.3837573 -0.26937327
+4   0.02526429 -0.87390681 -1.4494714  0.57556460
+5   0.22430885 -1.74049148 -1.0513823 -0.68910918
+6  -0.07795373 -3.63993555 -1.6559075 -1.98402809
+7   0.43400714 -0.62284268 -0.6319857  0.00914304
+8  -0.24364550 -0.34426981 -1.9872910  1.64302120
+9   0.15893717 -1.12298826 -1.1821257  0.05913740
+10  0.14496475 -0.99857142 -1.2100705  0.21149908
+11  0.34222975 -0.87656742 -0.8155405 -0.06102693
+12  0.25219145 -0.03304643 -0.9956171  0.96257066
+13  0.03532625 -0.49529863 -1.4293475  0.93404886
+14  0.36410633  0.12453660 -0.7717873  0.89632394
+15  0.29988593  0.09678258 -0.9002281  0.99701073
+16  0.19837037  0.38422270 -1.1032593  1.48748196
+17  0.07807041 -0.58143038 -1.3438592  0.76242880
+18  0.07935690 -0.34324576 -1.3412862  0.99804044
+19  0.57000953 -0.39054205 -0.3599809 -0.03056111
+20  0.34523284 -0.67548411 -0.8095343  0.13405021</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>lambda</span> <span class='op'>=</span> <span class='fl'>0.2</span></span>
+<span></span>
+<span><span class='va'>loss</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>d</span><span class='op'>$</span><span class='va'>error</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='op'>(</span><span class='va'>b0</span><span class='op'>^</span><span class='fl'>2</span> <span class='op'>+</span> <span class='va'>b1</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>loss</span> </span></code></pre>
+</div>
+<pre><code>[1] 19.01657</code></pre>
+</div>
+<p>Notice that when <span class="math inline">\(\lambda\)</span> is
+equal to zero, the loss function is identical to SSR; therefore, it
+becomes a linear regression with no regularization. As the value of
+<span class="math inline">\(\lambda\)</span> increases, the degree of
+penalty linearly increases. The <span
+class="math inline">\(\lambda\)</span> can technically take any positive
+value between 0 and <span class="math inline">\(\infty\)</span>.</p>
+<p>As we did in the previous lecture, imagine that we computed the loss
+function with the ridge penalty term for every possible combination of
+the intercept (<span class="math inline">\(\beta_0\)</span>) and the
+slope (<span class="math inline">\(\beta_1\)</span>). Let’s say the
+plausible range for the intercept is from -10 to 10 and the plausible
+range for the slope is from -2 to 2. Now, we also have to think of
+different values of <span class="math inline">\(\lambda\)</span> because
+the surface we try to minimize is dependent on the value <span
+class="math inline">\(\lambda\)</span> and different values of <span
+class="math inline">\(\lambda\)</span> yield different estimates of
+<span class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta_1\)</span>.</p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="figs/ridge.gif" style="display: block; margin: auto;" /></p>
+</div>
+<h3 id="model-estimation">Model Estimation</h3>
+<h4 id="matrix-solution">Matrix Solution</h4>
+<p>The matrix solution we learned before for regression without
+regularization can also be applied to estimate the coefficients from
+ridge regression given the <span class="math inline">\(\lambda\)</span>
+value. Given that</p>
+<ul>
+<li><span class="math inline">\(\mathbf{Y}\)</span> is an N x 1 column
+vector of observed values for the outcome variable,</li>
+<li><span class="math inline">\(\mathbf{X}\)</span> is an N x (P+1)
+<strong>design matrix</strong> for the set of predictor variables,
+including an intercept term,</li>
+<li><span class="math inline">\(\boldsymbol{\beta}\)</span> is an (P+1)
+x 1 column vector of regression coefficients,</li>
+<li><span class="math inline">\(\mathbf{I}\)</span> is a (P+1) x (P+1)
+identity matrix,</li>
+<li>and <span class="math inline">\(\lambda\)</span> is a positive
+real-valued number,</li>
+</ul>
+<p>the ridge regression coefficients can be estimated using the
+following matrix operation.</p>
+<p><span class="math display">\[\hat{\boldsymbol{\beta}} =
+(\mathbf{X^T}\mathbf{X} + \lambda
+\mathbf{I})^{-1}\mathbf{X^T}\mathbf{Y}\]</span> Suppose we want to
+predict the readability score using the two predictors, Feature 220
+(<span class="math inline">\(X_1\)</span>) and Feature 166 (<span
+class="math inline">\(X_2\)</span>). Our model will be</p>
+<p><span class="math display">\[Y_{(i)} = \beta_0  + \beta_1X_{1(i)} +
+\beta_2X_{2(i)} + \epsilon_{(i)}.\]</span> If we estimate the ridge
+regression coefficients by using <span
+class="math inline">\(\lambda=.5\)</span>, the estimates would be {<span
+class="math inline">\(\beta_0,\beta_1,\beta_2\)</span>} =
+{-.915,1.169,-0.22}.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fl'>0.5</span></span>
+<span></span>
+<span><span class='va'>beta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span></span>
+<span></span>
+<span><span class='va'>beta</span> </span></code></pre>
+</div>
+<pre><code>           [,1]
+[1,] -0.9151087
+[2,]  1.1691920
+[3,] -0.2206188</code></pre>
+</div>
+<p>If we change the value of <span
+class="math inline">\(\lambda\)</span> to 2, we will get different
+estimates for the regression coefficients.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fl'>2</span></span>
+<span></span>
+<span><span class='va'>beta</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span></span>
+<span></span>
+<span><span class='va'>beta</span> </span></code></pre>
+</div>
+<pre><code>           [,1]
+[1,] -0.7550986
+[2,]  0.4685138
+[3,] -0.1152953</code></pre>
+</div>
+<p>We can manipulate the value of <span
+class="math inline">\(\lambda\)</span> from 0 to 100 with increments of
+.1 and calculate the regression coefficients. Note the regression
+coefficients will shrink toward zero but will never be exactly equal to
+zero in ridge regression.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>100</span>,<span class='fl'>.1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>beta</span>     <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>nrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span>,ncol<span class='op'>=</span><span class='fl'>4</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>beta</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>lambda</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>beta</span><span class='op'>[</span><span class='va'>i</span>,<span class='fl'>2</span><span class='op'>:</span><span class='fl'>4</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='op'>}</span></span>
+<span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>beta</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>X1</span>,y<span class='op'>=</span><span class='va'>X2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>X1</span>,y<span class='op'>=</span><span class='va'>X3</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>X1</span>,y<span class='op'>=</span><span class='va'>X4</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>''</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom<span class='op'>=</span><span class='st'>'text'</span>,x<span class='op'>=</span><span class='fl'>1.5</span>,y<span class='op'>=</span><span class='fl'>1.5</span>,label<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom<span class='op'>=</span><span class='st'>'text'</span>,x<span class='op'>=</span><span class='fl'>3</span>,y<span class='op'>=</span><span class='op'>-</span><span class='fl'>.17</span>,label<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom<span class='op'>=</span><span class='st'>'text'</span>,x<span class='op'>=</span><span class='fl'>2</span>,y<span class='op'>=</span><span class='op'>-</span><span class='fl'>.9</span>,label<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='fl'>0</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-4_files/figure-html5/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<h4 id="standardized-variables">Standardized Variables</h4>
+<p>We haven’t considered a critical issue for the model estimation. This
+issue is not necessarily important if you have only one predictor;
+however, it is critical whenever you have more than one predictor.
+Different variables have different scales, and therefore the magnitude
+of the regression coefficients for different variables will depend on
+the variables’ scales. A regression coefficient for a predictor with a
+range from 0 to 100 will be very different from a regression coefficient
+for a predictor from 0 to 1. Therefore, if we work with the
+unstandardized variables, the ridge penalty will be amplified for the
+coefficients of those variables with a more extensive range of
+values.</p>
+<p>Therefore, we must standardize variables before we use ridge
+regression. Let’s do the example in the previous section, but we now
+first standardize the variables in our model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># Standardize Y</span></span>
+<span></span>
+<span>  <span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>Y</span></span></code></pre>
+</div>
+<pre><code>             [,1]
+ [1,] -1.34512103
+ [2,]  1.39315702
+ [3,] -0.92104526
+ [4,] -0.11446655
+ [5,] -1.01147297
+ [6,] -2.97759768
+ [7,]  0.14541127
+ [8,]  0.43376355
+ [9,] -0.37229209
+[10,] -0.24350754
+[11,] -0.11722056
+[12,]  0.75591253
+[13,]  0.27743280
+[14,]  0.91902756
+[15,]  0.89029923
+[16,]  1.18783003
+[17,]  0.18827737
+[18,]  0.43482354
+[19,]  0.38586691
+[20,]  0.09092186
+attr(,&quot;scaled:center&quot;)
+[1] -0.7633224
+attr(,&quot;scaled:scale&quot;)
+[1] 0.9660852</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Standardized X</span></span>
+<span>  </span>
+<span>  <span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span></span>
+<span>  <span class='va'>X</span></span></code></pre>
+</div>
+<pre><code>             [,1]        [,2]
+ [1,] -1.54285661  1.44758852
+ [2,]  0.24727019 -0.47711825
+ [3,] -0.55323997 -0.97867834
+ [4,] -0.71812450  1.41817232
+ [5,]  0.28072891 -0.62244962
+ [6,] -1.23609737  0.11236158
+ [7,]  1.33304531  0.34607530
+ [8,] -2.06757849 -1.22697345
+ [9,] -0.04732188  0.05882229
+[10,] -0.11743882 -1.24554362
+[11,]  0.87248435  1.93772977
+[12,]  0.42065052  0.13025831
+[13,] -0.66763117 -0.40479141
+[14,]  0.98226625  1.39073712
+[15,]  0.65999286  0.25182543
+[16,]  0.15056337 -0.28808443
+[17,] -0.45313072  0.02862469
+[18,] -0.44667480  0.25187100
+[19,]  2.01553800 -2.00805114
+[20,]  0.88755458 -0.12237606
+attr(,&quot;scaled:center&quot;)
+[1] 0.1683671 0.1005784
+attr(,&quot;scaled:scale&quot;)
+[1] 0.19927304 0.06196686</code></pre>
+</div>
+<p>When we standardize the variables, the mean of all variables becomes
+zero. So, the intercept estimate for any regression model with
+standardized variables is guaranteed to be zero. Note that our design
+matrix doesn’t have a column of ones because it is unnecessary (it would
+be a column of zeros if we had one).</p>
+<p>First, check the regression model’s coefficients with standardized
+variables when there is no ridge penalty.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fl'>0</span></span>
+<span></span>
+<span><span class='va'>beta.s</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span></span>
+<span></span>
+<span><span class='va'>beta.s</span> </span></code></pre>
+</div>
+<pre><code>            [,1]
+[1,]  0.42003881
+[2,] -0.06335594</code></pre>
+</div>
+<p>Now, let’s increase the ridge penalty to 0.5.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fl'>0.5</span></span>
+<span></span>
+<span><span class='va'>beta.s</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span></span>
+<span></span>
+<span><span class='va'>beta.s</span> </span></code></pre>
+</div>
+<pre><code>            [,1]
+[1,]  0.40931629
+[2,] -0.06215875</code></pre>
+</div>
+<p>Below, we can manipulate the value of <span
+class="math inline">\(\lambda\)</span> from 0 to 100 with increments of
+.1 as we did before and calculate the standardized regression
+coefficients.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>lambda</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>100</span>,<span class='fl'>.1</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>beta</span>     <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span>nrow<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span>,ncol<span class='op'>=</span><span class='fl'>3</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>beta</span><span class='op'>[</span>,<span class='fl'>1</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>lambda</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>beta</span><span class='op'>[</span><span class='va'>i</span>,<span class='fl'>2</span><span class='op'>:</span><span class='fl'>3</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/solve.html'>solve</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>X</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>*</span><span class='fu'><a href='https://rdrr.io/r/base/diag.html'>diag</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span><span class='op'><a href='https://rdrr.io/r/base/matmult.html'>%*%</a></span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='op'>}</span></span>
+<span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>beta</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>X1</span>,y<span class='op'>=</span><span class='va'>X2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>X1</span>,y<span class='op'>=</span><span class='va'>X3</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>lambda</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>''</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_hline</a></span><span class='op'>(</span>yintercept<span class='op'>=</span><span class='fl'>0</span>,lty<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom<span class='op'>=</span><span class='st'>'text'</span>,x<span class='op'>=</span><span class='fl'>3</span>,y<span class='op'>=</span><span class='fl'>.4</span>,label<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span>geom<span class='op'>=</span><span class='st'>'text'</span>,x<span class='op'>=</span><span class='fl'>2</span>,y<span class='op'>=</span><span class='op'>-</span><span class='fl'>.075</span>,label<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/expression.html'>expression</a></span><span class='op'>(</span><span class='va'>beta</span><span class='op'>[</span><span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-4_files/figure-html5/unnamed-chunk-10-1.png" width="768" style="display: block; margin: auto;" /></p>
+</div>
+<h4 id="glmnet-function"><code>glmnet()</code> function</h4>
+<p>Similar to the <code>lm</code> function, we can use the
+<code>glmnet()</code> function from the <code>glmnet</code> package to
+run a regression model with ridge penalty. There are many arguments for
+the <code>glmnet()</code> function. For now, the arguments we need to
+know are</p>
+<ul>
+<li><code>x</code>: an N x P input matrix, where N is the number of
+observations and P is the number of predictors</li>
+<li><code>y</code>: an N x 1 input matrix for the outcome variable</li>
+<li><code>alpha</code>: a mixing constant for lasso and ridge penalty.
+When it is zero, the ridge regression is conducted</li>
+<li><code>lambda</code>: penalty term</li>
+<li><code>intercept</code>: set FALSE to avoid intercept for
+standardized variables</li>
+</ul>
+<p>If you want to fit the linear regression without regularization, you
+can specify <code>alpha = 0</code> and <code>lambda = 0</code>.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#install.packages('glmnet')</span></span>
+<span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://glmnet.stanford.edu'>glmnet</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X</span>,</span>
+<span>              y <span class='op'>=</span> <span class='va'>Y</span>,</span>
+<span>              family <span class='op'>=</span> <span class='st'>'gaussian'</span>,</span>
+<span>              alpha <span class='op'>=</span> <span class='fl'>0</span>,</span>
+<span>              lambda <span class='op'>=</span> <span class='fl'>0</span>,</span>
+<span>              intercept<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>3 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+                     s0
+(Intercept)  .         
+V1           0.42003881
+V2          -0.06335594</code></pre>
+</div>
+<p>We can also increase the penalty term (<span
+class="math inline">\(\lambda\)</span>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#install.packages('glmnet')</span></span>
+<span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://glmnet.stanford.edu'>glmnet</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X</span>,</span>
+<span>              y <span class='op'>=</span> <span class='va'>Y</span>,</span>
+<span>              family <span class='op'>=</span> <span class='st'>'gaussian'</span>,</span>
+<span>              alpha <span class='op'>=</span> <span class='fl'>0</span>,</span>
+<span>              lambda <span class='op'>=</span> <span class='fl'>0.5</span>,</span>
+<span>              intercept<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>3 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+                     s0
+(Intercept)  .         
+V1           0.27809880
+V2          -0.04571182</code></pre>
+</div>
+<hr />
+<div id="infobox">
+<center style="color:black;">
+<strong>NOTE</strong>
+</center>
+<p>A careful eye should catch the fact that the coefficient estimates we
+obtained from the <code>glmnet()</code> function for the two
+standardized variables (Feature 220 and Feature 166) are different than
+our matrix calculations above when the penalty term (<span
+class="math inline">\(\lambda\)</span>) is 0.5. When we apply the matrix
+solution above for the ridge regression, we obtained the estimates of
+0.409 and -0.062 for the two predictors, respectively, at <span
+class="math inline">\(\lambda\)</span> = 0.5. When we enter the same
+value in <code>glmnet()</code>, we obtain the estimates of 0.278 and
+-0.046. So, what is wrong? Where does this discrepancy come from?</p>
+<p>There is nothing wrong. It appears that what <code>lambda</code>
+argument in <code>glmnet</code> indicates is <span
+class="math inline">\(\frac{\lambda}{N}\)</span>. In most statistics
+textbooks, the penalty term for the ridge regression is specified as</p>
+<p><span class="math display">\[\lambda
+\sum_{i=1}^{P}\beta_p^2.\]</span></p>
+<p>On the other hand, if we examine Equation 1-3 in <a
+href="https://www.jstatsoft.org/article/view/v033i01">this paper</a>
+written by the developers of the <code>glmnet</code> package, we can see
+that the penalty term applied is equivalent of</p>
+<p><span class="math display">\[\lambda N
+\sum_{i=1}^{P}\beta_p^2.\]</span></p>
+<p>Therefore, if we want identical results, we should use <span
+class="math inline">\(\lambda\)</span> = 0.5/20.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>N</span> <span class='op'>=</span> <span class='fl'>20</span></span>
+<span></span>
+<span><span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X</span>,</span>
+<span>              y <span class='op'>=</span> <span class='va'>Y</span>,</span>
+<span>              family <span class='op'>=</span> <span class='st'>'gaussian'</span>,</span>
+<span>              alpha <span class='op'>=</span> <span class='fl'>0</span>,</span>
+<span>              lambda <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>/</span><span class='va'>N</span>,</span>
+<span>              intercept<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>3 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+                     s0
+(Intercept)  .         
+V1           0.40958102
+V2          -0.06218857</code></pre>
+</div>
+<p>Note that these numbers are still slightly different. We can
+attribute this difference to the numerical approximation
+<code>glmnet</code> is using when optimizing the loss function.
+<code>glmnet</code> doesn’t use the closed-form matrix solution for
+ridge regression. This is a good thing because there is not always a
+closed form solution for different types of regularization approaches
+(e.g., lasso). Therefore, the computational approximation in
+<code>glmnet</code> is very needed moving forward.</p>
+</div>
+<hr />
+<h4 id="tuning-the-hyperparameter-lambda">Tuning the Hyperparameter
+<span class="math inline">\(\lambda\)</span></h4>
+<p>In ridge regression, the <span class="math inline">\(\lambda\)</span>
+parameter is called a <strong>hyperparameter</strong>. In the context of
+machine learning, the parameters in a model can be classified into two
+types: parameters and hyperparameters. The <strong>parameters</strong>
+are typically estimated from data and not set by users. In the context
+of ridge regression, regression coefficients, {<span
+class="math inline">\(\beta_0,\beta_1,...,\beta_P\)</span>}, are
+parameters to be estimated from data. On the other hand, the
+<strong>hyperparameters</strong> are not estimable, most of the time,
+because there are no first-order or second-order derivatives for these
+hyperparameters. Therefore, they must be set by the users. In the
+context of ridge regression, the penalty term, {<span
+class="math inline">\(\lambda\)</span>}, is a hyperparameter.</p>
+<p>The process of deciding what value to use for a hyperparameter is
+called <strong>tuning</strong>, and it is usually a trial-error process.
+The idea is simple. We try many different hyperparameter values and
+check how well the model performs based on specific criteria (e.g., MAE,
+MSE, RMSE) using k-fold cross-validation. Then, we pick the value of a
+hyperparameter that provides the best performance.</p>
+<h3 id="using-ridge-regression-to-predict-readability-scores">Using
+Ridge Regression to Predict Readability Scores</h3>
+<p>Please review the following notebook for applying Ridge Regresison to
+predict readability scores from all 768 features using the whole
+dataset.</p>
+<p><a
+href="https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model">Predicting
+Readability Scores using the Ridge Regression</a></p>
+<h2 id="lasso-regression">Lasso Regression</h2>
+<p>Lasso regression is very similar to the Ridge regression. The only
+difference is that it applies a different penalty to the loss function.
+Assuming that there are P regression coefficients in the model, the
+penalty term for the ridge regression would be</p>
+<p><span class="math display">\[\lambda \sum_{i=1}^{P}
+|\beta_p|,\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is again the
+penalty constant and <span class="math inline">\(|\beta_p|\)</span> is
+the absolute value of the regression coefficient for the <span
+class="math inline">\(p^{th}\)</span> parameter. Lasso regression also
+penalizes the regression coefficients when they get larger but
+differently. When we fit a regression model with a lasso penalty, the
+loss function to minimize becomes</p>
+<p><span class="math display">\[Loss = \sum_{i=1}^{N}\epsilon_{(i)}^2 +
+\lambda \sum_{i=1}^{P}|\beta_p|,\]</span></p>
+<p><span class="math display">\[Loss = SSR + \lambda
+\sum_{i=1}^{P}|\beta_p|.\]</span></p>
+<p>Let’s consider the same example where we fit a simple linear
+regression model: the readability score is the outcome (<span
+class="math inline">\(Y\)</span>) and Feature 229 is the predictor(<span
+class="math inline">\(X\)</span>). Our regression model is</p>
+<p><span class="math display">\[Y = \beta_0  + \beta_1X +
+\epsilon,\]</span></p>
+<p>and let’s assume the set of coefficients are {<span
+class="math inline">\(\beta_0,\beta_1\)</span>} = {-1.5,2}, so my model
+is <span class="math display">\[Y = -1.5 + 2X + \epsilon.\]</span></p>
+<p>Then, the value of the loss function when <span
+class="math inline">\(\lambda=0.2\)</span> would equal 18.467.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>'./data/readability_sub.csv'</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>d</span> <span class='op'>&lt;-</span>  <span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V220'</span>,<span class='st'>'target'</span><span class='op'>)</span><span class='op'>]</span></span>
+<span></span>
+<span><span class='va'>b0</span> <span class='op'>=</span> <span class='op'>-</span><span class='fl'>1.5</span></span>
+<span><span class='va'>b1</span> <span class='op'>=</span> <span class='fl'>2</span></span>
+<span></span>
+<span><span class='va'>d</span><span class='op'>$</span><span class='va'>predicted</span> <span class='op'>&lt;-</span> <span class='va'>b0</span> <span class='op'>+</span> <span class='va'>b1</span><span class='op'>*</span><span class='va'>d</span><span class='op'>$</span><span class='va'>V220</span></span>
+<span><span class='va'>d</span><span class='op'>$</span><span class='va'>error</span>     <span class='op'>&lt;-</span> <span class='va'>d</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>d</span><span class='op'>$</span><span class='va'>predicted</span></span>
+<span></span>
+<span><span class='va'>d</span></span></code></pre>
+</div>
+<pre><code>          V220      target  predicted       error
+1  -0.13908258 -2.06282395 -1.7781652 -0.28465879
+2   0.21764143  0.58258607 -1.0647171  1.64730321
+3   0.05812133 -1.65313060 -1.3837573 -0.26937327
+4   0.02526429 -0.87390681 -1.4494714  0.57556460
+5   0.22430885 -1.74049148 -1.0513823 -0.68910918
+6  -0.07795373 -3.63993555 -1.6559075 -1.98402809
+7   0.43400714 -0.62284268 -0.6319857  0.00914304
+8  -0.24364550 -0.34426981 -1.9872910  1.64302120
+9   0.15893717 -1.12298826 -1.1821257  0.05913740
+10  0.14496475 -0.99857142 -1.2100705  0.21149908
+11  0.34222975 -0.87656742 -0.8155405 -0.06102693
+12  0.25219145 -0.03304643 -0.9956171  0.96257066
+13  0.03532625 -0.49529863 -1.4293475  0.93404886
+14  0.36410633  0.12453660 -0.7717873  0.89632394
+15  0.29988593  0.09678258 -0.9002281  0.99701073
+16  0.19837037  0.38422270 -1.1032593  1.48748196
+17  0.07807041 -0.58143038 -1.3438592  0.76242880
+18  0.07935690 -0.34324576 -1.3412862  0.99804044
+19  0.57000953 -0.39054205 -0.3599809 -0.03056111
+20  0.34523284 -0.67548411 -0.8095343  0.13405021</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>lambda</span> <span class='op'>=</span> <span class='fl'>0.2</span></span>
+<span></span>
+<span><span class='va'>loss</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>d</span><span class='op'>$</span><span class='va'>error</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span> <span class='va'>lambda</span><span class='op'>*</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>b0</span><span class='op'>)</span> <span class='op'>+</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>b1</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>loss</span> </span></code></pre>
+</div>
+<pre><code>[1] 18.46657</code></pre>
+</div>
+<p>When <span class="math inline">\(\lambda\)</span> is equal to 0, the
+loss function is again identical to SSR; therefore, it becomes a linear
+regression with no regularization. Below is a demonstration of what
+happens to the loss function and the regression coefficients for
+increasing levels of loss penalty (<span
+class="math inline">\(\lambda\)</span>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="figs/lasso.gif" style="display: block; margin: auto;" /></p>
+</div>
+<h3 id="model-estimation-1">Model Estimation</h3>
+<p>Unfortunately, there is no closed-form solution for lasso regression
+due to the absolute value terms in the loss function. The only way to
+estimate the coefficients of the lasso regression is to optimize the
+loss function using numerical techniques and obtain computational
+approximations of the regression coefficients. Similar to ridge
+regression, <code>glmnet</code> is an engine we can use to estimate the
+coefficients of the lasso regression.</p>
+<h4 id="glmnet-function-1">glmnet() function</h4>
+<p>We can fit the lasso regression by setting the <code>alpha=</code>
+argument to 1 in <code>glmnet()</code> and specifying the penalty term
+(<span class="math inline">\(\lambda\)</span>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>Y</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span>  <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>as.matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/cbind.html'>cbind</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V220</span>,<span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>V166</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>Y</span><span class='op'>)</span></span>
+<span><span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/scale.html'>scale</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>mod</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://glmnet.stanford.edu/reference/glmnet.html'>glmnet</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>X</span>,</span>
+<span>              y <span class='op'>=</span> <span class='va'>Y</span>,</span>
+<span>              family <span class='op'>=</span> <span class='st'>'gaussian'</span>,</span>
+<span>              alpha <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>              lambda <span class='op'>=</span> <span class='fl'>0.2</span>,</span>
+<span>              intercept<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/coef.html'>coef</a></span><span class='op'>(</span><span class='va'>mod</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>3 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+                   s0
+(Intercept) .        
+V1          0.2174345
+V2          .        </code></pre>
+</div>
+<p>Notice that there is a <code>.</code> symbol for the coefficient of
+the second predictor. The <code>.</code> symbol indicates that it is
+equal to zero. While the regression coefficients in the ridge regression
+shrink to zero, they do not necessarily end up being exactly equal to
+zero. In contrast, lasso regression may yield a value of zero for some
+coefficients in the model. For this reason, lasso regression may be used
+as a variable selection algorithm. The variables with coefficients equal
+to zero may be discarded from future considerations as they are not
+crucial for predicting the outcome.</p>
+<h4 id="tuning-lambda">Tuning <span
+class="math inline">\(\lambda\)</span></h4>
+<p>We implement a similar strategy for finding the optimal value of
+<span class="math inline">\(\lambda\)</span>. We try many different
+values of <span class="math inline">\(\lambda\)</span> and check how
+well the model performs based on specific criteria (e.g., MAE, MSE,
+RMSE) using k-fold cross-validation. Then, we pick the value of <span
+class="math inline">\(\lambda\)</span> that provides the best
+performance.</p>
+<h3 id="using-lasso-regression-to-predict-the-readability-scores">Using
+Lasso Regression to Predict the Readability Scores</h3>
+<p>Please review the following notebook for applying Lasso Regresison to
+predict readability scores from all 768 features using the whole
+dataset.</p>
+<p><a
+href="https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model">Predicting
+Readability Scores using the Lasso Regression</a></p>
+<h2 id="elastic-net">Elastic Net</h2>
+<p>Elastic net combines the two types of penalty into one by mixing them
+with some weighted average. The penalty term for the elastic net could
+be written as</p>
+<p><span class="math display">\[\lambda \left[ (1-\alpha)\sum_{i=1}^{P}
+\beta_p^2 + \alpha\sum_{i=1}^{P} |\beta_p|)\right].\]</span></p>
+<p>Note that this term reduces to</p>
+<p><span class="math display">\[\lambda \sum_{i=1}^{P}
+\beta_p^2\]</span></p>
+<p>when <span class="math inline">\(\alpha\)</span> is equal to 1 and
+to</p>
+<p><span class="math display">\[\lambda \sum_{i=1}^{P}
+|\beta_p|\]</span></p>
+<p>when <span class="math inline">\(\alpha\)</span> is equal to 0.</p>
+<p>When <span class="math inline">\(\alpha\)</span> is set to 1, this is
+equivalent to ridge regression. When <span
+class="math inline">\(\alpha\)</span> equals 0, this is the equivalent
+of lasso regression. When <span class="math inline">\(\alpha\)</span>
+takes any value between 0 and 1, this term becomes a weighted average of
+the ridge penalty and lasso penalty. In Elastic Net, two hyperparameters
+will be tuned, <span class="math inline">\(\alpha\)</span> and <span
+class="math inline">\(\lambda\)</span>. We can consider all possible
+combinations of these two hyperparameters and try to find the optimal
+combination using 10-fold cross-validation.</p>
+<h3 id="using-elastic-net-to-predict-the-readability-scores">Using
+Elastic Net to Predict the Readability Scores</h3>
+<p>Please review the following notebook for applying Elastic Net to
+predict readability scores from all 768 features using the whole
+dataset.</p>
+<p><a
+href="https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net">Predicting
+Readability Scores using the Elastic Net</a></p>
+<h2 id="using-the-prediction-model-for-a-new-text">Using the Prediction
+Model for a New Text</h2>
+<p>Please review the following notebook for predicting the readability
+of a given text with the existing model objects</p>
+<p><a
+href="https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text">Predicting
+Readability Scores for a new text</a></p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom">
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<div class="distill-site-nav distill-site-footer">
+<center>
+<p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
+<p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
+<a href = "https://www.rstudio.com"> RStudio.</a></p>
+<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+</center>
+</div>
+<!--/radix_placeholder_navigation_after_body-->
+
+
+</body>
+
+</html>

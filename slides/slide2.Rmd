@@ -1,0 +1,1426 @@
+---
+title: "Data Preprocessing"
+subtitle: ""
+author: "Cengiz Zopluoglu"
+institute: "College of Education, University of Oregon"
+date: "Oct 10, 2022 <br> Eugene, OR"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
+    #self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+<style>
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+</style>
+
+```{R, setup, include = F}
+library(pacman)
+p_load(here, tidyverse, ggplot2, xaringan, knitr, kableExtra, 
+       xaringanthemer,DT,dplyr,gridExtra)
+
+#i_am("B:/UO Teaching/EDUC614/Winter22/Slide Template/template.rmd")
+
+red_pink <- "#e64173"
+turquoise = "#20B2AA"
+orange = "#FFA500"
+red = "#fb6107"
+blue = "#3b3b9a"
+green = "#8bb174"
+grey_light = "grey70"
+grey_mid = "grey50"
+grey_dark = "grey20"
+purple = "#6A5ACD"
+slate = "#314f4f"
+
+extra_css <- list(
+  ".red"   = list(color = "red"),
+  ".blue"  =list(color = "blue"),
+  ".red-pink" = list(color= "red_pink"),
+  ".grey-light" = list(color= "grey_light"),
+  ".purple" = list(color = "purple"),
+  ".small" = list("font-size" = "90%"))
+
+write_extra_css(css = extra_css, outfile = "my_custom.css")
+
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 6.75,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+options(knitr.table.format = "html")
+
+options(width = 120)
+
+options(max.print = 100)
+
+require(here)
+```
+
+### Today's Goals:
+
+- Processing Categorical Predictors
+  
+  - One-hot encoding (dummy variables)
+  
+  - Label encoding
+  
+  - Polynomial Contrasts
+
+- Processing Cyclic Variables
+
+- Processing Continuous Variables
+
+  - Centering and Scaling
+  
+  - Box-Cox transformation
+  
+  - Logit transformation
+  
+  - Polynomial basis expansions
+  
+- Handling Missing Data
+
+- the `recipes` package
+
+- Processing Text Data with pre-trained NLP models
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Processing Categorical Predictors
+
+---
+
+- When categorical predictors are in a dataset, it is essential to transform them into numerical codes because this is the only way to use them in predictive modeling. 
+
+<br>
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+
+
+
+DT::datatable(data = recidivism[1:50,c('Gender','Race','Education_Level','Prison_Offense')],
+              colnames = c('Gender','Race','Education Level','Prison Offence'),
+              rownames = FALSE,
+              filter="none",
+              options  = list(pageLength = 3,lengthMenu = c(3))) %>%
+    formatStyle(columns = c(1, 2, 3, 4), fontSize = '75%',textAlign = 'center')
+
+```
+
+<br>
+
+- When encoding categorical predictors, we try to preserve as much information as possible from their labels
+
+---
+
+## One-hot encoding (dummy variables)
+
+- A **dummy variable** is a synthetic variable with two values (0 and 1) representing a group membership.
+
+- When there is a nominal variable with *N* levels, it is typical to create *N* dummy variables to represent the information in the nominal variable. 
+
+- Each dummy variable represents membership to one of the levels in the nominal variable. 
+
+- These dummy variables can be used as features in predictive models.
+
+- In its simplest case, consider the variable Race in the Recidivism dataset with two levels: Black and White. We can create two dummy variables to represent the information in this variable.
+
+|        | Dummy Variable 1 | Dummy Variable 2 |
+|--------|:----------------:|:----------------:|
+| Black  |     1            |       0
+| White  |     0            |       1          |
+
+---
+- Variable Prison_Offense has five categories: Violent/Sex, Violent/Non-Sex, Property, Drug, and Other. 
+
+- We can create five dummy variables using the following coding scheme.
+<br>
+
+|                  | Dummy Variable 1 | Dummy Variable 2 | Dummy Variable 3 | Dummy Variable 4 | Dummy Variable 5 |
+|------------------|:----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
+| Violent/Sex      |     1            |       0          |     0            |     0            |     0            |
+| Violent/Non-Sex  |     0            |       1          |     0            |     0            |     0            |
+| Property         |     0            |     0            |     1            |     0            |     0            |
+| Drug             |     0            |     0            |     0            |     1            |     0            |
+| Other            |     0            |     0            |     0            |     0            |     1            |
+
+---
+
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)[1:10,]
+
+recidivism$race_black <- ifelse(recidivism$Race=='BLACK',1,0)
+recidivism$race_white <- ifelse(recidivism$Race=='WHITE',1,0)
+
+DT::datatable(data = recidivism[,c('Race','race_black','race_white')],
+              colnames = c('Race','Race_Black','Race_White'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             info = FALSE,
+                             paging = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1, 2, 3), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)[1:10,]
+
+recidivism$drug            <- ifelse(recidivism$Prison_Offense=='Drug',1,0)
+recidivism$property        <- ifelse(recidivism$Prison_Offense=='Property',1,0)
+recidivism$violent_sex     <- ifelse(recidivism$Prison_Offense=='Violent/Non-Sex',1,0)
+recidivism$violent_nonsex  <- ifelse(recidivism$Prison_Offense=='Violent/Sex',1,0)
+recidivism$other         <- ifelse(recidivism$Prison_Offense=='Other',1,0)
+
+
+DT::datatable(data = recidivism[,c('Prison_Offense','drug','property','violent_sex',
+                                   'violent_nonsex','other')],
+              colnames = c('Prison Offense','Drug','Property','Violent/Sex',
+                           'Violent/Nonsex','Other'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             info = FALSE,
+                             paging = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1, 2, 3,4,5,6), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+<br>
+
+<div id="infobox">
+
+<center style="color:black;"> <b>NOTE</b> </center>
+
+<br>
+
+When you fit a typical regression model without regularization using ordinary least-squares (OLS), a typical practice is to drop a dummy variable for one of the levels. So, for instance, if there are <i>N</i> levels for a nominal variable, you only have to create (<i>N-1</i>) dummy variables, as the <i>N</i><sup>th</sup> one has redundant information. The information regarding the excluded category is represented in the intercept term. It creates a problem when you put all <i>N</i> dummy variables into the model because the OLS procedure tries to invert a singular matrix, and you will likely get an error message. 
+
+<br>
+<br>
+
+On the other hand, this is not an issue when you fit a regularized regression model, which will be the case in this class. Therefore, you do not need to drop one of the dummy variables and can include all of them in the analysis. In fact, it may be beneficial to keep the dummy variables for all categories in the model when regularization is used in the regression. Otherwise, the model may produce different predictions depending on which category is excluded.
+
+</div>
+
+---
+
+## Label encoding
+
+- When the variable of interest is ordinal, and there is a hierarchy among the levels, another alternative is to assign a numerical value to each category.
+
+- Consider the variable **Age_At_Release** in the Recidivism dataset. It is coded as 7 different age intervals in the dataset: 18-22, 23-27, 28-32, 33-37, 38-42, 43-47, 48 or older. 
+
+|             | Encoding 1      | Encoding 2       |
+|-------------|:---------------:|:----------------:|
+| 18-22       |     20          |       1          |
+| 23-27       |     25          |       2          |
+| 28-32       |     30          |       3          |
+| 33-37       |     35          |       4          |
+| 38-42       |     40          |       5          |
+| 43-47       |     45          |       6          |
+| 48 or older |     60          |       7          |
+
+---
+
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)[1:10,]
+
+recidivism$age_at_release2 <- dplyr::recode(recidivism$Age_at_Release,
+                                            '18-22'=20,
+                                            '23-27'=25,
+                                            '28-32'=30,
+                                            '33-37'=35,
+                                            '38-42'=40,
+                                            '43-47'=45,
+                                            '48 or older'=60)
+
+recidivism$age_at_release3 <- dplyr::recode(recidivism$Age_at_Release,
+                                            '18-22'=1,
+                                            '23-27'=2,
+                                            '28-32'=3,
+                                            '33-37'=4,
+                                            '38-42'=5,
+                                            '43-47'=6,
+                                            '48 or older'=7)
+
+DT::datatable(data = recidivism[,c('Age_at_Release','age_at_release2','age_at_release3')],
+              colnames = c('Age_at_Release','Encoding 1','Encoding 2'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             info = FALSE,
+                             paging = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1, 2, 3), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+- Another example would be the variable **Education Level** in the Recidivism dataset. 
+
+- How would you encode this variable?
+
+|                        | Encoding 1 | Encoding 2      |
+|------------------------|:----------:|:---------------:|
+| Less than a HS diploma |            |                 |
+| HS diploma             |            |                 |
+| At least some college  |            |                 |
+
+---
+
+## Polynomial Contrasts
+
+- Another way of encoding an ordinal variable is to use polynomial contrasts. 
+
+- The polynomial contrasts may be helpful if one wants to explore whether or not there is a linear, quadratic, cubic, etc., relationship between the predictor variable and outcome variable.
+
+- If there are *N* levels, one can have polynomial terms up to the (*N-1*)<sup>th</sup> degree.
+
+- The polynomial terms are **orthonormal vectors**:
+  
+  - sum of the squares within each column is equal to 1
+  - the dot product of the vectors is equal to 0.
+
+---
+
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+
+ctr <- as.data.frame(round(poly(1:7,6),3))
+
+ctr$names <- names(table(recidivism$Age_at_Release))
+
+DT::datatable(data = ctr[,c(7,1:6)],
+              colnames = c('Age at Release','Linear Term','Quadratic Term','Cubic Term',
+                           '4th Degree Term','5th Degree Term','6th Degree Term'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             info = FALSE,
+                             paging = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1, 2, 3,4,5,6,7), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE,fig.height=8}
+
+ctr <- poly(1:7,6)
+
+linear <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,1]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,1]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Linear Term')+
+  scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+quad <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,2]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,2]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quadratic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+cubic <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,3]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,3]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Cubic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+fourth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,4]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,4]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quartic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+fifth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,5]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,5]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Quintic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+
+sixth <- ggplot()+
+  geom_point(aes(x=1:7,y=ctr[,6]),cex=3)+
+  geom_line(aes(x=1:7,y=ctr[,6]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Sextic Term')+
+    scale_x_continuous(breaks = 1:7,
+                     labels=c('1'='18-22',
+                              '2'='23-27',
+                              '3'='28-32',
+                              '4'='33-37',
+                              '5'='38-42',
+                              '6'='43-47',
+                              '7'='48 or older'))
+
+
+grid.arrange(linear,quad,cubic,fourth,fifth,sixth,nrow=3,ncol=2)
+```
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Processing Cyclic Variables
+
+---
+
+- There are sometimes variables that are cyclic by nature (e.g., months, days, hour)
+
+- Dummy variables or numerical encoding does not necessarily capture the information in these variables in the most meaningful way.
+
+- For cyclic variables, it may be more meaningful to creating two new variables using a sine and cosine transformation as the following:
+
+$$x_{1} = sin(\frac{2 \pi x}{max(x)})$$
+
+$$x_{2} = cos(\frac{2 \pi x}{max(x)})$$
+```{r,echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+d <- data.frame(days = c('Mon','Tue','Wed','Thu','Fri','Sat','Sun'),
+                x = 1:7)
+
+d$x1 <- round(sin((2*pi*d$x)/7),3)
+d$x2 <- round(cos((2*pi*d$x)/7),3)
+
+DT::datatable(data = d,
+              colnames = c('Day','x','term1','term2'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             paging=FALSE,
+                             info = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1, 2, 3,4), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+ggplot(data = d, aes(x=x1,y=x2))+
+  geom_point(cex=3)+
+  annotate("path",
+   x=cos(seq(0,2*pi,length.out=100)),
+   y=sin(seq(0,2*pi,length.out=100)))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  annotate("text", x = 0, y = 0.95, label = "Sun")+
+  annotate("text", x = 0.72, y = 0.6, label = "Mon")+
+  annotate("text", x = 0.9, y = -0.2, label = "Tue")+
+  annotate("text", x = 0.39, y = -0.85, label = "Wed")+
+  annotate("text", x = -0.39, y = -0.85, label = "Thu")+
+  annotate("text", x = -.9, y = -0.2, label = "Fri")+
+  annotate("text", x = -.72, y = 0.6, label = "Sat")
+  
+```
+
+---
+
+- Below is another example for the time of day
+
+.pull-left[
+.single[
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,comment = ''}
+
+d <- data.frame(hour = 1:24)
+
+d$x1 <- round(sin((2*pi*d$hour)/24),3)
+d$x2 <- round(cos((2*pi*d$hour)/24),3)
+
+d
+```
+]
+]
+
+.pull-right[
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=6,fig.height=6}
+
+ggplot(data = d, aes(x=x1,y=x2,label = 1:24))+
+  geom_point(cex=3)+
+  annotate("path",
+   x=cos(seq(0,2*pi,length.out=100)),
+   y=sin(seq(0,2*pi,length.out=100)))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  geom_text(nudge_y = c(rep(-0.05,6),rep(0.05,6),rep(0.05,6),rep(-0.05,6)), 
+            nudge_x = c(rep(-0.02,6),rep(-0.02,6),rep(0.02,6),rep(0.02,6)))
+  
+```
+]
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Processing Continuous Variables
+
+---
+
+## Centering and Scaling
+
+- Centering a variable is done by subtracting the variable’s mean from every value
+
+  $$X_{centered} = X - \bar{X}$$
+
+  Centering ensures that the mean of the centered variable equals zero. 
+  
+- Scaling a variable is dividing the value of each observation by the variable’s standard deviation. 
+  
+  $$X_{scaled} = \frac{X}{\sigma_{X}}$$
+  Scaling ensures that the standard deviation of the scaled variable equals 1. 
+  
+- When centering and scaling are both applied, it is called standardization.
+
+  $$z_{X} = \frac{X - \bar{X}}{\sigma_{X}}$$
+---
+
+- When we standardize a variable, we ensure that its mean is equal to zero and variance is equal to 1. 
+
+- Standardizing outcome and predictor variables may be critical and necessary for specific models (e.g., K-nearest neighbor, support vector machines, penalized regression), but it is not always necessary for other models (e.g., decision tree models).
+
+- Standardizing a variable only changes the first and second moments of a distribution (mean and variance) 
+
+- Standardizing a variable doesn’t change the third and fourth moments of a distribution (skewness and kurtosis).
+
+- Some people in the data science field use the term *normalization*, but what they actually mean is *standardization*.
+
+---
+
+## Box-Cox transformation
+
+- Variables with extreme skewness and kurtosis may deteriorate the model performance for certain types of models. 
+
+- It may sometimes be useful to transform a variable with extreme skewness and kurtosis such that its distribution approximates to a normal distribution.
+
+- Box-Cox transformation is a method to find an optimal parameter of λ to apply the following transformation:
+
+$$y^{(\lambda)}=
+\left\{\begin{matrix}
+\frac{y^{\lambda}-1}{\lambda} & , \lambda \neq 0 \\
+ & \\ 
+ln(y) & , \lambda = 0 
+\end{matrix}\right.$$
+---
+
+.pull-left[
+.single[
+.tiny[
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+require(bestNormalize)
+require(psych)
+
+set.seed(9272022)
+
+old <- rbeta(1000,1,1000)
+
+fit <- boxcox(old,standardize=FALSE)
+fit
+
+new <- predict(fit)
+ 
+describe(old)
+describe(new)
+
+```
+]
+]
+]
+
+.pull-right[
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=12}
+
+p1 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=old))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Original')
+
+p2 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=new))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Box-Cox Transformation')
+
+grid.arrange(p1,p2,nrow=1)
+
+```
+]
+
+---
+
+## Logit transformation
+
+- When a variable is a proportion bounded between 0 and 1, the logit transformation can be applied such that
+
+$$\pi^{*} = ln(\frac{\pi}{1-\pi}),$$
+
+.indent[ where &pi; represents a proportion.]
+
+- Particularly useful when your outcome variable is a proportion bounded between 0 and 1. 
+
+- When a linear model is used to model an outcome bounded between 0 and 1, the model predictions may exceed the reasonable range of values (predictions equal to less than zero or greater than one). 
+
+- Logit transformation scales variables such that the range of values becomes $-\infty$ and $\infty$ on the logit scale. 
+
+- One can build a model to predict $\pi^*$ instead of proportion ($\pi$), and then obtain predicted proportion after a simple reverse operation $$\hat{\pi} = \frac{e^{\hat{\pi^*}}}{1+e^{\hat{\pi^*}}}$$
+
+---
+
+Below is an example of logit transformation for a randomly generated variable.
+
+.single[
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+old <- rbeta(1000,1,1000)
+
+new <- log(old/(1-old))
+
+```
+]
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=12}
+p1 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=old))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Original')
+
+p2 <- ggplot()+
+  geom_histogram(col='black',fill='white',aes(x=new))+
+  theme_bw()+
+  xlab('')+
+  ylab('')+
+  ggtitle('Logit Transformation')
+
+grid.arrange(p1,p2,nrow=1)
+
+```
+
+---
+
+## Polynomial basis expansions
+
+- Basis expansions are useful to address nonlinearity between a continuous predictor variable and outcome variable.
+
+- We can create a set of feature variables using a nonlinear function of a variable *x*, $\phi(x)$. 
+
+- For continuous predictors, the most commonly used expansions are polynomial basis expansions. 
+
+- The $n^{th}$ degree polynomial basis expansion can be represented by
+
+$$\phi(x) = \beta_1x + \beta_2x^2 + \beta_3x^3 + ... + \beta_nx^n$$
+- For continuous predictors, there is no limit for the degree of polynomial. 
+
+- The higher the degree of polynomial, the more flexible the model becomes, and there is a higher chance of overfitting. 
+
+- Typically, polynomial terms up to the 3rd or 4th degree are more than enough.
+
+- One simply replaces the original variable *x* with the new variables obtained from $\phi(x)$. 
+
+---
+
+Suppose we have 100 observation from a random normal variable *x*. The third degree polynomial basis expansion (cubic basis expansion) can be found using the `poly` function as the following.
+
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+set.seed(654)
+
+x <- rnorm(100,0,1)
+
+head(x)
+
+head(poly(x,degree=3))
+
+```
+]]
+
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE, fig.width=24}
+
+x1 <- poly(x,degree=3)
+
+linear <- ggplot()+
+  geom_point(aes(x=x,y=x1[,1]),cex=1)+
+  geom_line(aes(x=x,y=x1[,1]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Linear Term')+
+  ggtitle('Linear Term')
+
+quad <- ggplot()+
+  geom_point(aes(x=x,y=x1[,2]),cex=1)+
+  geom_line(aes(x=x,y=x1[,2]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Quadratic Term')+
+  ggtitle('Quadratic Term')
+
+cubic <- ggplot()+
+  geom_point(aes(x=x,y=x1[,3]),cex=1)+
+  geom_line(aes(x=x,y=x1[,3]),lty=2)+
+  ylim(c(-1,1))+
+  theme_bw()+
+  xlab('X')+
+  ylab('Cubic Term')+
+  ggtitle('Cubic Term')
+
+grid.arrange(linear,quad,cubic,nrow=1,ncol=3)
+```
+
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Handling Missing Data
+
+---
+
+- For certain types of models such as gradient boosting, missing data is not a problem, and one can leave them as is without any processing. 
+
+- Some models such as regularized regression models require complete data and one have to deal with missing data before modeling data. 
+
+- Handling missing data
+
+  - Creating an indicator variable for missingness
+  
+  - Imputation
+  
+---
+
+## Creating Indicator Variable for Missingness
+
+- Identify the variables with missing data, and then create a binary indicator variable for every variable to indicate missingness (0: not missing, 1: missing). 
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+recidivism2 <- recidivism[,c('Gang_Affiliated','Avg_Days_per_DrugTest')]
+
+loc1 <- sample(which(is.na(recidivism2[,1])),3)
+loc2 <- sample(which(is.na(recidivism2[,2])),3)
+loc3 <- sample(1:nrow(recidivism),4)
+
+temp <- recidivism2[c(loc1,loc2,loc3),]
+
+temp$gang_na <- ifelse(is.na(temp[,1]),1,0)
+temp$drug_na <- ifelse(is.na(temp[,2]),1,0)
+
+
+DT::datatable(data = temp,
+              colnames = c('Gang_Affiliated','Avg_Days_per_DrugTest','Gang_na','Drug_na'),
+              rownames = FALSE,
+              filter="none",
+              options = list(columnDefs = list(list(className = 'dt-center', 
+                                                    targets = '_all')),
+                             info = FALSE,
+                             paging = FALSE,
+                             searching = FALSE)) %>%
+    formatStyle(columns = c(1,2,3,4), fontSize = '75%',textAlign = 'center')
+
+```
+
+---
+
+- Missingness indicator variables don't solve the missing data problem because we may still have to impute the missing values for certain types of models.
+
+- An indicator variable about whether or not a variable is missing may sometimes provide some information in predicting the outcome when the missingness is not random.
+
+- If there is a systematic relationship between outcome and whether or not values are missing for a variable, missingness indicators may provide vital information.
+
+- This indicator variable would be meaningless for variables that don’t have any missing value.
+
+---
+
+## Imputation
+
+- A common approach to missing data 
+
+- Below is a very naive example of how it would work if we have an outcome variable (Y) and three predictors (X1, X2, X3). 
+
+.single[
+
+| Imputation Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|        X1        |    X2,X3   |
+|        X2        |    X1,X3   |
+|        X3        |    X1,X2   |
+
+| Prediction Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|         Y        | X1, X2, X3 |
+
+]
+
+- Each predictor becomes an outcome of interest in imputation, and then the remaining predictors are used to build an imputation model to predict the missing values. after missing values are estimated and replaced for each predictor using an imputation model, primary outcome of interest is predicted using the imputed X1, X2, and X3. 
+
+---
+
+- An imputation model can be as simple as an intercept-only model (mean imputation). 
+  - For numeric variables, missing values can be replaced with a simple mean, median, or mode of the observed data. 
+    
+  - For categorical variables, missing values can be replaced with a value randomly drawn from a binomial or multinomial distribution with the observed probabilities.
+
+- An imputation model can also be as complex as desired using a regularized regression model, a decision tree model, or a K-nearest neighbors model. 
+
+- The main idea of a more complex prediction model is to find other observations similar to observations with a missing value in terms of other predictors and use data from these similar observations to predict the missing values. 
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# the `recipes` package
+
+---
+
+- Given a dataset, we may need to apply several processes for different types of variables.
+
+- One can write an R script to implement all these procedures manually, but it is likely a tedious job.
+
+- The `recipes` package helps us process data more efficiently and in an organized way.
+
+- The `recipes` package makes it easier to replicate the same data processing for future datasets as long as data comes in the same format (e.g., same column names, same variable types).
+
+- The recipes demo notebook
+
+.indent[
+https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo/notebook
+]
+
+```{r, echo=FALSE,eval=FALSE,message=FALSE, warning=FALSE}
+
+recidivism <- read.csv(here('data/recidivism_y1 removed and recoded.csv'),header=TRUE)
+recidivism2 <- recidivism[,c('ID','Gang_Affiliated','Education_Level','Dependents',
+'Avg_Days_per_DrugTest','DrugTests_Cocaine_Positive','Recidivism_Arrest_Year2')]
+
+loc1 <- sample(which(is.na(recidivism2[,2])),2)
+loc2 <- sample(which(is.na(recidivism2[,5])),2)
+loc3 <- sample(1:nrow(recidivism),1)
+
+temp <- recidivism2[c(loc1,loc2,loc3),]
+
+write.csv(temp,
+          './data/new_data.csv',
+          row.names = FALSE)
+```
+
+---
+
+- Note that the order of procedures applied to variables is important. 
+
+- For instance: 
+
+  - there would be no meaning of using step_indicate_na() after using `step_impute_bag()`.Why?
+  
+  - there will be a problem when you first standardize variables using `step_normalize()` and then apply a Box-Cox transformation. Why?
+
+- For a complete list of `step_` functions available in the `recipes` package, check this page.
+
+.indent[
+https://recipes.tidymodels.org/reference/index.html
+]
+
+---
+
+Make sure you review the following notebook to see how to process the various types of variables in the NIJ's Recidivism dataset using the `recipes` package.
+
+[https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i](https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Processing Text Data with pre-trained NLP models
+
+---
+
+## Natural Language Processing (NLP)
+
+- NLP = Linguistics + Computer Science + Statistics 
+
+- The ultimate goal is to develop algorithms and models to understand and use human language in a way we understand and use it. 
+
+- The goal is not only to understand individual words but also the context in which these words are being used
+
+- The recent advancements in the field of NLP revolutionized the language models
+and play a critical role in our daily lives 
+
+  - Did Gmail suggested you how to complete a sentence?
+  
+  - Did Outlook suggested a greeting message when you start drafting an email?
+  
+  - Have you ever interacted with a chat bot?
+  
+---
+
+
+```{r, echo=F,eval=TRUE,message=FALSE, warning=FALSE}
+
+require(lubridate)
+
+# source: https://benalexkeen.com/creating-a-timeline-graphic-using-r-and-ggplot2/
+  
+df <- read.csv(here('data/transformers.csv'))
+df$date <- with(df, ymd(sprintf('%04d%02d%02d', year, month, 1)))
+df <- df[with(df, order(date)), ]
+
+positions <- c(0.05, -0.05, 0.075, -0.075, 0.1, -0.1)
+directions <- c(1, -1)
+
+line_pos <- data.frame(
+    "date"=unique(df$date),
+    "position"=rep(positions, length.out=length(unique(df$date))),
+    "direction"=rep(directions, length.out=length(unique(df$date)))
+)
+
+df <- merge(x=df, y=line_pos, by="date", all = TRUE)
+
+text_offset <- 0.01
+
+df$month_count <- ave(df$date==df$date, df$date, FUN=cumsum)
+df$text_position <- (df$month_count * text_offset * df$direction) + df$position
+
+month_buffer <- 2
+
+month_date_range <- seq(min(df$date) - months(month_buffer), max(df$date) + months(month_buffer), by='month')
+month_format <- format(month_date_range, '%b')
+month_df <- data.frame(month_date_range, month_format)
+
+year_date_range <- seq(min(df$date) - months(month_buffer), max(df$date) + months(month_buffer), by='year')
+year_date_range <- as.Date(
+    intersect(
+        ceiling_date(year_date_range, unit="year"),
+        floor_date(year_date_range, unit="year")
+    ),  origin = "1970-01-01"
+)
+year_format <- format(year_date_range, '%Y')
+year_df <- data.frame(year_date_range, year_format)
+
+#### PLOT ####
+
+ggplot(df,aes(x=date,y=0,label=model)) +
+  theme_classic() +
+  geom_hline(yintercept=0, color = "black", size=0.3)+
+  geom_segment(data=df[df$month_count == 1,], aes(y=position,yend=0,xend=date), color='black', size=0.2)+
+  geom_point(aes(y=0), size=1)+
+  theme(axis.line.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x =element_blank(),
+        axis.ticks.x =element_blank(),
+        axis.line.x =element_blank(),
+        legend.position = "bottom")+
+  geom_text(data=month_df, 
+            aes(x=month_date_range,y=-0.008,label=month_format),size=3.5,vjust=0, color='black', angle=90)+
+  geom_text(data=year_df, aes(x=year_date_range,y=-0.02,label=year_format, fontface="bold"),size=5, color='black')+
+  geom_text(aes(y=text_position,label=model),size=5)
+```
+
+---
+
+- Below is a brief list of some of these NLP models and some information, including links to original papers.
+
+| Model                                                                                      | Developer  | Year |# of parameters | Estimated Cost |
+|--------------------------------------------------------------------------------------------|:----------:|:----:|:--------------:|:--------------:|
+| [Bert-Large](https://arxiv.org/pdf/1810.04805.pdf)                                         | Google AI  | 2018 | 336 M          | [$ 7K](https://syncedreview.com/2019/06/27/the-staggering-cost-of-training-sota-ai-models/) |     
+| [Roberta-Large](https://arxiv.org/pdf/1907.11692.pdf)                                      | Facebook AI| 2019 | 335 M          | ? |
+| [GPT2-XL](https://d4mucfpksywv.cloudfront.net/better-language-models/language-models.pdf)  | Open AI    | 2019 | 1.5 B          | [$ 50K](https://medium.com/@vanya_cohen/opengpt-2-we-replicated-gpt-2-because-you-can-too-45e34e6d36dc)|
+| [T5](https://arxiv.org/pdf/1910.10683.pdf)                                                 | Google AI  | 2020 |  11 B          | [$ 1.3 M](https://arxiv.org/pdf/2004.08900.pdf)|
+| [GPT3](https://arxiv.org/pdf/2005.14165.pdf)                                               | OpenAI     | 2020 | 175 B          | [$ 12.0 M](https://venturebeat.com/2020/06/01/ai-machine-learning-openai-gpt-3-size-isnt-everything/)|
+
+- These models are expensive to train and use the enormous amounts of data available. 
+
+- For instance, 
+
+  - Bert/Roberta was trained using the entire Wikipedia and a Book Corpus (a total of ~ 4.7 billion words), 
+  
+  - GPT-2 was trained using 8 million web pages, and 
+  
+  - GPT3 was trained on 45 TB of data from the internet and books.
+  
+---
+
+- All these models except GPT3 are open source. 
+
+- They can be immediately utilized using open libraries (typically Python)
+
+- Hugging Face is a platform people host the pre-trained AI/ML models, more like CRAN hosting R packages.
+
+  <center> [https://huggingface.co/models](https://huggingface.co/models) </center>
+
+- The tasks that can be achieved with these models are 
+
+.pull-left[
+
+      - text generation 
+
+  - text classification
+
+  - text summarization
+
+  - question answering
+
+  - sentence similarity
+]
+
+.pull-right[
+
+      - translation
+
+  - speech recognition
+
+  - audio classification
+
+  - image classification 
+
+  - object detection
+]
+
+---
+
+## The `reticulate` package
+
+The reticulate package provides an interface to call and run Python from R.
+
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+library(reticulate)
+
+py_config()
+
+```    
+]
+
+
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+conda_list()
+
+```    
+]
+
+
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+use_condaenv('r-reticulate')
+
+# conda_install(envname  = 'r-reticulate',
+#              packages = 'sentence_transformers',
+#               pip      = TRUE)
+
+st <- import('sentence_transformers')
+
+st
+```    
+]
+]
+
+---
+
+## Sample model: RoBERTa
+
+- Next, we will pick a pre-trained language model to play with. 
+
+- It can be any model available on Hugging Face. 
+
+- You have to find the associated Hugging Face page for that particular model and use the same tag used for that model. 
+
+- For instance, suppose we want to use the RoBERTa model. The associated Huggingface webpage for this model is [https://huggingface.co/roberta-base](https://huggingface.co/roberta-base)
+
+- Notice that the tag for this model is `roberta-base`. 
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+model.name <- 'roberta-base'
+
+roberta       <- st$models$Transformer(model.name)
+pooling_model <- st$models$Pooling(roberta$get_word_embedding_dimension())
+model         <- st$SentenceTransformer(modules = list(roberta,pooling_model))
+model
+```    
+]
+]
+]
+
+- When you run this code the first time, it will install all the relevant model files [https://huggingface.co/roberta-base/tree/main](https://huggingface.co/roberta-base/tree/main) to a local folder on your machine. 
+
+---
+
+- Each model has a limit for the number of characters they can process. 
+
+- For instance, RoBERTa can handle a text sequence with a maximum number of 512 characters. 
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+model$get_max_seq_length()
+```    
+]
+]
+]
+
+- If we submit any text with more than 512 characters, it will only process the first 512 characters.
+
+- Another essential characteristic is the length of the output vector when a language model returns numerical embeddings. 
+
+- The following code reveals that RoBERTa returns a vector with a length of 768.
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+model$get_sentence_embedding_dimension()
+```    
+]
+]
+]
+
+- RoBERTa can take any text sequence up to 512 characters as input and then return a numerical vector with a length of 768 that represent this text sequence. This process is also called **encoding**.
+
+---
+
+- For instance, we can get the embeddings for a single word ‘sofa’. 
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+model$encode('sofa')
+```    
+]
+]
+]
+
+- Similarly, we can get the vector of numerical embeddings for a whole sentence.
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+model$encode('I like to drink Turkish coffee')
+```    
+]
+]
+]
+
+---
+
+- The input can be many sentences. 
+
+- For instance, if I submit a vector of three sentences as an input, the model returns a 3 x 768 matrix containng sentence embeddings. 
+
+Each row contains the embeddings for the corresponding sentence.
+
+.indent[
+.single[
+.tiny[
+```{r, echo=T,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+my.sentences <- c('The weather today is great.',
+                  'I live in Eugene.',
+                  'I am a graduate student.')
+
+embeddings <- model$encode(my.sentences)
+
+dim(embeddings)
+```    
+]
+]
+]
+
+---
+
+Make sure you review the following notebook to see how to process 2834 reading excerpts in the CommonLit Readability dataset and obtain a 2834 x 768 matrix of numerical embeddings using the [AllenAI Longformer model](https://huggingface.co/allenai/longformer-base-4096). 
+
+[https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii](https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii)

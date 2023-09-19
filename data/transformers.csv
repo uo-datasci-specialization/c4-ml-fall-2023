@@ -1,0 +1,15 @@
+model,year,month,
+GPT,2018,6,
+BERT,2018,10,
+GPT-2,2019,2,https://paperswithcode.com/paper/language-models-are-unsupervised-multitask
+DistilBert,2019,10,https://paperswithcode.com/method/distillbert
+BART,2019,10,https://paperswithcode.com/method/bart
+T5,2019,10,https://paperswithcode.com/method/t5
+GPT-3,2020,5,https://paperswithcode.com/method/gpt-3
+XLM,2019,1,https://paperswithcode.com/paper/cross-lingual-language-model-pretraining
+XLNet,2019,6,https://paperswithcode.com/paper/xlnet-generalized-autoregressive-pretraining
+RoBERTa,2019,7,https://paperswithcode.com/paper/roberta-a-robustly-optimized-bert-pretraining
+ALBERT,2019,10,https://paperswithcode.com/paper/albert-a-lite-bert-for-self-supervised
+ELECTRA,2020,3,https://paperswithcode.com/paper/electra-pre-training-text-encoders-as-1
+DeBERTa,2020,7,https://paperswithcode.com/paper/deberta-decoding-enhanced-bert-with
+Longformer,2020,5,https://paperswithcode.com/paper/longformer-the-long-document-transformer

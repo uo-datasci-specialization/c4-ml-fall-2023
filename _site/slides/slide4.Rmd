@@ -1,0 +1,840 @@
+---
+title: "Regularized (Penalized) Linear Regression"
+subtitle: ""
+author: "Cengiz Zopluoglu"
+institute: "College of Education, University of Oregon"
+date: "Oct 31, 2022 <br> Eugene, OR"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
+    #self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+<style>
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+</style>
+
+```{R, setup, include = F}
+library(pacman)
+p_load(here, tidyverse, ggplot2, xaringan, knitr, kableExtra, 
+       xaringanthemer,DT,dplyr,gridExtra, plotly)
+
+#i_am("B:/UO Teaching/EDUC614/Winter22/Slide Template/template.rmd")
+
+red_pink <- "#e64173"
+turquoise = "#20B2AA"
+orange = "#FFA500"
+red = "#fb6107"
+blue = "#3b3b9a"
+green = "#8bb174"
+grey_light = "grey70"
+grey_mid = "grey50"
+grey_dark = "grey20"
+purple = "#6A5ACD"
+slate = "#314f4f"
+
+extra_css <- list(
+  ".red"   = list(color = "red"),
+  ".blue"  =list(color = "blue"),
+  ".red-pink" = list(color= "red_pink"),
+  ".grey-light" = list(color= "grey_light"),
+  ".purple" = list(color = "purple"),
+  ".small" = list("font-size" = "90%"))
+
+write_extra_css(css = extra_css, outfile = "my_custom.css")
+
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 6.75,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+options(knitr.table.format = "html")
+
+options(width = 120)
+
+options(max.print = 100)
+
+require(here)
+```
+
+### Today's Goals:
+
+- A conceptual introduction to Regularized Regression
+  
+  - Ridge Regression
+  
+  - Lasso Regression
+  
+  - Elastic Net
+  
+- Implementation with the `glmnet` package 
+
+- Building Regularized Regression models with the `caret` package
+
+---
+
+### What is regularization?
+
+- Regularization is a general strategy to incorporate additional penalty terms into the model fitting process 
+
+- It is implemented in a various of other algorithms, not just regression. 
+
+- The idea behind the regularization is to constrain the size of model coefficients to reduce their sampling variation and, hence, reduce the variance of model predictions. 
+
+- The reduction in the variance comes with an expense of bias in model predictions.
+
+- These constraints are typically incorporated into the loss function to be optimized.
+
+  - bias - variance tradeoff
+
+- There are two commonly used regularization strategies: 
+
+  - ridge penalty 
+  
+  - lasso penalty
+  
+  - elastic net (a mix of ridge and lasso penalty)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Ridge Regression
+---
+
+### Ridge Penalty
+
+- The loss function for the unregularized linear regression: the sum of squared residuals across all observations. 
+
+  $$\sum_{i=1}^{N}\epsilon_{(i)}^2$$
+
+- For ridge regression, we add a penalty term to this loss function, which is a function of all the regression coefficients in the model. 
+
+  $$Penalty = \lambda \sum_{i=1}^{P}\beta_p^2,$$
+
+  - $\lambda$ is a parameter that penalizes the regression coefficients when they get larger. 
+
+- Loss function to optimize for the ridge regression:
+
+$$Loss = \sum_{i=1}^{N}\epsilon_{(i)}^2 + \lambda \sum_{p=1}^{P}\beta_p^2,$$
+
+---
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+readability_sub <- read.csv(here('data/readability_sub.csv'),header=TRUE)
+
+```
+
+Let’s consider the same example from the previous class. Suppose that we would like to predict the target readability score for a given text from the Feature 220.
+
+$$Y = \beta_0  + \beta_1X + \epsilon$$
+
+Assume the set of coefficients are { $\beta_0,\beta_1$ } = {-1.5,2}, so my model is
+$$Y = -1.5  + 2X + \epsilon.$$
+
+Then, the value of the loss function when $\lambda=0.2$ would be equal to 19.02.
+
+.pull-left[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+d <-  readability_sub[,c('V220','target')]
+
+b0 = -1.5
+b1 = 2
+
+d$predicted <- b0 + b1*d$V220
+d$error     <- d$target - d$predicted
+
+d
+```
+]]]
+
+.pull-right[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+lambda = 0.2
+
+SSR     <- sum((d$error)^2)
+penalty <- lambda*(b0^2 + b1^2)
+loss    <- SSR + penalty
+
+SSR
+
+penalty
+
+loss
+```
+]]]
+
+---
+
+- Note that when $\lambda$ is equal to zero, the loss function is identical to SSR; therefore, it becomes a linear regression with no regularization. 
+
+- As the value of $\lambda$ increases, the degree of penalty linearly increases. 
+
+- The $\lambda$ can technically take any positive value between 0 and $\infty$.
+
+- A visual representation of the effect of penalty terms on the loss function and regression coefficients
+
+![](ridge.gif)
+---
+
+### Model Estimation
+
+The matrix solution we learned before for regression without regularization can also be applied to estimate the coefficients from ridge regression given a specific $\lambda$ value. 
+
+$$\hat{\boldsymbol{\beta}} = (\mathbf{X^T}\mathbf{X} + \lambda \mathbf{I})^{-1}\mathbf{X^T}\mathbf{Y}$$
+  - $\mathbf{Y}$ is an N x 1 column vector of observed values for the outcome variable, 
+  - $\mathbf{X}$ is an N x (P+1) **design matrix** for the set of predictor variables, including an intercept term,
+
+  - $\boldsymbol{\beta}$ is an (P+1) x 1 column vector of regression coefficients, 
+
+  - $\mathbf{I}$ is a (P+1) x (P+1) identity matrix,
+
+  - and $\lambda$ is a positive real-valued number,
+  
+---
+
+Suppose we want to predict the readability score using the two predictors, Feature 220 ($X_1$) and Feature 166 ($X_2$). Our model will be
+
+$$Y_{(i)} = \beta_0  + \beta_1X_{1(i)} + \beta_2X_{2(i)} + \epsilon_{(i)}.$$
+
+If we estimate the ridge regression coefficients by using $\lambda=.5$, the estimates would be 
+
+{ $\beta_0,\beta_1,\beta_2$ } = {-.915, 1.169, -0.221}.
+
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(1,readability_sub$V220,readability_sub$V166))
+
+
+lambda <- 0.5
+
+beta <- solve(t(X)%*%X + lambda*diag(ncol(X)))%*%t(X)%*%Y
+
+beta
+```
+]]
+
+---
+
+If we change the value of λ to 2, we will get different estimates for the regression coefficients.
+
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(1,readability_sub$V220,readability_sub$V166))
+
+
+lambda <- 2
+
+beta <- solve(t(X)%*%X + lambda*diag(ncol(X)))%*%t(X)%*%Y
+
+beta
+```
+]]
+
+---
+
+Suppose you manipulate the value of λ from 0 to 100 with increments of .1 and calculate the regression coefficients for different levels of $\lambda$ values. 
+
+```{r, echo=FALSE,eval=TRUE,fig.width=8,fig.height=5}
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(1,readability_sub$V220,readability_sub$V166))
+
+lambda <- seq(0,100,.1)
+
+beta     <- data.frame(matrix(nrow=length(lambda),ncol=4))
+beta[,1] <- lambda
+
+for(i in 1:length(lambda)){
+  beta[i,2:4] <- t(solve(t(X)%*%X + lambda[i]*diag(ncol(X)))%*%t(X)%*%Y)
+}
+
+ggplot(data = beta)+
+  geom_line(aes(x=X1,y=X2),lty=2)+
+  geom_line(aes(x=X1,y=X3),lty=2)+
+  geom_line(aes(x=X1,y=X4),lty=2)+
+  xlab(expression(lambda))+
+  ylab('')+
+  theme_bw()+
+  annotate(geom='text',x=1.5,y=1.5,label=expression(beta[1]))+
+  annotate(geom='text',x=3,y=-.17,label=expression(beta[2]))+
+  annotate(geom='text',x=2,y=-.9,label=expression(beta[0]))
+  
+```
+
+Note that the regression coefficients will shrink toward zero but will never be exactly equal to zero in ridge regression.
+
+---
+
+### Standardized variables
+
+A critical complication arises in ridge regression when you have more than one predictor.
+
+  - Different scales of different variables will affect the magnitude of the unstandardized regression coefficients.
+  
+  - A regression coefficient of a predictor ranging from 0 to 100 will be very different from a regression coefficient of a predictor from 0 to 1. 
+  
+  - If we work with the unstandardized variables, the ridge penalty will be amplified for the coefficients of those variables with a more extensive range of values.
+
+Therefore, it is critical that we standardize variables before we use ridge regression.
+
+---
+
+- When we standardize the variables, the mean of all variables becomes zero. 
+
+- Therefore, the intercept estimate for any regression model with standardized variables is guaranteed to be zero. 
+
+- The design matrix (**X**) doesn’t have to have a column of ones anymore because it is unnecessary (it would be a column of zeros if we had one).
+
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(readability_sub$V220,readability_sub$V166))
+```
+]]
+
+
+.pull-left[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+# Standardized Y
+
+Y <- scale(Y)
+  
+Y
+```
+]]]
+
+.pull-right[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+# Standardized X
+
+X <- scale(X)
+  
+X
+```
+]]]
+
+---
+
+The regression model's coefficients with standardized variables when there is no ridge penalty.
+
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+lambda <- 0
+
+beta.s <- solve(t(X)%*%X + lambda*diag(ncol(X)))%*%t(X)%*%Y
+
+beta.s 
+```
+]]
+
+The regression coefficients when the ridge penalty is increased to 0.5. 
+
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+
+
+lambda <- 0.5
+
+beta.s <- solve(t(X)%*%X + lambda*diag(ncol(X)))%*%t(X)%*%Y
+
+beta.s 
+```
+]]
+
+---
+
+Change in **standardized regression coefficients** when we manipulate the value of $\lambda$ from 0 to 100 with increments of .1.
+
+```{r, echo=FALSE,eval=TRUE,fig.width=8,fig.height=5}
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(readability_sub$V220,readability_sub$V166))
+
+Y <- scale(Y)
+X <- scale(X)
+
+lambda <- seq(0,100,.1)
+
+beta     <- data.frame(matrix(nrow=length(lambda),ncol=3))
+beta[,1] <- lambda
+
+for(i in 1:length(lambda)){
+  beta[i,2:3] <- t(solve(t(X)%*%X + lambda[i]*diag(ncol(X)))%*%t(X)%*%Y)
+}
+
+ggplot(data = beta)+
+  geom_line(aes(x=X1,y=X2),lty=2)+
+  geom_line(aes(x=X1,y=X3),lty=2)+
+  xlab(expression(lambda))+
+  ylab('')+
+  theme_bw()+
+  geom_hline(yintercept=0,lty=2) + 
+  annotate(geom='text',x=3,y=.4,label=expression(beta[1]))+
+  annotate(geom='text',x=2,y=-.075,label=expression(beta[2]))
+  
+```
+
+---
+
+### Ridge regression with the `glmnet` package
+
+Similar to the `lm()` function, we can use the `glmnet()` function from the `glmnet` package to run a regression model with ridge penalty. 
+
+There are many arguments for the glmnet() function. For now, the arguments we need to know are
+
+- `x`: an N  x P input matrix, where N is the number of observations and P is the number of predictors
+
+- `y`: an N x 1 input matrix for the outcome variable
+
+- `alpha`: a mixing constant for lasso and ridge penalty. When it is 0, the ridge regression is conducted.
+
+- `lambda`: penalty term
+
+- `intercept`: set FALSE to avoid intercept for standardized variables
+
+---
+
+Regression with no penalty (traditional OLS regression)
+
+  - `alpha = 0` 
+  
+  - `lambda = 0`.
+
+.single[
+.tiny[
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+require(glmnet)
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(readability_sub$V220,readability_sub$V166))
+Y <- scale(Y)
+X <- scale(X)
+
+mod <- glmnet(x        = X,
+              y        = Y,
+              family   = 'gaussian',
+              alpha    = 0,
+              lambda   = 0,
+              intercept= FALSE)
+
+
+coef(mod)
+
+```
+
+]]
+
+---
+
+Increase the penalty term to 0.5.
+
+  - `alpha = 0` 
+  
+  - `lambda = 0.5`.
+
+.single[
+.tiny[
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+require(glmnet)
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(readability_sub$V220,readability_sub$V166))
+Y <- scale(Y)
+X <- scale(X)
+
+mod <- glmnet(x        = X,
+              y        = Y,
+              family   = 'gaussian',
+              alpha    = 0,
+              lambda   = 0.5,
+              intercept= FALSE)
+
+
+coef(mod)
+
+```
+
+]]
+
+---
+
+In Slide 14, when we estimate the ridge regression coefficients with $\lambda=0.5$ using matrix solution, we got different numbers than whan the `glmnet()` function reports.
+
+In the `glmnet()` function, it appears that the penalty term for the ridge regression is specified as 
+
+$$\lambda N \sum_{i=1}^{P}\beta_p^2.$$
+
+For identical results, we should use $\lambda = 0.5/20$ in the `glmnet()` package.
+
+.single[
+.tiny2[
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,comment=''}
+
+mod <- glmnet(x        = X,
+              y        = Y,
+              family   = 'gaussian',
+              alpha    = 0,
+              lambda   = 0.5/20,
+              intercept= FALSE)
+
+
+coef(mod)
+
+```
+
+]]
+
+Note that these numbers are still slightly different. 
+
+The difference is due to the numerical approximation glmnet is using when optimizing the loss function. glmnet doesn’t use the closed-form matrix solution for ridge regression. This is a good thing because there is not always a closed form solution for different types of regularization approaches (e.g., lasso). Therefore, the computational approximation in glmnet is very needed moving forward.
+
+---
+
+### Tuning the Hyperparameter $\lambda$
+
+In the context of machine learning, the parameters in a model can be classified into two types: parameters and hyperparameters. 
+
+  - The **parameters** are typically estimated from data and not set by users. In the context of ridge regression, regression coefficients, {$\beta_0,\beta_1,...,\beta_P$}, are parameters to be estimated from data. 
+  
+  - The **hyperparameters** are not estimable because there are no first-order or second-order derivatives for these hyperparameters. Therefore, they must be set by the users. In the context of ridge regression, the penalty term, {$\lambda$}, is a hyperparameter.
+
+
+The process of deciding what value to use for a hyperparameter is called **Tuning**. 
+
+It is usually a trial-error process. You try many different hyperparameter values and check how well the model performs based on specific criteria (e.g., MAE, MSE, RMSE) using k-fold cross-validation. 
+
+Then, you pick the value of a hyperparameter that provides the best predictive performance on cross-validation.
+
+---
+
+### Using Ridge Regression to Predict Readability Scores
+
+Please review the following notebook for applying Ridge Regresison to predict readability scores from 768 features using the whole dataset.
+
+[Predicting Readability Scores using the Ridge Regression](https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Lasso Regression
+---
+
+### Lasso Penalty
+
+Lasso regression is similar to the Ridge regression but applies a different penalty term. 
+
+$$ Penalty = \lambda \sum_{i=1}^{P} |\beta_p|,$$
+
+  - $\lambda$ is the penalty constant,
+  
+  - $|\beta_p|$ is the absolute value of the regression coefficient for the $p^{th}$ parameter. 
+
+The loss function for the lasso regression to optimize:
+
+$$Loss = \sum_{i=1}^{N}\epsilon_{(i)}^2 + \lambda \sum_{i=1}^{P}|\beta_p|$$
+
+---
+
+Let's consider the same example where we fit a simple linear regression model: the readability score is the outcome ($Y$) and Feature 229 is the predictor($X$). 
+
+$$Y = \beta_0  + \beta_1X + \epsilon,$$
+
+Assume the set of coefficients are { $\beta_0,\beta_1$ } = {-1.5,2}, so my model is
+
+$$Y = -1.5  + 2X + \epsilon.$$
+Then, the value of the loss function when $\lambda=0.2$ would be equal to 18.467.
+
+.pull-left[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+d <-  readability_sub[,c('V220','target')]
+
+b0 = -1.5
+b1 = 2
+
+d$predicted <- b0 + b1*d$V220
+d$error     <- d$target - d$predicted
+
+d
+```
+]]]
+
+.pull-right[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,comment=''}
+lambda = 0.2
+
+SSR     <- sum((d$error)^2)
+penalty <- lambda*(abs(b0) + abs(b1))
+loss    <- SSR + penalty
+
+SSR
+
+penalty
+
+loss
+```
+]]]
+
+---
+
+Below is a demonstration of what happens to the loss function and the regression coefficients for increasing levels of loss penalty (λ) for Lasso regression.
+
+![](lasso.gif)
+
+Note that the regression coefficients become equal to 0 at some point (this was not the case for ridge regression).
+
+---
+
+### Model Estimation via `glmnet()`
+
+- There is no closed-form solution for lasso regression due to the absolute value terms in the loss function. 
+
+- The only way to estimate the coefficients of the lasso regression is to use numerical techniques and obtain computational approximations. 
+
+- Similar to ridge regression, glmnet is an engine we can use to estimate the coefficients of the lasso regression.
+
+- The arguments are identical. The only difference is that we fix the `alpha=` argument to 1 for lasso regression.
+
+.indent[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,message=FALSE,warning=FALSE,comment=''}
+
+Y <-  as.matrix(readability_sub$target)
+X <-  as.matrix(cbind(readability_sub$V220,readability_sub$V166))
+Y <- scale(Y)
+X <- scale(X)
+
+mod <- glmnet(x = X,
+              y = Y,
+              family = 'gaussian',
+              alpha = 1,
+              lambda = 0.2,
+              intercept=FALSE)
+
+
+coef(mod)
+
+```
+
+]]]
+
+---
+
+- The `.` symbol for the coefficient of the second predictor indicates that it is equal to zero. 
+
+- While the regression coefficients in the **ridge regression** shrink to zero, they do not necessarily end up being exactly equal to zero. 
+
+- In contrast, **lasso regression** may yield a value of zero for some coefficients in the model. 
+
+- For this reason, lasso regression may be used as a variable selection algorithm. The variables with coefficients equal to zero may be discarded from future considerations as they are not crucial for predicting the outcome.
+
+---
+
+### Tuning $\lambda$
+
+We implement a similar strategy for finding the optimal value of λ as we did for the Ridge Regression. 
+
+### Using Lasso Regression to Predict the Readability Scores
+
+Please review the following notebook to apply Lasso Regression to predict readability scores from all 768 features using the whole dataset.
+
+[Predicting Readability Scores using the Lasso Regression](https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Elastic Net
+---
+
+Elastic net combines the two types of penalty into one by mixing them with some weighted average. The penalty term for the elastic net could be written as
+
+$$\lambda \left[ (1-\alpha)\sum_{i=1}^{P} \beta_p^2 + \alpha\sum_{i=1}^{P} |\beta_p|)\right].$$
+
+The loss function for the elastic net to optimize:
+
+$$Loss = \sum_{i=1}^{N}\epsilon_{(i)}^2 + \lambda \left[ (1-\alpha)\sum_{i=1}^{P} \beta_p^2 + \alpha\sum_{i=1}^{P} |\beta_p|)\right]$$
+- When $\alpha$ is set to 1, this is equivalent to ridge regression. 
+
+- When $\alpha$ equals 0, this is the equivalent of lasso regression. 
+
+- When $\alpha$ takes any value between 0 and 1, this term becomes a weighted average of the ridge penalty and lasso penalty. 
+
+In Elastic Net, two hyperparameters will be tuned: $\alpha$ and $\lambda$. 
+
+We can consider many possible combinations of these two hyperparameters and try to find the optimal combination using 10-fold cross-validation. 
+
+---
+
+### Using Elastic Net to Predict the Readability Scores
+
+Review of the following notebook for applying Elastic Net to predict readability scores from all 768 features using the whole dataset.
+
+[Predicting Readability Scores using the Elastic Net](https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net)
+
+
+## Using the Prediction Model for a New Text
+
+Review of the following notebook for predicting the readability of a given text with the existing model objects
+
+[Predicting Readability Scores for a new text](https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text)

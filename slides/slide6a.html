@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to K-Nearest Neighbors Algorithm</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cengiz Zopluoglu" />
+    <script src="slide6a_files/header-attrs-2.14/header-attrs.js"></script>
+    <link href="slide6a_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slide6a_files/remark-css-0.0.1/uo.css" rel="stylesheet" />
+    <link href="slide6a_files/remark-css-0.0.1/ki-fonts.css" rel="stylesheet" />
+    <script src="slide6a_files/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+    <script src="slide6a_files/plotly-binding-4.10.0/plotly.js"></script>
+    <script src="slide6a_files/typedarray-0.1/typedarray.min.js"></script>
+    <script src="slide6a_files/jquery-3.5.1/jquery.min.js"></script>
+    <link href="slide6a_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="slide6a_files/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+    <link href="slide6a_files/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+    <script src="slide6a_files/plotly-main-2.5.1/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="my_custom.css" type="text/css" />
+    <link rel="stylesheet" href="xaringanthemer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to K-Nearest Neighbors Algorithm
+]
+.author[
+### Cengiz Zopluoglu
+]
+.institute[
+### College of Education, University of Oregon
+]
+.date[
+### Nov 21, 2022 <br> Eugene, OR
+]
+
+---
+
+
+&lt;style&gt;
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+&lt;/style&gt;
+
+
+
+### The goals:
+
+- K-nearest Neighbors Algorithm
+
+  - The concept of **distance** between two vectors
+    
+  - The concept of K-nearest neighbors
+    
+  - Predicting an outcome based on K-nearest neighbors
+    
+  - Kernels to Weight the neighbors
+  
+  - Review of Kaggle notebooks for building KNN models
+  
+---
+
+# Distance Between Two Vectors
+
+- Imagine that each observation in a dataset lives in a *P*-dimensional space, where *P* is the number of predictors. 
+
+  - Obsevation 1: `\(\mathbf{A} = (A_1, A_2, A_3, ..., A_P)\)`
+
+  - Obsevation 2: `\(\mathbf{B} = (B_1, B_2, B_3, ..., B_P)\)`
+
+- A general definition of distance between two vectors is the **Minkowski Distance**. 
+
+`$$\left ( \sum_{i=1}^{P}|A_i-B_i|^q \right )^{\frac{1}{q}},$$`
+where `\(q\)` can take any positive value.
+
+---
+
+- Suppose that we have two observations and three predictors
+
+  - Observation 1:  (20,25,30)
+
+  - Observation 2:  (80,90,75)
+
+<div id="htmlwidget-1d7cf42d909d34a4eb5d" style="width:600px;height:400px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1d7cf42d909d34a4eb5d">{"x":{"visdat":{"275c234c43":["function () ","plotlyVisDat"]},"cur_data":"275c234c43","attrs":{"275c234c43":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"width":600,"height":400,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+- If we assume that the `\(q=1\)` for the Minkowski equation above, then we can calculate the distance as the following:
+
+.indent[
+.single[
+.tiny[
+
+```r
+A &lt;- c(20,25,30)
+B &lt;- c(80,90,75)
+
+sum(abs(A - B))
+```
+
+```
+[1] 170
+```
+]]]
+
+- If we assume that the `\(q=2\)` for the Minkowski equation above, then we can calculate the distance as the following:
+
+.indent[
+.single[
+.tiny[
+
+```r
+A &lt;- c(20,25,30)
+B &lt;- c(80,90,75)
+
+(sum(abs(A - B)^2))^(1/2)
+```
+
+```
+[1] 99.25
+```
+]]]
+
+
+- If we assume that the `\(q=3\)` for the Minkowski equation above, then we can calculate the distance as the following:
+
+.indent[
+.single[
+.tiny[
+
+```r
+A &lt;- c(20,25,30)
+B &lt;- c(80,90,75)
+
+(sum(abs(A - B)^3))^(1/2)
+```
+
+```
+[1] 762.7
+```
+]]]
+---
+
+When `\(q\)` is equal to 1 for the Minkowski equation, it becomes a special case known as **Manhattan Distance**. 
+
+<div id="htmlwidget-91620aaae7f3e47a34fd" style="width:800px;height:500px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-91620aaae7f3e47a34fd">{"x":{"visdat":{"275c6a61165":["function () ","plotlyVisDat"]},"cur_data":"275c6a61165","attrs":{"275c6a61165":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"275c6a61165.1":{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"275c6a61165.2":{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"275c6a61165.3":{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+When `\(q\)` is equal to 2 for the Minkowski equation, it is also a special case known as **Euclidian Distance**.
+
+<div id="htmlwidget-fbf0c682dabe3d5d0988" style="width:800px;height:500px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fbf0c682dabe3d5d0988">{"x":{"visdat":{"275c37b421ff":["function () ","plotlyVisDat"]},"cur_data":"275c37b421ff","attrs":{"275c37b421ff":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"275c37b421ff.1":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+# K-Nearest Neighbors
+
+- When there are `\(N\)` observations in a dataset, a distance between any observation and `\(N-1\)` remaining observations can be computed using Minkowski distance (with a user-defined choice of `\(q\)` value, a hyperparameter). 
+
+- Then, for any given observation, we can rank order the remaining observations based on how close they are to the given observation and then decide the K observations closest based on their distance.
+
+- Suppose that there are ten observations measured on three predictor variables (X1, X2, and X3) with the following values. 
+
+.indent[
+.single[
+.tiny[
+
+```r
+d &lt;- data.frame(x1 =c(20,25,30,42,10,60,65,55,80,90),
+                x2 =c(10,15,12,20,45,75,70,80,85,90),
+                x3 =c(25,30,35,20,40,80,85,90,92,95),
+                label= c('A','B','C','D','E','F','G','H','I','J'))
+
+d
+```
+
+```
+   x1 x2 x3 label
+1  20 10 25     A
+2  25 15 30     B
+3  30 12 35     C
+4  42 20 20     D
+5  10 45 40     E
+6  60 75 80     F
+7  65 70 85     G
+8  55 80 90     H
+9  80 85 92     I
+10 90 90 95     J
+```
+]]]
+
+---
+
+<div id="htmlwidget-f0c6c7854cf5fd72dd9c" style="width:800px;height:500px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f0c6c7854cf5fd72dd9c">{"x":{"visdat":{"275c15a759e8":["function () ","plotlyVisDat"]},"cur_data":"275c15a759e8","attrs":{"275c15a759e8":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"275c15a759e8.1":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","marker":{"color":"orange"},"inherit":true},"275c15a759e8.2":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["A","B","C","D","E"],"inherit":true},"275c15a759e8.3":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["F","G","H","I","J"],"inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.5,"y":1,"z":1}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","type":"scatter3d","marker":{"color":"orange","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","type":"scatter3d","text":["A","B","C","D","E"],"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","type":"scatter3d","text":["F","G","H","I","J"],"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+
+---
+
+Given that there are ten observations, we can calculate the distance between all 45 pairs of observations (e.g., Euclidian distance). 
+
+.pull-left[
+.indent[
+.single[
+.tiny2[
+
+```r
+labels &lt;- c('A','B','C','D','E',
+            'F','G','H','I','J')
+
+dist &lt;- as.data.frame(t(combn(labels,2)))
+dist$euclidian &lt;- NA
+
+for(i in 1:nrow(dist)){
+  
+  a &lt;- d[d$label==dist[i,1],1:3]
+  b &lt;- d[d$label==dist[i,2],1:3]
+  dist[i,]$euclidian &lt;- sqrt(sum((a-b)^2))
+  
+}
+
+dist
+```
+]]]]
+
+
+.pull-right[
+.indent[
+.single[
+.tiny2[
+
+```
+   V1 V2 euclidian
+1   A  B     8.660
+2   A  C    14.283
+3   A  D    24.678
+4   A  E    39.370
+5   A  F    94.074
+6   A  G    96.047
+7   A  H   101.735
+8   A  I   117.107
+9   A  J   127.279
+10  B  C     7.681
+11  B  D    20.347
+12  B  E    35.000
+13  B  F    85.586
+14  B  G    87.464
+15  B  H    93.408
+16  B  I   108.485
+17  B  J   118.638
+18  C  D    20.809
+19  C  E    38.910
+20  C  F    83.030
+21  C  G    84.196
+22  C  H    90.962
+23  C  I   105.252
+24  C  J   115.256
+25  D  E    45.266
+26  D  F    83.361
+27  D  G    85.170
+28  D  H    93.107
+29  D  I   104.178
+30  D  J   113.265
+31  E  F    70.711
+32  E  G    75.333
+33  E  H    75.829
+ [ reached 'max' / getOption("max.print") -- omitted 12 rows ]
+```
+]]]]
+---
+
+For instance, we can find the three closest observations to **Point E** (3-Nearest Neighbors). As seen below, the 3-Nearest Neighbors for **Point E** in this dataset would be **Point B**, **Point C**, and **Point A**.
+
+.single[
+.tiny2[
+
+```r
+# Point E is the fifth observation in the dataset
+
+loc &lt;- which(dist[,1]=='E' | dist[,2]=='E')
+
+tmp &lt;- dist[loc,]
+
+tmp[order(tmp$euclidian),]
+```
+
+```
+   V1 V2 euclidian
+12  B  E     35.00
+19  C  E     38.91
+4   A  E     39.37
+25  D  E     45.27
+31  E  F     70.71
+32  E  G     75.33
+33  E  H     75.83
+34  E  I     95.94
+35  E  J    107.00
+```
+]]
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+***
+&lt;div id="infobox"&gt;
+
+&lt;center style="color:black;"&gt; &lt;b&gt;NOTE 1&lt;/b&gt; &lt;/center&gt;
+
+The `\(q\)` in the Minkowski distance equation and `\(K\)` in the K-nearest neighbor are user-defined hyperparameters in the KNN algorithm. As a researcher and model builder, you can pick any values for `\(q\)` and `\(K\)`. They can be tuned using a similar approach applied in earlier classes for regularized regression models. One can pick a set of values for these hyperparameters and apply a grid search to find the combination that provides the best predictive performance.
+
+It is typical to observe overfitting (high model variance, low model bias) for small values of K and underfitting (low model variance, high model bias) for large values of K. In general, people tend to focus their grid search for K around `\(\sqrt{N}\)`.
+
+&lt;/div&gt;
+***
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+
+***
+&lt;div id="infobox"&gt;
+
+&lt;center style="color:black;"&gt; &lt;b&gt;NOTE 2&lt;/b&gt; &lt;/center&gt;
+
+It is essential to remember that the distance calculation between two observations is highly dependent on the scale of measurement for the predictor variables. If predictors are on different scales, the distance metric formula will favor the differences in predictors with larger scales, and it is not ideal. Therefore, it is essential to center and scale all predictors before the KNN algorithm so each predictor similarly contributes to the distance metric calculation.
+
+&lt;/div&gt;
+***
+
+---
+
+# Prediction with K-Nearest Neighbors
+
+Below is a list of steps for predicting an outcome for a given observation.
+
+  - 1. Calculate the distance between the observation and the remaining `\(N-1\)` observations in the data (with a user choice of `\(q\)` in Minkowski distance).
+
+  - 2. Rank order the observations based on the calculated distance, and choose the K-nearest neighbor. (with a user choice of `\(K\)`)
+
+  - 3. Calculate the mean of the observed outcome in the K-nearest neighbors as your prediction.
+
+Note that Step 3 applies regardless of the type of outcome. 
+
+If the outcome variable is continuous, we calculate the average outcome for the K-nearest neighbors as our prediction. 
+
+If the outcome variable is binary (e.g., 0 vs. 1), then the proportion of observing each class among the K-nearest neighbors yields predicted probabilities for each class.
+
+---
+
+### An example of predicting a continuous outcome with the KNN algorithm
+
+1. Import the data
+
+2. Write a recipe for processing variables
+
+3. Apply the recipe to the dataset
+
+
+.indent[
+.single[
+.tiny2[
+
+
+```r
+# Import the dataset
+
+readability &lt;- read.csv('./data/readability_features.csv',header=TRUE)
+
+# Write the recipe
+
+require(recipes)
+
+blueprint_readability &lt;- recipe(x     = readability,
+                                vars  = colnames(readability),
+                                roles = c(rep('predictor',768),'outcome')) %&gt;%
+  step_zv(all_numeric()) %&gt;%
+  step_nzv(all_numeric()) %&gt;%
+  step_normalize(all_numeric_predictors()) 
+
+# Apply the recipe
+
+baked_read &lt;- blueprint_readability %&gt;% 
+  prep(training = readability) %&gt;%
+  bake(new_data = readability)
+```
+]]]
+
+
+Our final dataset (`baked_read`) has 2834 observations and 769 columns (768 predictors; the last column is target outcome). 
+
+Suppose we would like to predict the readability score for the first observation. 
+
+---
+
+The code below will calculate the Minkowski distance (with `\(q=2\)`) between the first observation and each of the remaining 2833 observations by using the first 768 columns of the dataset (predictors).
+
+.indent[
+.single[
+.tiny2[
+
+```r
+dist &lt;- data.frame(obs = 2:2834,dist = NA,target=NA)
+
+for(i in 1:2833){
+  
+  a &lt;- as.matrix(baked_read[1,1:768])
+  b &lt;- as.matrix(baked_read[i+1,1:768])
+  dist[i,]$dist   &lt;- sqrt(sum((a-b)^2))
+  dist[i,]$target &lt;- baked_read[i+1,]$target
+
+  #print(i)
+}
+```
+]]]
+
+---
+
+
+
+We now rank-order the observations from closest to the most distant and then choose the 20 nearest observations (K=20). 
+
+.single[
+.tiny[
+
+```r
+# Rank order the observations from closest to the most distant
+
+dist &lt;- dist[order(dist$dist),]
+
+# Check the 20-nearest neighbors
+
+print(dist[1:20,], row.names = FALSE)
+```
+
+```
+  obs  dist  target
+ 2441 24.18  0.5590
+   45 24.37 -0.5864
+ 1992 24.91  0.1430
+ 2264 25.26 -0.9035
+ 2522 25.27 -0.6359
+ 2419 25.41 -0.2128
+ 1530 25.66 -1.8725
+  239 25.93 -0.5611
+  238 26.30 -0.8890
+ 1520 26.40 -0.6159
+ 2244 26.50 -0.3327
+ 1554 26.57 -1.8844
+ 1571 26.61 -1.1337
+ 2154 26.62 -1.1141
+   76 26.64 -0.6056
+ 2349 26.68 -0.1593
+ 1189 26.85 -1.2395
+ 2313 26.95 -0.2532
+ 2179 27.05 -1.0299
+ 2017 27.06  0.1399
+```
+]]
+
+---
+
+Finally, we can calculate the average of the observed outcome for the 20 nearest neighbors, which will become our prediction of the readability score for the first observation.
+
+.tiny[
+
+```r
+mean(dist[1:20,]$target)
+```
+
+```
+[1] -0.6594
+```
+]
+
+The observed outcome (readability score) for the first observation.
+
+.tiny[
+
+```r
+readability[1,]$target
+```
+
+```
+[1] -0.3403
+```
+]
+---
+
+### An example of predicting a binary outcome with the KNN algorithm
+
+- We can follow the same procedures to predict Recidivism in the second year after an individual's initial release from prison. 
+
+- The final dataset (`baked_recidivism`) after pre-processing has 18111 observations and 142 predictors.
+
+- Suppose that we would like to predict the probability of Recidivism for the first individual. 
+
+- The code below will calculate the Minkowski distance (with `\(q=2\)`) between the first individual and each of the remaining 18,110 individuals by using values of the 142 predictors in this dataset.
+
+.indent[
+.single[
+.tiny2[
+
+```r
+dist2 &lt;- data.frame(obs = 2:18111,dist = NA,target=NA)
+
+for(i in 1:18110){
+  
+  a &lt;- as.matrix(baked_recidivism[1,3:144])
+  b &lt;- as.matrix(baked_recidivism[i+1,3:144])
+  dist2[i,]$dist   &lt;- sqrt(sum((a-b)^2))
+  dist2[i,]$target &lt;- as.character(baked_recidivism[i+1,]$Recidivism_Arrest_Year2)
+
+  #print(i)
+}
+```
+]]]
+
+---
+
+
+
+Suppose we now rank-order the individuals from closest to the most distant and then choose the 20-nearest observations. 
+
+Then, we calculate proportion of individuals who were recidivated (YES) and not recidivated (NO) among these 20-nearest neighbors. 
+
+.pull-left[
+.single[
+.tiny2[
+
+```r
+dist2 &lt;- dist2[order(dist2$dist),]
+
+print(dist2[1:20,],
+      row.names = FALSE)
+```
+
+```
+   obs  dist target
+  7070 6.217     No
+ 14204 6.256     No
+  1574 6.384     No
+  4527 6.680     No
+  8446 7.012     No
+  6024 7.251     No
+  7787 7.270     No
+   565 7.279    Yes
+  8768 7.288     No
+  4646 7.359     No
+  4043 7.376     No
+  9113 7.385     No
+  5316 7.405     No
+  4095 7.536     No
+  9732 7.566     No
+   831 7.634     No
+ 14385 7.644     No
+  2933 7.660    Yes
+   647 7.676    Yes
+  6385 7.685    Yes
+```
+]]]
+
+.pull-right[
+.single[
+.tiny2[
+
+```r
+table(dist2[1:20,]$target)
+```
+
+```
+
+ No Yes 
+ 16   4 
+```
+
+```r
+# The observed outcome for the first individual
+
+recidivism[1,]$Recidivism_Arrest_Year2
+```
+
+```
+[1] 0
+```
+]]]
+
+These proportions predict the probability of being recidivated or not recidivated for the first individual.
+
+The probability of the first observation to be recidivated within 2 years is 0.2 (4/20) based on 20 nearest neighbors.
+
+---
+
+# Kernels to Weight the Neighbors
+
+- In the previous section, we used a simple average of the observed outcome from K-nearest neighbors. 
+
+- A simple average implies equally weighing each neighbor. 
+
+- Another way of averaging the target outcome from K-nearest neighbors would be to weigh each neighbor according to its distance and calculate a weighted average. 
+
+- A simple way to weigh each neighbor is to use the inverse of the distance. 
+- For instance, consider the earlier example where we find the 20-nearest neighbor for the first observation in the readability dataset.
+
+- We can assign a weight to each neighbor by taking the inverse of their distance and rescaling them such that the sum of the weights equals 1.
+
+---
+
+.pull-left[
+.single[
+.tiny2[
+
+```r
+dist &lt;- dist[order(dist$dist),]
+
+k_neighbors &lt;- dist[1:20,]
+
+print(k_neighbors,row.names=FALSE)
+```
+
+```
+  obs  dist  target
+ 2441 24.18  0.5590
+   45 24.37 -0.5864
+ 1992 24.91  0.1430
+ 2264 25.26 -0.9035
+ 2522 25.27 -0.6359
+ 2419 25.41 -0.2128
+ 1530 25.66 -1.8725
+  239 25.93 -0.5611
+  238 26.30 -0.8890
+ 1520 26.40 -0.6159
+ 2244 26.50 -0.3327
+ 1554 26.57 -1.8844
+ 1571 26.61 -1.1337
+ 2154 26.62 -1.1141
+   76 26.64 -0.6056
+ 2349 26.68 -0.1593
+ 1189 26.85 -1.2395
+ 2313 26.95 -0.2532
+ 2179 27.05 -1.0299
+ 2017 27.06  0.1399
+```
+]]]
+
+
+.pull-right[
+.single[
+.tiny2[
+
+```r
+k_neighbors$weight &lt;- 1/k_neighbors$dist
+k_neighbors$weight &lt;- k_neighbors$weight/sum(k_neighbors$weight)
+
+print(k_neighbors,row.names=FALSE)
+```
+
+```
+  obs  dist  target  weight
+ 2441 24.18  0.5590 0.05382
+   45 24.37 -0.5864 0.05341
+ 1992 24.91  0.1430 0.05225
+ 2264 25.26 -0.9035 0.05152
+ 2522 25.27 -0.6359 0.05151
+ 2419 25.41 -0.2128 0.05122
+ 1530 25.66 -1.8725 0.05072
+  239 25.93 -0.5611 0.05020
+  238 26.30 -0.8890 0.04949
+ 1520 26.40 -0.6159 0.04930
+ 2244 26.50 -0.3327 0.04911
+ 1554 26.57 -1.8844 0.04899
+ 1571 26.61 -1.1337 0.04892
+ 2154 26.62 -1.1141 0.04890
+   76 26.64 -0.6056 0.04886
+ 2349 26.68 -0.1593 0.04878
+ 1189 26.85 -1.2395 0.04847
+ 2313 26.95 -0.2532 0.04829
+ 2179 27.05 -1.0299 0.04812
+ 2017 27.06  0.1399 0.04810
+```
+]]]
+
+
+Compute a weighted average of the target scores instead of a simple average.
+
+.single[
+.tiny2[
+
+```r
+sum(k_neighbors$target*k_neighbors$weight)
+```
+
+```
+[1] -0.6526
+```
+]]
+
+---
+
+Several kernel functions can be used to assign weight to K-nearest neighbors
+
+- Epanechnikov
+
+- Rectangular
+
+- Quartic
+
+- Triweight
+
+- Tricube
+
+- Gaussian
+
+- Cosine
+
+For all of them, closest neighbors are assigned higher weights while the weight gets smaller as the distance increases, and they slightly differ the way they assign the weight. 
+
+---
+
+Below is a demonstration of how assigned weight changes as a function of distance for different kernel functions.
+
+&lt;img src="slide6a_files/figure-html/unnamed-chunk-25-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+***
+&lt;div id="infobox"&gt;
+
+&lt;center style="color:black;"&gt; &lt;b&gt; NOTE 3 &lt;/b&gt; &lt;/center&gt;
+
+Which kernel function should we use for weighing the distance? The type of kernel function can also be considered a hyperparameter to tune.
+
+&lt;/div&gt;
+***
+
+---
+
+#### Hyperparameters for the KNN algorithm
+
+
+```r
+require(caret)
+require(kknn)
+
+getModelInfo()$kknn$parameters
+```
+
+```
+  parameter     class           label
+1      kmax   numeric Max. #Neighbors
+2  distance   numeric        Distance
+3    kernel character          Kernel
+```
+  
+---
+
+#### **Kaggle Notebook**
+
+[Building a Prediction Model for a Continuous Outcome Using the KNN Algorithm](https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn)
+
+** Performance Comparison of Different Algorithms**
+
+|                   | R-square | MAE   | RMSE
+|-------------------|:--------:|:-----:|:-----:|
+| Linear Regression |  0.658   | 0.499 | 0.620 |
+| Ridge Regression  |  0.727   | 0.432 | 0.536 |
+| Lasso Regression  |  0.721   | 0.433 | 0.542 |
+| Elastic Net       |  0.726   | 0.433 | 0.539 |
+| KNN               |  0.611   | 0.519 | 0.648 |
+
+---
+
+#### **Kaggle Notebook**
+
+[Building a Classification Model for a Binary Outcome Using the KNN Algorithm](https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn)
+
+** Performance Comparison of Different Algorithms**
+
+|                                         | -LL  | AUC  | ACC | TPR | TNR | FPR |PRE  |
+|-----------------------------------------|:----:|:----:|:---:|:---:|:---:|:---:|:---:|
+| Logistic Regression                     |0.5096|0.7192|0.755|0.142|0.949|0.051|0.471|
+| Logistic Regression with Ridge Penalty  |0.5111|0.7181|0.754|0.123|0.954|0.046|0.461|
+| Logistic Regression with Lasso Penalty  |0.5090|0.7200|0.754|0.127|0.952|0.048|0.458|
+| Logistic Regression with Elastic Net    |0.5091|0.7200|0.753|0.127|0.952|0.048|0.456|
+| KNN                                     |?     |     ?|   ? | ?   |  ?  |  ?  |  ?  |
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

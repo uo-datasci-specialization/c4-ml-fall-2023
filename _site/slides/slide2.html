@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Preprocessing</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cengiz Zopluoglu" />
+    <script src="slide2_files/header-attrs-2.14/header-attrs.js"></script>
+    <link href="slide2_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slide2_files/remark-css-0.0.1/uo.css" rel="stylesheet" />
+    <link href="slide2_files/remark-css-0.0.1/ki-fonts.css" rel="stylesheet" />
+    <script src="slide2_files/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+    <link href="slide2_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+    <script src="slide2_files/datatables-binding-0.23/datatables.js"></script>
+    <script src="slide2_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+    <link href="slide2_files/dt-core-1.11.3/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="slide2_files/dt-core-1.11.3/css/jquery.dataTables.extra.css" rel="stylesheet" />
+    <script src="slide2_files/dt-core-1.11.3/js/jquery.dataTables.min.js"></script>
+    <link href="slide2_files/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+    <script src="slide2_files/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+    <link rel="stylesheet" href="my_custom.css" type="text/css" />
+    <link rel="stylesheet" href="xaringanthemer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Data Preprocessing
+]
+.author[
+### Cengiz Zopluoglu
+]
+.institute[
+### College of Education, University of Oregon
+]
+.date[
+### Oct 10, 2022 <br> Eugene, OR
+]
+
+---
+
+
+&lt;style&gt;
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+&lt;/style&gt;
+
+
+
+### Today's Goals:
+
+- Processing Categorical Predictors
+  
+  - One-hot encoding (dummy variables)
+  
+  - Label encoding
+  
+  - Polynomial Contrasts
+
+- Processing Cyclic Variables
+
+- Processing Continuous Variables
+
+  - Centering and Scaling
+  
+  - Box-Cox transformation
+  
+  - Logit transformation
+  
+  - Polynomial basis expansions
+  
+- Handling Missing Data
+
+- the `recipes` package
+
+- Processing Text Data with pre-trained NLP models
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Processing Categorical Predictors
+
+---
+
+- When categorical predictors are in a dataset, it is essential to transform them into numerical codes because this is the only way to use them in predictive modeling. 
+
+&lt;br&gt;
+&lt;br&gt;
+
+<div id="htmlwidget-8efa612c9c1c6b0ee189" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8efa612c9c1c6b0ee189">{"x":{"filter":"none","vertical":false,"data":[["M","M","M","M","M","M","M","M","M","M","M","M","M","M","M","M","F","F","M","M","M","F","M","M","M","M","M","F","M","M","M","M","M","M","F","M","M","M","M","M","M","M","F","M","F","M","M","M","F","M"],["BLACK","BLACK","BLACK","WHITE","WHITE","BLACK","BLACK","WHITE","WHITE","WHITE","BLACK","WHITE","BLACK","WHITE","BLACK","BLACK","WHITE","WHITE","WHITE","WHITE","BLACK","WHITE","WHITE","BLACK","WHITE","BLACK","BLACK","BLACK","BLACK","BLACK","BLACK","WHITE","WHITE","BLACK","WHITE","WHITE","BLACK","BLACK","BLACK","BLACK","WHITE","BLACK","WHITE","BLACK","WHITE","BLACK","BLACK","BLACK","WHITE","WHITE"],["At least some college","Less than HS diploma","At least some college","Less than HS diploma","High School Diploma","Less than HS diploma","High School Diploma","Less than HS diploma","Less than HS diploma","Less than HS diploma","Less than HS diploma","High School Diploma","At least some college","Less than HS diploma","High School Diploma","Less than HS diploma","High School Diploma","Less than HS diploma","Less than HS diploma","Less than HS diploma","High School Diploma","Less than HS diploma","High School Diploma","Less than HS diploma","High School Diploma","Less than HS diploma","High School Diploma","At least some college","High School Diploma","High School Diploma","Less than HS diploma","High School Diploma","High School Diploma","Less than HS diploma","At least some college","At least some college","Less than HS diploma","High School Diploma","High School Diploma","At least some college","Less than HS diploma","Less than HS diploma","Less than HS diploma","High School Diploma","High School Diploma","Less than HS diploma","High School Diploma","High School Diploma","Less than HS diploma","High School Diploma"],["Drug","Violent/Non-Sex","Drug","Property","Property",null,"Drug","Violent/Non-Sex","Property","Violent/Non-Sex",null,"Property","Property","Property","Violent/Non-Sex","Drug","Violent/Non-Sex","Other","Drug","Other","Property","Property","Drug","Drug","Drug","Property","Violent/Non-Sex","Property","Violent/Non-Sex","Drug","Violent/Non-Sex","Drug","Violent/Sex","Drug","Property","Other","Drug","Property","Violent/Sex","Violent/Non-Sex",null,"Property","Property","Property","Other","Drug","Drug",null,null,"Violent/Non-Sex"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Gender<\/th>\n      <th>Race<\/th>\n      <th>Education Level<\/th>\n      <th>Prison Offence<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"pageLength":3,"lengthMenu":3,"columnDefs":[],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+&lt;br&gt;
+
+- When encoding categorical predictors, we try to preserve as much information as possible from their labels
+
+---
+
+## One-hot encoding (dummy variables)
+
+- A **dummy variable** is a synthetic variable with two values (0 and 1) representing a group membership.
+
+- When there is a nominal variable with *N* levels, it is typical to create *N* dummy variables to represent the information in the nominal variable. 
+
+- Each dummy variable represents membership to one of the levels in the nominal variable. 
+
+- These dummy variables can be used as features in predictive models.
+
+- In its simplest case, consider the variable Race in the Recidivism dataset with two levels: Black and White. We can create two dummy variables to represent the information in this variable.
+
+|        | Dummy Variable 1 | Dummy Variable 2 |
+|--------|:----------------:|:----------------:|
+| Black  |     1            |       0
+| White  |     0            |       1          |
+
+---
+- Variable Prison_Offense has five categories: Violent/Sex, Violent/Non-Sex, Property, Drug, and Other. 
+
+- We can create five dummy variables using the following coding scheme.
+&lt;br&gt;
+
+|                  | Dummy Variable 1 | Dummy Variable 2 | Dummy Variable 3 | Dummy Variable 4 | Dummy Variable 5 |
+|------------------|:----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
+| Violent/Sex      |     1            |       0          |     0            |     0            |     0            |
+| Violent/Non-Sex  |     0            |       1          |     0            |     0            |     0            |
+| Property         |     0            |     0            |     1            |     0            |     0            |
+| Drug             |     0            |     0            |     0            |     1            |     0            |
+| Other            |     0            |     0            |     0            |     0            |     1            |
+
+---
+
+&lt;br&gt;
+
+<div id="htmlwidget-ecec8bec982ca498184e" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ecec8bec982ca498184e">{"x":{"filter":"none","vertical":false,"data":[["BLACK","BLACK","BLACK","WHITE","WHITE","BLACK","BLACK","WHITE","WHITE","WHITE"],[1,1,1,0,0,1,1,0,0,0],[0,0,0,1,1,0,0,1,1,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Race<\/th>\n      <th>Race_Black<\/th>\n      <th>Race_White<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"info":false,"paging":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+&lt;br&gt;
+
+<div id="htmlwidget-b751c6a3656e71f17ea9" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b751c6a3656e71f17ea9">{"x":{"filter":"none","vertical":false,"data":[["Drug","Violent/Non-Sex","Drug","Property","Property",null,"Drug","Violent/Non-Sex","Property","Violent/Non-Sex"],[1,0,1,0,0,null,1,0,0,0],[0,0,0,1,1,null,0,0,1,0],[0,1,0,0,0,null,0,1,0,1],[0,0,0,0,0,null,0,0,0,0],[0,0,0,0,0,null,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Prison Offense<\/th>\n      <th>Drug<\/th>\n      <th>Property<\/th>\n      <th>Violent/Sex<\/th>\n      <th>Violent/Nonsex<\/th>\n      <th>Other<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"info":false,"paging":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[5]; $(this.api().cell(row, 5).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+&lt;br&gt;
+
+&lt;div id="infobox"&gt;
+
+&lt;center style="color:black;"&gt; &lt;b&gt;NOTE&lt;/b&gt; &lt;/center&gt;
+
+&lt;br&gt;
+
+When you fit a typical regression model without regularization using ordinary least-squares (OLS), a typical practice is to drop a dummy variable for one of the levels. So, for instance, if there are &lt;i&gt;N&lt;/i&gt; levels for a nominal variable, you only have to create (&lt;i&gt;N-1&lt;/i&gt;) dummy variables, as the &lt;i&gt;N&lt;/i&gt;&lt;sup&gt;th&lt;/sup&gt; one has redundant information. The information regarding the excluded category is represented in the intercept term. It creates a problem when you put all &lt;i&gt;N&lt;/i&gt; dummy variables into the model because the OLS procedure tries to invert a singular matrix, and you will likely get an error message. 
+
+&lt;br&gt;
+&lt;br&gt;
+
+On the other hand, this is not an issue when you fit a regularized regression model, which will be the case in this class. Therefore, you do not need to drop one of the dummy variables and can include all of them in the analysis. In fact, it may be beneficial to keep the dummy variables for all categories in the model when regularization is used in the regression. Otherwise, the model may produce different predictions depending on which category is excluded.
+
+&lt;/div&gt;
+
+---
+
+## Label encoding
+
+- When the variable of interest is ordinal, and there is a hierarchy among the levels, another alternative is to assign a numerical value to each category.
+
+- Consider the variable **Age_At_Release** in the Recidivism dataset. It is coded as 7 different age intervals in the dataset: 18-22, 23-27, 28-32, 33-37, 38-42, 43-47, 48 or older. 
+
+|             | Encoding 1      | Encoding 2       |
+|-------------|:---------------:|:----------------:|
+| 18-22       |     20          |       1          |
+| 23-27       |     25          |       2          |
+| 28-32       |     30          |       3          |
+| 33-37       |     35          |       4          |
+| 38-42       |     40          |       5          |
+| 43-47       |     45          |       6          |
+| 48 or older |     60          |       7          |
+
+---
+
+&lt;br&gt;
+
+<div id="htmlwidget-d689cd609c41b4f9a5c6" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d689cd609c41b4f9a5c6">{"x":{"filter":"none","vertical":false,"data":[["43-47","33-37","48 or older","38-42","38-42","48 or older","38-42","43-47","48 or older","33-37"],[45,35,60,40,40,60,40,45,60,35],[6,4,7,5,5,7,5,6,7,4]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Age_at_Release<\/th>\n      <th>Encoding 1<\/th>\n      <th>Encoding 2<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"info":false,"paging":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+- Another example would be the variable **Education Level** in the Recidivism dataset. 
+
+- How would you encode this variable?
+
+|                        | Encoding 1 | Encoding 2      |
+|------------------------|:----------:|:---------------:|
+| Less than a HS diploma |            |                 |
+| HS diploma             |            |                 |
+| At least some college  |            |                 |
+
+---
+
+## Polynomial Contrasts
+
+- Another way of encoding an ordinal variable is to use polynomial contrasts. 
+
+- The polynomial contrasts may be helpful if one wants to explore whether or not there is a linear, quadratic, cubic, etc., relationship between the predictor variable and outcome variable.
+
+- If there are *N* levels, one can have polynomial terms up to the (*N-1*)&lt;sup&gt;th&lt;/sup&gt; degree.
+
+- The polynomial terms are **orthonormal vectors**:
+  
+  - sum of the squares within each column is equal to 1
+  - the dot product of the vectors is equal to 0.
+
+---
+
+&lt;br&gt;
+
+<div id="htmlwidget-5f2f86a722510e6d7f80" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5f2f86a722510e6d7f80">{"x":{"filter":"none","vertical":false,"data":[["18-22","23-27","28-32","33-37","38-42","43-47","48 or older"],[-0.567,-0.378,-0.189,0,0.189,0.378,0.567],[0.546,0,-0.327,-0.436,-0.327,0,0.546],[-0.408,0.408,0.408,0,-0.408,-0.408,0.408],[0.242,-0.564,0.081,0.483,0.081,-0.564,0.242],[-0.109,0.436,-0.546,-0,0.546,-0.436,0.109],[0.033,-0.197,0.493,-0.658,0.493,-0.197,0.033]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Age at Release<\/th>\n      <th>Linear Term<\/th>\n      <th>Quadratic Term<\/th>\n      <th>Cubic Term<\/th>\n      <th>4th Degree Term<\/th>\n      <th>5th Degree Term<\/th>\n      <th>6th Degree Term<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"info":false,"paging":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[4]; $(this.api().cell(row, 4).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[5]; $(this.api().cell(row, 5).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[6]; $(this.api().cell(row, 6).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-6-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Processing Cyclic Variables
+
+---
+
+- There are sometimes variables that are cyclic by nature (e.g., months, days, hour)
+
+- Dummy variables or numerical encoding does not necessarily capture the information in these variables in the most meaningful way.
+
+- For cyclic variables, it may be more meaningful to creating two new variables using a sine and cosine transformation as the following:
+
+`$$x_{1} = sin(\frac{2 \pi x}{max(x)})$$`
+
+`$$x_{2} = cos(\frac{2 \pi x}{max(x)})$$`
+<div id="htmlwidget-675a47de3c9a5b87195c" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-675a47de3c9a5b87195c">{"x":{"filter":"none","vertical":false,"data":[["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],[1,2,3,4,5,6,7],[0.782,0.975,0.434,-0.434,-0.975,-0.782,-0],[0.623,-0.223,-0.901,-0.901,-0.223,0.623,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Day<\/th>\n      <th>x<\/th>\n      <th>term1<\/th>\n      <th>term2<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"paging":false,"info":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-8-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+- Below is another example for the time of day
+
+.pull-left[
+.single[
+
+```
+   hour     x1     x2
+1     1  0.259  0.966
+2     2  0.500  0.866
+3     3  0.707  0.707
+4     4  0.866  0.500
+5     5  0.966  0.259
+6     6  1.000  0.000
+7     7  0.966 -0.259
+8     8  0.866 -0.500
+9     9  0.707 -0.707
+10   10  0.500 -0.866
+11   11  0.259 -0.966
+12   12  0.000 -1.000
+13   13 -0.259 -0.966
+14   14 -0.500 -0.866
+15   15 -0.707 -0.707
+16   16 -0.866 -0.500
+17   17 -0.966 -0.259
+18   18 -1.000  0.000
+19   19 -0.966  0.259
+20   20 -0.866  0.500
+21   21 -0.707  0.707
+22   22 -0.500  0.866
+23   23 -0.259  0.966
+24   24  0.000  1.000
+```
+]
+]
+
+.pull-right[
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" /&gt;
+]
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Processing Continuous Variables
+
+---
+
+## Centering and Scaling
+
+- Centering a variable is done by subtracting the variable’s mean from every value
+
+  `$$X_{centered} = X - \bar{X}$$`
+
+  Centering ensures that the mean of the centered variable equals zero. 
+  
+- Scaling a variable is dividing the value of each observation by the variable’s standard deviation. 
+  
+  `$$X_{scaled} = \frac{X}{\sigma_{X}}$$`
+  Scaling ensures that the standard deviation of the scaled variable equals 1. 
+  
+- When centering and scaling are both applied, it is called standardization.
+
+  `$$z_{X} = \frac{X - \bar{X}}{\sigma_{X}}$$`
+---
+
+- When we standardize a variable, we ensure that its mean is equal to zero and variance is equal to 1. 
+
+- Standardizing outcome and predictor variables may be critical and necessary for specific models (e.g., K-nearest neighbor, support vector machines, penalized regression), but it is not always necessary for other models (e.g., decision tree models).
+
+- Standardizing a variable only changes the first and second moments of a distribution (mean and variance) 
+
+- Standardizing a variable doesn’t change the third and fourth moments of a distribution (skewness and kurtosis).
+
+- Some people in the data science field use the term *normalization*, but what they actually mean is *standardization*.
+
+---
+
+## Box-Cox transformation
+
+- Variables with extreme skewness and kurtosis may deteriorate the model performance for certain types of models. 
+
+- It may sometimes be useful to transform a variable with extreme skewness and kurtosis such that its distribution approximates to a normal distribution.
+
+- Box-Cox transformation is a method to find an optimal parameter of λ to apply the following transformation:
+
+`$$y^{(\lambda)}=
+\left\{\begin{matrix}
+\frac{y^{\lambda}-1}{\lambda} &amp; , \lambda \neq 0 \\
+ &amp; \\ 
+ln(y) &amp; , \lambda = 0 
+\end{matrix}\right.$$`
+---
+
+.pull-left[
+.single[
+.tiny[
+
+
+```r
+require(bestNormalize)
+require(psych)
+
+set.seed(9272022)
+
+old &lt;- rbeta(1000,1,1000)
+
+fit &lt;- boxcox(old,standardize=FALSE)
+fit
+```
+
+```
+Non-Standardized Box Cox Transformation with 1000 nonmissing obs.:
+ Estimated statistics:
+ - lambda = 0.2449266 
+ - mean (before standardization) = -3.390823 
+ - sd (before standardization) = 0.1860852 
+```
+
+```r
+new &lt;- predict(fit)
+ 
+describe(old)
+```
+
+```
+   vars    n mean sd median trimmed mad min  max range skew kurtosis se
+X1    1 1000    0  0      0       0   0   0 0.01  0.01 2.43    10.27  0
+```
+
+```r
+describe(new)
+```
+
+```
+   vars    n  mean   sd median trimmed  mad   min   max range  skew kurtosis   se
+X1    1 1000 -3.39 0.19  -3.39   -3.39 0.19 -3.94 -2.76  1.18 -0.03     -0.2 0.01
+```
+]
+]
+]
+
+.pull-right[
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-12-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+## Logit transformation
+
+- When a variable is a proportion bounded between 0 and 1, the logit transformation can be applied such that
+
+`$$\pi^{*} = ln(\frac{\pi}{1-\pi}),$$`
+
+.indent[ where &amp;pi; represents a proportion.]
+
+- Particularly useful when your outcome variable is a proportion bounded between 0 and 1. 
+
+- When a linear model is used to model an outcome bounded between 0 and 1, the model predictions may exceed the reasonable range of values (predictions equal to less than zero or greater than one). 
+
+- Logit transformation scales variables such that the range of values becomes `\(-\infty\)` and `\(\infty\)` on the logit scale. 
+
+- One can build a model to predict `\(\pi^*\)` instead of proportion ($\pi$), and then obtain predicted proportion after a simple reverse operation `$$\hat{\pi} = \frac{e^{\hat{\pi^*}}}{1+e^{\hat{\pi^*}}}$$`
+
+---
+
+Below is an example of logit transformation for a randomly generated variable.
+
+.single[
+
+
+```r
+old &lt;- rbeta(1000,1,1000)
+
+new &lt;- log(old/(1-old))
+```
+]
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-14-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Polynomial basis expansions
+
+- Basis expansions are useful to address nonlinearity between a continuous predictor variable and outcome variable.
+
+- We can create a set of feature variables using a nonlinear function of a variable *x*, `\(\phi(x)\)`. 
+
+- For continuous predictors, the most commonly used expansions are polynomial basis expansions. 
+
+- The `\(n^{th}\)` degree polynomial basis expansion can be represented by
+
+`$$\phi(x) = \beta_1x + \beta_2x^2 + \beta_3x^3 + ... + \beta_nx^n$$`
+- For continuous predictors, there is no limit for the degree of polynomial. 
+
+- The higher the degree of polynomial, the more flexible the model becomes, and there is a higher chance of overfitting. 
+
+- Typically, polynomial terms up to the 3rd or 4th degree are more than enough.
+
+- One simply replaces the original variable *x* with the new variables obtained from `\(\phi(x)\)`. 
+
+---
+
+Suppose we have 100 observation from a random normal variable *x*. The third degree polynomial basis expansion (cubic basis expansion) can be found using the `poly` function as the following.
+
+.single[
+.tiny[
+
+```r
+set.seed(654)
+
+x &lt;- rnorm(100,0,1)
+
+head(x)
+```
+
+```
+[1] -0.76031762 -0.38970450  1.68962523 -0.09423560  0.09530146  0.81727228
+```
+
+```r
+head(poly(x,degree=3))
+```
+
+```
+                1           2            3
+[1,] -0.070492258 -0.06612854  0.056003658
+[2,] -0.030023304 -0.07454585 -0.003988336
+[3,]  0.197028288  0.28324096  0.348896805
+[4,]  0.002240307 -0.06560960 -0.044790680
+[5,]  0.022936731 -0.05256865 -0.063289287
+[6,]  0.101772051  0.04942613 -0.034439696
+```
+]]
+
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-16-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Handling Missing Data
+
+---
+
+- For certain types of models such as gradient boosting, missing data is not a problem, and one can leave them as is without any processing. 
+
+- Some models such as regularized regression models require complete data and one have to deal with missing data before modeling data. 
+
+- Handling missing data
+
+  - Creating an indicator variable for missingness
+  
+  - Imputation
+  
+---
+
+## Creating Indicator Variable for Missingness
+
+- Identify the variables with missing data, and then create a binary indicator variable for every variable to indicate missingness (0: not missing, 1: missing). 
+
+<div id="htmlwidget-d9d2eb5459008ec13208" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d9d2eb5459008ec13208">{"x":{"filter":"none","vertical":false,"data":[[null,null,null,0,0,0,null,0,0,0],[17.1875,232,null,null,null,null,92.33333333,190,66.9,null],[1,1,1,0,0,0,1,0,0,0],[0,0,1,1,1,1,0,0,0,1]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Gang_Affiliated<\/th>\n      <th>Avg_Days_per_DrugTest<\/th>\n      <th>Gang_na<\/th>\n      <th>Drug_na<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-center","targets":"_all"}],"info":false,"paging":false,"searching":false,"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data, displayNum, displayIndex, dataIndex) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'75%','text-align':'center'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'75%','text-align':'center'});\n}"}},"evals":["options.rowCallback"],"jsHooks":[]}</script>
+
+---
+
+- Missingness indicator variables don't solve the missing data problem because we may still have to impute the missing values for certain types of models.
+
+- An indicator variable about whether or not a variable is missing may sometimes provide some information in predicting the outcome when the missingness is not random.
+
+- If there is a systematic relationship between outcome and whether or not values are missing for a variable, missingness indicators may provide vital information.
+
+- This indicator variable would be meaningless for variables that don’t have any missing value.
+
+---
+
+## Imputation
+
+- A common approach to missing data 
+
+- Below is a very naive example of how it would work if we have an outcome variable (Y) and three predictors (X1, X2, X3). 
+
+.single[
+
+| Imputation Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|        X1        |    X2,X3   |
+|        X2        |    X1,X3   |
+|        X3        |    X1,X2   |
+
+| Prediction Model |            |
+|:----------------:|:----------:|
+|      Outcome     | Predictors |
+|         Y        | X1, X2, X3 |
+
+]
+
+- Each predictor becomes an outcome of interest in imputation, and then the remaining predictors are used to build an imputation model to predict the missing values. after missing values are estimated and replaced for each predictor using an imputation model, primary outcome of interest is predicted using the imputed X1, X2, and X3. 
+
+---
+
+- An imputation model can be as simple as an intercept-only model (mean imputation). 
+  - For numeric variables, missing values can be replaced with a simple mean, median, or mode of the observed data. 
+    
+  - For categorical variables, missing values can be replaced with a value randomly drawn from a binomial or multinomial distribution with the observed probabilities.
+
+- An imputation model can also be as complex as desired using a regularized regression model, a decision tree model, or a K-nearest neighbors model. 
+
+- The main idea of a more complex prediction model is to find other observations similar to observations with a missing value in terms of other predictors and use data from these similar observations to predict the missing values. 
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# the `recipes` package
+
+---
+
+- Given a dataset, we may need to apply several processes for different types of variables.
+
+- One can write an R script to implement all these procedures manually, but it is likely a tedious job.
+
+- The `recipes` package helps us process data more efficiently and in an organized way.
+
+- The `recipes` package makes it easier to replicate the same data processing for future datasets as long as data comes in the same format (e.g., same column names, same variable types).
+
+- The recipes demo notebook
+
+.indent[
+https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo/notebook
+]
+
+
+
+---
+
+- Note that the order of procedures applied to variables is important. 
+
+- For instance: 
+
+  - there would be no meaning of using step_indicate_na() after using `step_impute_bag()`.Why?
+  
+  - there will be a problem when you first standardize variables using `step_normalize()` and then apply a Box-Cox transformation. Why?
+
+- For a complete list of `step_` functions available in the `recipes` package, check this page.
+
+.indent[
+https://recipes.tidymodels.org/reference/index.html
+]
+
+---
+
+Make sure you review the following notebook to see how to process the various types of variables in the NIJ's Recidivism dataset using the `recipes` package.
+
+[https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i](https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i)
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Processing Text Data with pre-trained NLP models
+
+---
+
+## Natural Language Processing (NLP)
+
+- NLP = Linguistics + Computer Science + Statistics 
+
+- The ultimate goal is to develop algorithms and models to understand and use human language in a way we understand and use it. 
+
+- The goal is not only to understand individual words but also the context in which these words are being used
+
+- The recent advancements in the field of NLP revolutionized the language models
+and play a critical role in our daily lives 
+
+  - Did Gmail suggested you how to complete a sentence?
+  
+  - Did Outlook suggested a greeting message when you start drafting an email?
+  
+  - Have you ever interacted with a chat bot?
+  
+---
+
+
+&lt;img src="slide2_files/figure-html/unnamed-chunk-19-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+- Below is a brief list of some of these NLP models and some information, including links to original papers.
+
+| Model                                                                                      | Developer  | Year |# of parameters | Estimated Cost |
+|--------------------------------------------------------------------------------------------|:----------:|:----:|:--------------:|:--------------:|
+| [Bert-Large](https://arxiv.org/pdf/1810.04805.pdf)                                         | Google AI  | 2018 | 336 M          | [$ 7K](https://syncedreview.com/2019/06/27/the-staggering-cost-of-training-sota-ai-models/) |     
+| [Roberta-Large](https://arxiv.org/pdf/1907.11692.pdf)                                      | Facebook AI| 2019 | 335 M          | ? |
+| [GPT2-XL](https://d4mucfpksywv.cloudfront.net/better-language-models/language-models.pdf)  | Open AI    | 2019 | 1.5 B          | [$ 50K](https://medium.com/@vanya_cohen/opengpt-2-we-replicated-gpt-2-because-you-can-too-45e34e6d36dc)|
+| [T5](https://arxiv.org/pdf/1910.10683.pdf)                                                 | Google AI  | 2020 |  11 B          | [$ 1.3 M](https://arxiv.org/pdf/2004.08900.pdf)|
+| [GPT3](https://arxiv.org/pdf/2005.14165.pdf)                                               | OpenAI     | 2020 | 175 B          | [$ 12.0 M](https://venturebeat.com/2020/06/01/ai-machine-learning-openai-gpt-3-size-isnt-everything/)|
+
+- These models are expensive to train and use the enormous amounts of data available. 
+
+- For instance, 
+
+  - Bert/Roberta was trained using the entire Wikipedia and a Book Corpus (a total of ~ 4.7 billion words), 
+  
+  - GPT-2 was trained using 8 million web pages, and 
+  
+  - GPT3 was trained on 45 TB of data from the internet and books.
+  
+---
+
+- All these models except GPT3 are open source. 
+
+- They can be immediately utilized using open libraries (typically Python)
+
+- Hugging Face is a platform people host the pre-trained AI/ML models, more like CRAN hosting R packages.
+
+  &lt;center&gt; [https://huggingface.co/models](https://huggingface.co/models) &lt;/center&gt;
+
+- The tasks that can be achieved with these models are 
+
+.pull-left[
+
+      - text generation 
+
+  - text classification
+
+  - text summarization
+
+  - question answering
+
+  - sentence similarity
+]
+
+.pull-right[
+
+      - translation
+
+  - speech recognition
+
+  - audio classification
+
+  - image classification 
+
+  - object detection
+]
+
+---
+
+## The `reticulate` package
+
+The reticulate package provides an interface to call and run Python from R.
+
+.single[
+.tiny[
+
+```r
+library(reticulate)
+
+py_config()
+```
+
+```
+python:         C:/Users/cengiz/AppData/Local/r-miniconda/envs/r-reticulate/python.exe
+libpython:      C:/Users/cengiz/AppData/Local/r-miniconda/envs/r-reticulate/python36.dll
+pythonhome:     C:/Users/cengiz/AppData/Local/r-miniconda/envs/r-reticulate
+version:        3.6.13 (default, Sep 23 2021, 07:38:49) [MSC v.1916 64 bit (AMD64)]
+Architecture:   64bit
+numpy:          C:/Users/cengiz/AppData/Local/r-miniconda/envs/r-reticulate/Lib/site-packages/numpy
+numpy_version:  1.19.5
+
+NOTE: Python version was forced by RETICULATE_PYTHON
+```
+]
+
+
+.tiny[
+
+```r
+conda_list()
+```
+
+```
+          name                                                                         python
+1    Anaconda3                                       C:\\Users\\cengiz\\Anaconda3\\python.exe
+2 r-reticulate C:\\Users\\cengiz\\AppData\\Local\\r-miniconda\\envs\\r-reticulate\\python.exe
+```
+]
+
+
+.tiny[
+
+```r
+use_condaenv('r-reticulate')
+
+# conda_install(envname  = 'r-reticulate',
+#              packages = 'sentence_transformers',
+#               pip      = TRUE)
+
+st &lt;- import('sentence_transformers')
+
+st
+```
+
+```
+Module(sentence_transformers)
+```
+]
+]
+
+---
+
+## Sample model: RoBERTa
+
+- Next, we will pick a pre-trained language model to play with. 
+
+- It can be any model available on Hugging Face. 
+
+- You have to find the associated Hugging Face page for that particular model and use the same tag used for that model. 
+
+- For instance, suppose we want to use the RoBERTa model. The associated Huggingface webpage for this model is [https://huggingface.co/roberta-base](https://huggingface.co/roberta-base)
+
+- Notice that the tag for this model is `roberta-base`. 
+
+.indent[
+.single[
+.tiny[
+
+```r
+model.name &lt;- 'roberta-base'
+
+roberta       &lt;- st$models$Transformer(model.name)
+pooling_model &lt;- st$models$Pooling(roberta$get_word_embedding_dimension())
+model         &lt;- st$SentenceTransformer(modules = list(roberta,pooling_model))
+model
+```
+
+```
+SentenceTransformer(
+  (0): Transformer({'max_seq_length': 512, 'do_lower_case': False}) with Transformer model: RobertaModel 
+  (1): Pooling({'word_embedding_dimension': 768, 'pooling_mode_cls_token': False, 'pooling_mode_mean_tokens': True, 'pooling_mode_max_tokens': False, 'pooling_mode_mean_sqrt_len_tokens': False})
+)
+```
+]
+]
+]
+
+- When you run this code the first time, it will install all the relevant model files [https://huggingface.co/roberta-base/tree/main](https://huggingface.co/roberta-base/tree/main) to a local folder on your machine. 
+
+---
+
+- Each model has a limit for the number of characters they can process. 
+
+- For instance, RoBERTa can handle a text sequence with a maximum number of 512 characters. 
+
+.indent[
+.single[
+.tiny[
+
+```r
+model$get_max_seq_length()
+```
+
+```
+[1] 512
+```
+]
+]
+]
+
+- If we submit any text with more than 512 characters, it will only process the first 512 characters.
+
+- Another essential characteristic is the length of the output vector when a language model returns numerical embeddings. 
+
+- The following code reveals that RoBERTa returns a vector with a length of 768.
+
+.indent[
+.single[
+.tiny[
+
+```r
+model$get_sentence_embedding_dimension()
+```
+
+```
+[1] 768
+```
+]
+]
+]
+
+- RoBERTa can take any text sequence up to 512 characters as input and then return a numerical vector with a length of 768 that represent this text sequence. This process is also called **encoding**.
+
+---
+
+- For instance, we can get the embeddings for a single word ‘sofa’. 
+
+.indent[
+.single[
+.tiny[
+
+```r
+model$encode('sofa')
+```
+
+```
+  [1] -0.035673961  0.009145292  0.045155115 -0.022831999  0.444271356 -0.213501185  0.016776590 -0.031104138
+  [9]  0.010763753 -0.109695613 -0.218385130 -0.114003226  0.123890847 -0.079736136  0.169241652  0.033682950
+ [17] -0.060081303  0.062376734  0.090727039 -0.022418823 -0.048738785  0.146164417 -0.040947653  0.048980530
+ [25] -0.078615293 -0.001459451  0.122411616  0.016039580 -0.027918482 -0.063380398 -0.218016654 -0.130548552
+ [33]  0.069047354 -0.001986546  0.043062352  0.060666095  0.076921932  0.082324371 -0.009124480  0.074072585
+ [41] -0.099838220  0.019355917 -0.161781847  0.006589258 -0.006635100 -0.009499688  0.142429739 -0.162081540
+ [49]  0.035310790 -0.042761490  0.091216803 -0.069520645 -0.067890733  0.085272178 -0.052535873 -0.128475532
+ [57]  0.078527123 -0.065088570 -0.077463746  0.036280572 -0.076873213  0.503972054 -0.041739281  0.019071214
+ [65] -0.034255326  0.059130061 -0.068348601  0.298463583  0.103186190 -0.045786552  0.005054155 -0.082052834
+ [73]  0.067019530  0.096304454 -0.005556324 -0.014345085  0.089176968 -2.471521616 -0.152103558  0.050706096
+ [81]  0.071368039 -0.075957939  0.637347639  0.123483524  0.097477347  0.002311159  0.017645134  0.233651847
+ [89] -0.020067355  0.051375460  0.057862498  0.038290158  0.038890921  0.078757085  0.026953537  0.042133540
+ [97] -0.018540401  0.316686124 -0.064064525  0.024643535
+ [ reached getOption("max.print") -- omitted 668 entries ]
+```
+]
+]
+]
+
+- Similarly, we can get the vector of numerical embeddings for a whole sentence.
+
+.indent[
+.single[
+.tiny[
+
+```r
+model$encode('I like to drink Turkish coffee')
+```
+
+```
+  [1] -0.011787563  0.102784999  0.010933759 -0.046234991 -0.004870780 -0.044982813  0.082253136 -0.030680846
+  [9]  0.002545473 -0.074854769  0.006268861 -0.161093548  0.073251143 -0.008548131  0.040855005  0.282602638
+ [17]  0.113437660  0.134714946  0.070556641  0.369077712 -0.023299653  0.129972905 -0.087970734  0.001767353
+ [25] -0.135965645  0.056659225  0.119028516 -0.015006499  0.137721002 -0.004969854 -0.084344238 -0.078683749
+ [33]  0.021612354 -0.039848015  0.044566937  0.058498740  0.116407432  0.022860289 -0.009472768  0.005023805
+ [41]  0.046304196 -0.321840614 -0.020347901  0.017407298  0.013550013 -0.046380099 -0.056976926 -0.140553191
+ [49]  0.074571297 -0.012873427 -0.015933262  0.075764850  0.029388802  0.041944694 -0.055896059  0.032724179
+ [57]  0.038444079  0.054137304  0.120718785 -0.074913748  0.019386305  0.541475773 -0.155054778  0.053815808
+ [65]  0.040421356 -0.006427096 -0.007460407 -0.121550187 -0.024524804  0.108934306  0.030513961 -0.088536829
+ [73]  0.049289271 -0.089430012  0.018972535  0.071318731  0.068718828 -4.136425018  0.133511454  0.076649025
+ [81]  0.036512222 -0.096736401  0.892177880 -0.043068361  0.041941863 -0.055145040 -0.021039886  0.175592646
+ [89]  0.012270497 -0.003860307  0.044418067 -0.035518471 -0.075384133  0.111435041  0.049394138  0.038163140
+ [97]  0.098541118 -0.023031345 -0.001796652 -0.000854142
+ [ reached getOption("max.print") -- omitted 668 entries ]
+```
+]
+]
+]
+
+---
+
+- The input can be many sentences. 
+
+- For instance, if I submit a vector of three sentences as an input, the model returns a 3 x 768 matrix containng sentence embeddings. 
+
+Each row contains the embeddings for the corresponding sentence.
+
+.indent[
+.single[
+.tiny[
+
+```r
+my.sentences &lt;- c('The weather today is great.',
+                  'I live in Eugene.',
+                  'I am a graduate student.')
+
+embeddings &lt;- model$encode(my.sentences)
+
+dim(embeddings)
+```
+
+```
+[1]   3 768
+```
+]
+]
+]
+
+---
+
+Make sure you review the following notebook to see how to process 2834 reading excerpts in the CommonLit Readability dataset and obtain a 2834 x 768 matrix of numerical embeddings using the [AllenAI Longformer model](https://huggingface.co/allenai/longformer-base-4096). 
+
+[https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii](https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

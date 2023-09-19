@@ -1,0 +1,1200 @@
+---
+title: "(Regularized) Logistic Regression"
+subtitle: ""
+author: "Cengiz Zopluoglu"
+institute: "College of Education, University of Oregon"
+date: "Nov 7 & 14, 2022 <br> Eugene, OR"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
+    #self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+<style>
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 75% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 60% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+</style>
+
+```{R, setup, include = F}
+library(pacman)
+p_load(here, tidyverse, ggplot2, xaringan, knitr, kableExtra, 
+       xaringanthemer,DT,dplyr,gridExtra, plotly)
+
+#i_am("B:/UO Teaching/EDUC614/Winter22/Slide Template/template.rmd")
+
+red_pink <- "#e64173"
+turquoise = "#20B2AA"
+orange = "#FFA500"
+red = "#fb6107"
+blue = "#3b3b9a"
+green = "#8bb174"
+grey_light = "grey70"
+grey_mid = "grey50"
+grey_dark = "grey20"
+purple = "#6A5ACD"
+slate = "#314f4f"
+
+extra_css <- list(
+  ".red"   = list(color = "red"),
+  ".blue"  =list(color = "blue"),
+  ".red-pink" = list(color= "red_pink"),
+  ".grey-light" = list(color= "grey_light"),
+  ".purple" = list(color = "purple"),
+  ".small" = list("font-size" = "90%"))
+
+write_extra_css(css = extra_css, outfile = "my_custom.css")
+
+# Knitr options
+opts_chunk$set(
+  comment = "",
+  fig.align = "center",
+  fig.height = 4,
+  fig.width = 4,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+options(knitr.table.format = "html")
+
+options(scipen = 99, digits = 4,max.print = 100,width = 120)
+
+require(here)
+```
+
+### The goals for the next two weeks:
+
+- Overview of the Logistic Regression
+
+  - Linear Probability Model
+    
+  - Model Description
+    
+  - Model Estimation
+    
+  - Model Performance Evaluation
+    
+- Regularized Logistic Regression
+
+  - Ridge penalty
+  
+  - Lasso penalty
+  
+  - Elastic Net
+  
+- Review of Kaggle notebooks for building classification models
+
+---
+
+### Demo Dataset for Two Group Classification
+
+A random sample of 20 observations from the Recidivism dataset
+
+.tiny2[
+.single[
+.pull-left[
+```{r, echo=TRUE,eval=TRUE}
+
+recidivism_sub <- read.csv(here('data/recidivism_sub.csv'),
+                           header=TRUE)
+
+recidivism_sub[,c('ID',
+                  'Dependents',
+                  'Recidivism_Arrest_Year2')]
+
+table(recidivism_sub$Recidivism_Arrest_Year2)
+
+``` 
+]
+]
+]
+
+.pull-right[
+
+- The outcome variable is a binary outcome (1: Recidivated, 0: Not Recidivated)
+
+- In practice, the binary outcomes can be coded in various ways: 
+  
+  - True vs. False
+  
+  - Yes vs. No
+  
+  - Success vs. Failure 
+  
+- In this class, we assume that the outcome variable is coded as 0s and 1s, and the category we want to predict is 1.
+
+- The predictor is the number of dependents a parolee has at the time of release
+
+]
+
+---
+
+### Linear Probability Model
+
+
+- A linear probability model fits a typical regression model to a binary outcome. 
+
+- When the outcome is binary, the predictions from a linear regression model can be considered as the probability of the outcome being equal to 1,
+
+$$\hat{Y} = P(Y = 1) = \beta_0 + \beta_1X + \epsilon$$
+
+.indent[
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE}
+mod <- lm(Recidivism_Arrest_Year2 ~ 1 + Dependents,
+          data = recidivism_sub)
+
+summary(mod)
+```  
+]
+]
+]
+
+---
+
+- Intercept (0.75): When the number of dependents is equal to 0, the probability of being recidivated in Year 2 is 0.75.
+
+- Slope (-0.25): For every additional dependent (one unit increase in X) the individual has, the probability of being recidivated in Year 2 is reduced by .25.
+
+<br>
+
+```{r, echo=FALSE,eval=TRUE}
+set.seed(1234)
+x <- recidivism_sub$Dependents + runif(20,-.1,.1)
+y <- recidivism_sub$Recidivism_Arrest_Year2
+ggplot()+
+  geom_point(aes(x=x,y=y))+
+  theme_bw()+
+  geom_abline(intercept = coef(mod)[1],slope = coef(mod)[2])+
+  xlim(c(min(x),10))+
+  scale_x_continuous(breaks = 1:10,limits=c(0,10))
+```  
+
+---
+
+A major issue when using a linear regression model to predict a binary outcome is that the model predictions can go outside of the boundary [0,1] and yield unreasonable predictions. 
+
+.indent[
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE}
+X <- data.frame(Dependents = 0:10)
+
+cbind(0:10,round(predict(mod,newdata = X),3))
+
+``` 
+]
+]
+]
+
+A linear regression model may not be the best tool to predict a binary outcome.
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Overview of the Logistic Regression
+---
+
+### Model Description
+
+- To overcome the limitations of the linear probability model, we bundle our prediction model in a sigmoid function. 
+
+$$ f(a) =\frac{e^a}{1 + e^a}. $$
+
+$$ f(a) = \frac{1}{1 + e^{-a}}. $$
+- The output of this function is always between 0 and 1 regardless of the value of $a$. 
+
+- The sigmoid function is an appropriate choice for the logistic regression (but not the only one) because it assures that the output is always bounded between 0 and 1. 
+
+
+```{r, echo=FALSE,eval=TRUE,fig.width=3,fig.height=3}
+fx <- function(x) { exp(x)/(1+exp(x))}
+ggplot()+
+  geom_function(fun=fx)+
+  xlim(c(-10,10))+
+  ylim(c(0,1))+
+  theme_bw()+
+  xlab('a')+
+  ylab('f(a)')+
+  ggtitle('Sigmoid function')
+```  
+
+---
+
+If we revisit the previous example, we can specify a logistic regression model to predict the probability of being recidivated in Year 2 as the following:
+
+$$P(Y=1) =  \frac{1}{1 + e^{-(\beta_0+\beta_1X)}}.$$
+
+The model output can be directly interpreted as the probability of the binary outcome being equal to 1 
+
+Then, we assume that the actual outcome follows a binomial distribution with the predicted probability.
+
+$$ P(Y=1) = p $$
+
+$$ Y \sim Binomial(p)$$
+
+Suppose the coefficient estimates of this model are 
+
+- $\beta_0 = 1.33$
+
+- $\beta_1 = -1.62$
+
+The probability of being recidivated for a parolee with 8 dependents:
+
+$$P(Y=1) =  \frac{1}{1+e^{-(1.33-1.62 \times 8)}} = 0.0000088951098.$$
+
+---
+
+```{r, echo=FALSE,eval=FALSE}
+mod <- glm(Recidivism_Arrest_Year2 ~ 1 + Dependents,
+           family = 'binomial',
+           data = recidivism_sub)
+summary(mod)
+``` 
+
+
+.single[
+```{r, echo=TRUE,eval=TRUE}
+b0 = 1.33
+b1 = -1.62
+x = 0:10
+y = 1/(1+exp(-(b0+b1*x)))
+``` 
+]
+
+.pull-left[
+.single[
+.tiny[
+```{r, echo=TRUE,eval=TRUE}
+data.frame(number.of.dependents=x, 
+           probability=y)
+```
+]]]
+
+.pull-right[
+```{r, echo=FALSE,eval=TRUE}
+b0 = 1.33
+b1 = -1.62
+fx <- function(x) {1/(1+exp(-(b0+b1*x)))}
+ggplot()+
+  geom_function(fun=fx)+
+  xlim(c(0,10))+
+  ylim(c(0,1))+
+  theme_bw()+
+  xlab('Number of Dependents')+
+  ylab('Probability of Being Recidivated')+
+  ggtitle('')+
+  scale_x_continuous(breaks = 1:10,limits=c(0,10))
+```  
+]
+
+---
+
+<br>
+
+$$P(Y=1) =  \frac{1}{1 + e^{-(\beta_0+\beta_1X)}}.$$
+<br>
+
+- In its original form, it is difficult to interpret the logistic regression parameters because a one unit increase in the predictor is no longer linearly related to the probability of the outcome being equal to 1.
+
+- The most common presentation of logistic regression is obtained after a bit of algebraic manipulation to rewrite the model equation.
+
+<br>
+
+$$ln \left [ \frac{P(Y=1)}{1-P(Y=1)} \right] =  \beta_0+\beta_1X.$$
+
+<br>
+
+- The term on the left side of the equation is known as the **logit** (natural logarithm of odds). 
+
+---
+<br>
+
+It is essential that you get familiar with the three concepts (probability, odds, logit) and how these three are related to each other for interpreting the logistic regression parameters. 
+
+![](pr-odd-logit.PNG)
+
+---
+<br>
+
+$$ln \left [ \frac{P(Y=1)}{1-P(Y=1)} \right] =  1.33 - 1.62X.$$
+
+- When the number of dependents is equal to zero, the predicted logit is equal to 1.33 (intercept), and for every additional dependent, the logit decreases by 1.62 (slope).
+
+- It is also common to transform the logit to odds when interpreting the parameters.
+
+  - When the number of dependents is equal to zero, the odds of being recidivated is 3.78,  $e^{1.33}$.
+  
+  - For every additional dependent the odds of being recidivated is multiplied by $e^{-1.62}$
+ 
+  - Odds ratio --> $e^{-1.62} = 0.198$
+
+---
+
+- The right side of the equation can be expanded by adding more predictors, adding polynomial terms of the predictors, or adding interactions among predictors. 
+
+- A model with only the main effects of $P$ predictors can be written as
+
+$$ln \left [ \frac{P(Y=1)}{1-P(Y=1)} \right] = \beta_0  + \sum_{p=1}^{P} \beta_pX_{p}$$
+
+- $\beta_0$ 
+
+  - the predicted logit when the values for all the predictor variables in the model are equal to zero. 
+  
+  - $e^{\beta_0}$, the predicted odds of the outcome being equal to 1 when the values for all the predictor variables in the model are equal to zero.
+
+-  $\beta_p$
+
+  - the change in the predicted logit for one unit increases in $X_p$ when the values for all other predictors in the model are held constant
+  
+  - For every one unit in increase in $X_p$, the odds of the outcome being equal to 1 is multiplied  by $e^{\beta_p}$ when the values for all other predictors in the model are held constant
+
+---
+
+### Model Estimation
+
+#### **The concept of likelihood**
+
+- It is essential to understand the **likelihood** concept for estimating the coefficients of a logistic regression model. 
+
+- Consider a simple example of flipping coins. Suppose you flip the same coin 20 times and observe the following data. 
+
+$$\mathbf{Y} = \left ( H,H,H,T,H,H,H,T,H,T \right )$$
+
+- We don't know whether this is a fair coin in which the probability of observing a head or tail is equal to 0.5. 
+
+- Is this a fair coin? If not, what is the probability of observing a head for this coin?
+
+---
+
+- Suppose we define $p$ as the probability of observing a head when we flip this coin. 
+
+- By definition, the probability of observing a tail is $1-p$.
+
+$$P(Y=H) = p$$
+
+$$P(Y=T) = 1 - p$$
+
+- The likelihood of our observations of heads and tails as a function of $p$.
+
+$$ \mathfrak{L}(\mathbf{Y}|p) = p \times p \times p \times (1-p) \times p \times p \times p \times (1-p) \times p \times (1-p) $$
+
+$$ \mathfrak{L}(\mathbf{Y}|p) = p^7 \times (1-p)^3 $$
+
+
+- If this is a fair coin, then $p$ is equal to 0.5, and  the likelihood of observing seven heads and three tails would be
+
+$$ \mathfrak{L}(\mathbf{Y}|p = 0.5) = 0.5^7 \times (1-0.5)^3 = 0.0009765625$$
+
+- If we assume that $p$ is equal to 0.65, the likelihood of observed data would be 
+
+$$ \mathfrak{L}(\mathbf{Y}|p = 0.65) = 0.65^7 \times (1-0.65)^3 = 0.00210183$$
+
+- Based on observed data, Which one is more likely? $p=0.5$ or $p=0.65$?
+
+---
+
+####  **Maximum likelihood estimation (MLE)**
+
+- What would be the best estimate of $p$ given our observed data (seven heads and three tails)? 
+
+- Suppose we try every possible value of $p$ between 0 and 1 and calculate the likelihood of observed data, $\mathfrak{L}(\mathbf{Y})$. 
+
+- Then, plot $p$ vs. $\mathfrak{L}(\mathbf{Y})$
+
+.pull-left[
+```{r, echo=FALSE,eval=TRUE}
+
+p <- seq(0,1,.001)
+
+L <- p^7*(1-p)^3
+
+ggplot()+
+  geom_line(aes(x=p,y=L)) + 
+  theme_bw() + 
+  xlab('Probability of Observing a Head (p)')+
+  ylab('Likelihood of Observing 7 Heads and 3 Tails')+
+  geom_vline(xintercept=p[which.max(L)],lty=2)
+```
+]
+
+.pull-right[
+
+- Which $p$ value does make observed data most likely (largest likelihood)? 
+
+- This $p$ value is called the **maximum likelihood estimate** of $p$.
+
+- We can show that the $p$ value that makes the likelihood largest is 0.7.
+]
+
+---
+
+#### **The concept of the log-likelihood**
+
+- The computation of likelihood requires the multiplication of so many $p$ values.
+
+- When you multiply values between 0 and 1, the result gets smaller and smaller. 
+
+- It creates problems when you multiply so many of these small $p$ values due to the maximum precision any computer can handle. 
+
+.indent[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+.Machine$double.xmin
+```
+]]
+
+- When you have hundreds of thousands of observations, it is probably not a good idea to work directly with likelihood. 
+
+- Instead, we prefer working with the log of likelihood (log-likelihood). 
+
+---
+
+- The log-likelihood has two main advantages:
+
+  - We are less concerned about the precision of small numbers our computer can handle.
+
+  - Log-likelihood has better mathematical properties for optimization problems (the log of the product of two numbers equals the sum of the log of the two numbers).
+
+  - The point that maximizes likelihood is the same number that maximizes the log-likelihood, so our end results (MLE estimate) do not care if we use log-likelihood instead of likelihood.
+
+$$ ln(\mathfrak{L}(\mathbf{Y}|p)) = ln(lop^7 \times (1-p)^3) $$
+
+$$ ln(\mathfrak{L}(\mathbf{Y}|p)) = ln(p^7) + ln((1-p)^3) $$
+
+$$ ln(\mathfrak{L}(\mathbf{Y}|p)) = 7 \times ln(p) + 3 \times ln(1-p) $$
+
+---
+
+<br>
+
+.pull-left[
+```{r, echo=FALSE,eval=TRUE}
+
+p <- seq(0,1,.001)
+
+L <- p^7*(1-p)^3
+
+ggplot()+
+  geom_line(aes(x=p,y=L)) + 
+  theme_bw() + 
+  xlab('Probability of Observing a Head (p)')+
+  ylab('Likelihood of Observing 7 Heads and 3 Tails')+
+  geom_vline(xintercept=p[which.max(L)],lty=2)
+```
+]
+
+.pull-right[
+```{r, echo=FALSE,eval=TRUE}
+p <- seq(0,1,.001)
+
+logL <- log(p)*7 + log(1-p)*3
+
+ggplot()+
+  geom_line(aes(x=p,y=logL)) + 
+  theme_bw() + 
+  xlab('Probability of Observing a Head (p)')+
+  ylab('Loglikelihood of Observing 7 Heads and 3 Tails')+
+  geom_vline(xintercept=p[which.max(logL)],lty=2)
+```
+]
+
+---
+
+#### **MLE for Logistic Regression coefficients**
+
+- Let's apply these concepts to estimate the logistic regression coefficients for the demo dataset. 
+
+$$ln \left [ \frac{P_i(Y=1)}{1-P_i(Y=1)} \right] =  \beta_0+\beta_1X_i.$$
+
+- Note that $X$ and $P$ have a subscript $i$ to indicate that each individual may have a different X value, and therefore each individual will have a different probability. 
+
+- You can consider each individual as a separate coin flip with an unknown probability.
+
+- Our observed outcome is a set of 0s (not recidivated) and 1s (recidivated. 
+
+.indent[
+.tiny[
+```{r, echo=TRUE,eval=TRUE ,message=FALSE, warning=FALSE}
+recidivism_sub$Recidivism_Arrest_Year2
+``` 
+]
+]
+
+- How likely to observe this set of values? What { $\beta_0,\beta_1$ } values make this data most likely?
+
+---
+
+- Given a specific set of coefficients, { $\beta_0,\beta_1$ }, we can calculate the logit for every observation using the model equation and then transform this logit to a probability, $P_i(Y=1)$. 
+
+- Then, we can calculate the log of the probability for each observation and sum them across observations to obtain the log-likelihood of observing this data (12 zeros and eight ones). 
+
+- Suppose that we have two guesstimates for { $\beta_0,\beta_1$ }, which are 0.5 and -0.8, respectively. These coefficients imply the following predicted model.
+
+```{r, echo=FALSE,eval=TRUE, message=FALSE, warning=FALSE}
+b0 = 0.5
+b1 = -0.8
+
+fx <- function(x) {exp(b0+b1*x)/(1+exp(b0+b1*x))}
+
+ggplot()+
+  geom_function(fun=fx)+
+  xlim(c(0,10))+
+  ylim(c(0,1))+
+  theme_bw()+
+  xlab('Number of Dependents')+
+  ylab('Probability of Being Recidivated')+
+  ggtitle('')
+
+```  
+
+---
+
+.pull-left[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE}
+
+b0 = 0.5
+b1 = -0.8
+
+x = recidivism_sub$Dependents
+
+y = recidivism_sub$Recidivism_Arrest_Year2
+
+pred_logit <- b0 + b1*x
+
+pred_prob1 <- exp(pred_logit)/(1+exp(pred_logit))
+
+pred_prob0 <- 1 - pred_prob1 
+
+data.frame(Dependents      = x, 
+           Recidivated     = y, 
+           Prob1 = pred_prob1,
+           Prob0 = pred_prob0)
+``` 
+]]]
+
+.pull-right[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE}
+logL <-  y*log(pred_prob1) + (1-y)*log(pred_prob0)
+sum(logL)
+``` 
+]]]
+
+---
+
+- We can summarize this by saying that if our model coefficients were $\beta_0$ = 0.5 and $\beta_1$ = -0.8, then the log of the likelihood of observing the outcome in our data would be -9.25.
+
+$$\mathbf{Y} = \left ( 1,0,1,0,0,0,0,1,1,0,0,1,0,0,0,1,0,0,0,0 \right )$$
+
+$$ \mathfrak{logL}(\mathbf{Y}|\beta_0 = 0.5,\beta_1 = -0.8) = -9.25$$
+
+- Is there another pair of values we can assign to $\beta_0$ and $\beta_1$ that would provide a higher likelihood of data? 
+
+- Is there a pair of values that makes the log-likelihood largest?
+
+
+<center> ![](loglik.PNG)
+
+---
+
+<br>
+
+- What is the maximum point of this surface? 
+
+- Our simple search indicates that the maximum point of this surface is -8.30, and the set of $\beta_0$ and $\beta_1$ coefficients that make the observed data most likely is 1.33 and -1.62. 
+
+$$ln \left [ \frac{P_i(Y=1)}{1-P_i(Y=1)} \right] =  1.33 - 1.62 \times X_i.$$
+
+<br>
+
+<center> ![](loglik.PNG) 
+
+---
+
+#### **Logistic Loss function**
+
+- Below is a compact way of writing likelihood and log-likelihood in mathematical notation. For simplification purposes, we write $P_i$ to represent $P_i(Y=1)$.
+
+$$ \mathfrak{L}(\mathbf{Y}|\boldsymbol\beta) = \prod_{i=1}^{N} P_i^{y_i} \times (1-P_i)^{1-y_i}$$
+
+$$ \mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta) = \sum_{i=1}^{N} Y_i \times ln(P_i) + (1-Y_i) \times ln(1-P_i)$$
+
+- The final equation above, $\mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta)$, is known as the **logistic loss** function. 
+
+- By finding the set of coefficients in a model, $\boldsymbol\beta = (\beta_0, \beta_1,...,\beta_P)$, that maximizes this quantity, we obtain the maximum likelihood estimates of the coefficients for the logistic regression model.
+
+- There is no closed-form solution for estimating the logistic regression parameters.
+
+- The naive crude search we applied above would be inefficient when you have a complex model with many predictors.  
+
+- The only way to estimate the logistic regression coefficients is to use numerical approximations and computational algorithms to maximize the logistic loss function. 
+
+---
+
+<br>
+<br>
+<br>
+
+<div id="infobox">
+
+<center style="color:black;"> <b>NOTE</b> </center>
+
+<br>
+
+Why do we not use least square estimation and minimize the sum of squared residuals when estimating the coefficients of the logistic regression model? We can certainly use the sum of squared residuals as our loss function and minimize it to estimate the coefficients for the logistic regression, just like we did for the linear regression. The complication is that the sum of the squared residuals function yields a non-convex surface when the outcome is binary as opposed to a convex surface obtained from the logistic loss function. Non-convex optimization problems are more challenging than convex optimization problems, and they are more vulnerable to finding sub-optimal solutions (local minima/maxima). Therefore, the logistic loss function and maximizing it is preferred when estimating the coefficients of a logistic regression model.
+
+</div>
+
+---
+
+#### **The `glm` function**
+
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE,fig.width=8,fig.height=8}
+
+mod <- glm(Recidivism_Arrest_Year2 ~ 1 + Dependents,
+           data   = recidivism_sub,
+           family = 'binomial')
+
+summary(mod)
+
+```
+]]
+
+In the **Coefficients** table, the numbers under the **Estimate** column are the estimated coefficients for the logistic regression model. The quantity labeled as the **Residual Deviance** in the output is twice the maximized log-likelihood,
+
+$$ Deviance  = -2 \times \mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta). $$
+
+---
+
+#### **The `glmnet` function**
+
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+require(glmnet)
+
+mod <- glmnet(x         = cbind(0,recidivism_sub$Dependents),
+              y         = factor(recidivism_sub$Recidivism_Arrest_Year2),
+              family    = 'binomial',
+              alpha     = 0,
+              lambda    = 0,
+              intercept = TRUE)
+
+coef(mod)
+
+```
+]]
+
+<br>
+
+The `x` argument is the input matrix for predictors, and the `y` argument is a vector of binary response outcome. The `glmnet` requires the `y` argument to be a factor with two levels. 
+
+Note that I defined the `x` argument above as `cbind(0,recidivism_sub$Dependents)` because `glmnet` requires the `x` to be a matrix with at least two columns. So, I added a column of zeros to trick the function and force it to run. That column of zeros has zero impact on the estimation. 
+
+---
+
+### Model Performance Evaluation
+
+When the outcome is a binary variable, classification models, such as logistic regression, yield a probability estimate for a class membership (or a continuous-valued prediction between 0 and 1). 
+
+$$ln \left [ \frac{P_i(Y=1)}{1-P_i(Y=1)} \right] =  1.33 - 1.62 \times X_i.$$
+
+.indent[
+.single[
+.tiny2[
+```{r, echo=TRUE,eval=TRUE}
+
+mod <- glm(Recidivism_Arrest_Year2 ~ 1 + Dependents,
+           data   = recidivism_sub,
+           family = 'binomial')
+
+recidivism_sub$pred_prob <- predict(mod,type='response')
+
+recidivism_sub[,c('ID','Dependents','Recidivism_Arrest_Year2','pred_prob')]
+
+```
+]]]
+
+---
+
+#### **Separation of two classes**
+
+In an ideal situation where a model does a perfect job of predicting a binary outcome, we expect 
+
+- all those observations in Group 0 (Not Recidivated) to have a predicted probability of 0,
+
+- and all those observations in Group 1 (Recidivated) to have a predicted probability of 1. 
+
+So, predicted values close to 0 for observations in Group 0 and those close to 1 for Group 1 are indicators of good model performance.
+
+One way to look at the quality of separation between two classes of a binary outcome is to examine the distribution of predictions within each class.
+
+
+.pull-left[
+```{r, echo=FALSE,eval=TRUE,fig.width=5,fig.height=3}
+
+x   <- c(rnorm(1000,0.45,.1),rnorm(1000,0.55,.1))
+out <- factor(c(rep(0,1000),rep(1,1000)))
+
+ggplot()+
+  geom_density(aes(x=x,lty=out))+
+  theme_bw()+
+  xlab('Model Predictions')+
+  labs(lty='')+
+  scale_linetype_manual(values = c(1,2))
+
+```
+]
+
+.pull-right[
+```{r, echo=FALSE,eval=TRUE,fig.width=5,fig.height=3}
+
+x   <- c(rnorm(1000,0.3,.1),rnorm(1000,0.7,.1))
+out <- factor(c(rep(0,1000),rep(1,1000)))
+
+ggplot()+
+  geom_density(aes(x=x,lty=out))+
+  theme_bw()+
+  xlab('Model Predictions')+
+  labs(lty='')+
+  scale_linetype_manual(values = c(1,2))
+
+```
+]
+
+---
+
+From the demo analysis:
+
+```{r, echo=FALSE,eval=TRUE,fig.width=6,fig.height=6}
+
+ggplot(data = recidivism_sub, 
+       aes(x=pred_prob,
+           lty=factor(Recidivism_Arrest_Year2,
+                      levels = c(0,1),
+                      labels = c('Not Recidivated','Recidivated'))))+
+  geom_density()+
+  theme_bw()+
+  xlab('Model Predictions')+
+  labs(lty='')+
+  scale_linetype_manual(values = c(1,2))
+
+```
+
+---
+
+#### **Class Predictions**
+
+- In most situations, for practical reasons, we transformed the continuous probability predicted by a model into a binary prediction. 
+
+- Predicted class membership leads actionable items in practice.
+
+- This is implemented by determining an arbitrary cut-off value. Once a cut-off value is determined, then we can generate class predictions. 
+
+- Consider that we use a cut-off value of 0.5. 
+
+.pull-left[
+.single[
+.tiny2[
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+recidivism_sub$pred_class <- ifelse(recidivism_sub$pred_prob>.5,1,0)
+
+recidivism_sub[,c('ID','Dependents',
+                  'Recidivism_Arrest_Year2',
+                  'pred_prob','pred_class')]
+```
+]]]
+
+
+.pull-right[
+.indent[
+- If an observation has a predicted class probability less than 0.5, we predict that this person is in Group 0 (Not Recidivated). 
+
+- If an observation has a predicted class probability higher than 0.5, we predict that this person is in Group 1.
+]]
+
+---
+
+#### **Confusion Matrix**
+
+We can summarize the relationship between the binary outcome and binary prediction in a 2 x 2 table. This table is commonly referred to as **confusion matrix**.
+
+```{r, echo=FALSE,eval=TRUE}
+
+tab <- table(recidivism_sub$pred_class,
+             recidivism_sub$Recidivism_Arrest_Year2,
+             dnn = c('Predicted','Observed'))
+tab
+```
+
+
+Based on the elements of this table, we can define four key concepts:
+
+- **True Positives(TP)**: True positives are the observations where both the outcome and prediction are equal to 1. 
+
+- **True Negative(TN)**: True negatives are the observations where both the outcome and prediction are equal to 0. 
+
+- **False Positives(FP)**: False positives are the observations where the outcome is 0 but the prediction is 1. 
+
+- **False Negatives(FN)**: False negatives are the observations where the outcome is 1 but the prediction is 0. 
+
+```{r, echo=FALSE,eval=FALSE,message=FALSE, warning=FALSE}
+
+tn <- tab[1,1]
+tp <- tab[2,2]
+fp <- tab[2,1]
+fn <- tab[1,2]
+
+```
+
+---
+
+#### **Related Metrics**
+
+.pull-left[
+- **Accuracy**: Overall accuracy simply represent the proportion of correct predictions.
+
+$$ACC = \frac{TP + TN}{TP + TN + FP + FN}$$
+
+- **True Positive Rate (Sensitivity)**: True positive rate (a.k.a. sensitivity) is the proportion of correct predictions for those observations the outcome is 1 (event is observed).
+
+$$TPR = \frac{TP}{TP + FN}$$
+
+- **True Negative Rate (Specificity)**: True negative rate (a.k.a. specificity) is the proportion of correct predictions for those observations the outcome is 0 (event is not observed).
+
+$$TNR = \frac{TN}{TN + FP}$$
+]
+
+.pull-right[
+- **Positive predicted value (Precision)**: Positive predicted value (a.k.a. precision) is the proportion of correct decisions when the model predicts that the outcome is 1. 
+
+$$PPV = \frac{TP}{TP + FP}$$
+
+- **F1 score**: F1 score is a metric that combines both PPV and TPR.
+
+$$F1 = 2*\frac{PPV*TPR}{PPV + TPR}$$
+
+]
+
+---
+
+#### **Area Under the Receiver Operating Curve (AUC or AUROC)**
+
+- The confusion matrix and related metrics all depend on the arbitrary cut-off value one picks when transforming continuous predicted probabilities to binary predicted classes. 
+
+- We can change the cut-off value to optimize certain metrics, and there is always a trade-off between these metrics for different cut-off values. 
+
+<center>
+.single[
+.tidy2[
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+# Write a generic function to return the metric for a given vector of observed 
+# outcome, predicted probability and cut-off value
+
+cmat <- function(x,y,cut){
+  # x, a vector of predicted probabilities
+  # y, a vector of observed outcomes
+  # cut, user-defined cut-off value
+ 
+  x_ <- ifelse(x>cut,1,0)
+    
+  tn <- sum(x_==0 & y==0)
+  tp <- sum(x_==1 & y==1)
+  fp <- sum(x_==1 & y==0)
+  fn <- sum(x_==0 & y==1)
+  
+  acc <- (tp + tn)/(tp+tn+fp+fn)
+  tpr <- (tp)/(tp+fn)
+  tnr <- (tn)/(tn+fp)
+  ppv <- (tp)/(tp+fp)
+  fpr <- (fp)/(fp+tn)
+  f1 <- (2*ppv*tpr)/(ppv+tpr)
+
+  return(list(acc=acc,tpr=tpr,tnr=tnr,ppv=ppv,fpr=fpr,f1=f1))
+}
+
+# Try it out
+
+  #cmat(x=recidivism_sub$pred_prob,
+  #     y=recidivism_sub$Recidivism_Arrest_Year2,
+  #     cut=0.5)
+
+# Do it for different cut-off values
+
+metrics <- data.frame(cut=seq(0,0.8,0.1),
+                      acc=NA,
+                      tpr=NA,
+                      tnr=NA,
+                      ppv=NA,
+                      fpr=NA,
+                      f1=NA)
+
+
+for(i in 1:nrow(metrics)){
+  
+  cmat_ <- cmat(x   = recidivism_sub$pred_prob,
+                y   = recidivism_sub$Recidivism_Arrest_Year2,
+                cut = metrics[i,1])
+  
+  metrics[i,2:7] = c(cmat_$acc,
+                     cmat_$tpr,
+                     cmat_$tnr,
+                     cmat_$ppv,
+                     cmat_$fpr,
+                     cmat_$f1)
+
+}
+
+metrics
+
+```
+]]
+
+---
+
+
+A receiver operating characteristic curve (ROC) is plot that represents this dynamic relationship between TPR and FPR (1-TNR) for varying levels of a cut-off value. 
+
+The area under the ROC curve (AUC or AUROC) is typically used to evaluate the predictive power of classification models. 
+
+.pull-left[
+```{r, echo=FALSE,eval=TRUE,fig.width=4,fig.height=4}
+
+ggplot(data = metrics, aes(x=1-tnr,y=tpr))+
+  geom_line()+
+  xlab('FPR (1-TNR)')+
+  ylab('TPR')+
+  geom_abline(lty=2)+
+  theme_bw()+
+  annotate('text',x=.9,y=0,label = 'AUC = 0.854')
+```
+]
+
+.pull-right[
+
+- The diagonal line in this plot represents a hypothetical model with no predictive power and AUC for the diagonal line is 0.5 (it is half of the whole square). 
+
+- The closer AUC is to 0.5, the closer predictive power is to random guessing. 
+
+- The more ROC curve resembles with the diagonal line, less the predictive power is.
+
+- The closer AUC is to 1, the more predictive power the model has. 
+
+- The magnitude of AUC is closely related to how well the predicted probabilities separate the two classes.
+
+]
+
+---
+
+### Building a Logistic Regression Model via `caret`
+
+Please review the following notebook that builds a classification model using the logistic regression for the full recidivism dataset.
+
+[Building a Logistic Regression Model](https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Regularized Logistic Regression
+
+---
+
+- The regularization works similarly in logistic regression, as discussed in linear regression. 
+
+- We add penalty terms to the loss function to avoid large coefficients, and we reduce model variance by including a penalty term in exchange for adding bias. 
+
+- Optimizing the penalty degree via tuning, we can typically get models with better performance than a logistic regression with no regularization.
+
+.indent[
+
+#### **Logistic Loss with Ridge Penalty**
+
+$$\mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta) = \left ( \sum_{i=1}^{N} Y_i \times ln(P_i) + (1-Y_i) \times ln(1-P_i) \right ) - \frac{\lambda}{2} \sum_{i=1}^{P}\beta_p^2$$
+
+#### **Logistic Loss with Lasso Penalty**
+
+$$\mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta) = \left ( \sum_{i=1}^{N} Y_i \times ln(P_i) + (1-Y_i) \times ln(1-P_i) \right)- \lambda \sum_{i=1}^{P}|\beta_p|$$
+
+#### **Logistic Loss with Elastic Net**
+
+$$\mathfrak{logL}(\mathbf{Y}|\boldsymbol\beta) = \left ( \sum_{i=1}^{N} Y_i \times ln(P_i) + (1-Y_i) \times ln(1-P_i) \right)- \left ((1-\alpha)\frac{\lambda}{2} \sum_{i=1}^{P}\beta_p^2 + \alpha  \lambda \sum_{i=1}^{P}|\beta_p| \right)$$
+]
+
+---
+
+#### **Shrinkage in Logistic Regression Coefficients with Ridge Penalty**
+
+```{r, echo=FALSE,eval=TRUE,fig.width=5,fig.height=5}
+
+coef_ridge <- read.csv(here('data/ridge coefs.csv'))
+
+ggplot()+
+  geom_line(aes(x=seq(0,9.9,.1),y=as.numeric(coef_ridge[7,])))+
+  geom_line(aes(x=seq(0,9.9,.1),y=as.numeric(coef_ridge[3,])))+
+  geom_line(aes(x=seq(0,9.9,.1),y=as.numeric(coef_ridge[112,])))+
+  theme_bw()+
+  xlab('Lambda')+
+  ylab('Logistic regression coefficients')
+
+```
+
+
+---
+
+#### **Shrinkage in Logistic Regression Coefficients with Lasso Penalty**
+
+```{r, echo=FALSE,eval=TRUE,fig.width=5,fig.height=5}
+
+coef_lasso <- read.csv(here('data/lasso coefs.csv'))
+
+ggplot()+
+  geom_line(aes(x=seq(0,0.07,.001),y=as.numeric(coef_lasso[7,])))+
+  geom_line(aes(x=seq(0,0.07,.001),y=as.numeric(coef_lasso[3,])))+
+  geom_line(aes(x=seq(0,0.07,.001),y=as.numeric(coef_lasso[112,])))+
+  theme_bw()+
+  xlab('Lambda')+
+  ylab('Logistic regression coefficients')
+
+
+```
+
+
+---
+
+<br>
+
+### Building a Regularized Logistic Regression Model via `caret`
+
+Please review the following notebooks that build classification models using the regularized logistic regression for the full recidivism dataset.
+
+- [Building a Logistic Regression Model with Ridge Penalty ](https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/)
+
+
+- [Building a Logistic Regression Model with Lasso Penalty ](https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty)
+
+
+- [Building a Logistic Regression Model with Elastic Net ](https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net)

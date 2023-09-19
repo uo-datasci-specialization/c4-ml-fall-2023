@@ -1,0 +1,29 @@
+---
+title: "Applied Machine Learning for Educational Data Science"
+description: |
+  The fourth course in the Educational Data Science specialization at the University of Oregon
+site: distill::distill_website
+---
+
+This course focuses on applied machine learning (ML), with an emphasis on supervised This course is the fourth in a sequence of courses on educational data science (EDS), taught using free and open-source statistical programming languages. EDLD 654: Machine Learning for Educational Data Science aims to teach how to apply several predictive modeling approaches to educational and social science datasets, emphasizing supervised learning methods that have emerged over the last several decades. The primary goal of these methods is to create models capable of making accurate predictions, which generally implies less emphasis on statistical inference. 
+
+By the end of this course, students will be able to
+
+-	pre-process continuous, categorical, and text data to extract meaningful features to include in a predictive model,
+
+-	describe the framework of supervised learning methods, modeling process, and how it differs from standard inferential statistics,
+
+-	construct various supervised learning models for both classification- and regression-based problems, including linear and logistic regression (for prediction rather than inference), penalized regression (ridge/lasso), various decision tree models (including bagged trees and random forests), and k-nearest neighbor models,
+
+-	discuss the bias-variance tradeoff in supervised learning and apply the concept in making decisions about model selection,
+
+-	measure and contrast the performance of various models.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+# Learn more about creating websites with Distill at:
+# https://rstudio.github.io/distill/website.html
+
+```

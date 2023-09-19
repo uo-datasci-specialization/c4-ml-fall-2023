@@ -1,0 +1,538 @@
+---
+title: "EDLD 654: Introduction to Course"
+subtitle: ""
+author: "Cengiz Zopluoglu"
+institute: "College of Education, University of Oregon"
+date: "Oct 3, 2022 <br> Eugene, OR"
+output:
+  xaringan::moon_reader:
+    css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
+    #self_contained: true
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+<style>
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 70% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+</style>
+
+```{R, setup, include = F}
+library(pacman)
+p_load(here, tidyverse, ggplot2, xaringan, knitr, kableExtra, xaringanthemer)
+
+#i_am("B:/UO Teaching/EDUC614/Winter22/Slide Template/template.rmd")
+
+red_pink <- "#e64173"
+turquoise = "#20B2AA"
+orange = "#FFA500"
+red = "#fb6107"
+blue = "#3b3b9a"
+green = "#8bb174"
+grey_light = "grey70"
+grey_mid = "grey50"
+grey_dark = "grey20"
+purple = "#6A5ACD"
+slate = "#314f4f"
+
+extra_css <- list(
+  ".red"   = list(color = "red"),
+  ".blue"  =list(color = "blue"),
+  ".red-pink" = list(color= "red_pink"),
+  ".grey-light" = list(color= "grey_light"),
+  ".purple" = list(color = "purple"),
+  ".small" = list("font-size" = "90%"))
+
+write_extra_css(css = extra_css, outfile = "my_custom.css")
+
+# Knitr options
+opts_chunk$set(
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 6.75,
+  fig.width = 10.5,
+  warning = F,
+  message = F
+)
+opts_chunk$set(dev = "svg")
+options(device = function(file, width, height) {
+  svg(tempfile(), width = width, height = height)
+})
+
+options(knitr.table.format = "html")
+
+options(width = 120)
+
+require(here)
+```
+
+### Today's Goals:
+
+- **Know your instructor**
+
+- **Course overview**
+
+- **Getting familiar with two datasets we will use throughout this course.**
+
+  - These two datasets have a different type of target outcome for prediction.
+
+  - CommonLit Readability Competition --> predicting a continuous outcome from plain text
+  
+  - NIJ's Recidivism  Challenge --> predicting a binary outcome from various numerical and categorical features
+
+- **Getting familiar and installing tools require for later weeks.** 
+
+    - the `reticulate` package: an interface between Python and R
+    
+    - `sentence_transformers`: a Python module to access pretrained language models
+    
+    - This lecture will introduce the installation of these tools as we will use them in the future weeks.
+    
+- **Introduction to Kaggle notebooks**
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Know Your Instructor
+
+---
+
+- How to pronounce my name?
+
+https://namedrop.io/cengizzopluoglu
+
+- Call me whatever you find most convenient (with one exception). I don't have a preference.
+
+    - Cengiz
+    - Dr. Cengiz
+    - Dr. Z
+    - Professor
+    - ~~<div style="color:red"> Hey Doc </div>~~
+
+- Pronouns: He/Him/His
+    - My native language (Turkish) is a gender-neutral language so please excuse my misuse of pronouns in daily language. My apologies in advance. 
+    
+---
+
+## A little bit about myself…
+
+- was born and raised in Istanbul (Turkey),
+
+- received my BA in Mathematics Teaching from Abant Izzet Baysal University (Bolu, Turkey) in 2005, 
+
+- taught math for a year at 6th grade,
+
+- came to the United States in 2007 for graduate education with a loan from Turkish government,
+
+- received my degree in 2013 from University of Minnesota,
+
+- was a faculty member at the University of Miami (2013-2020),
+
+- moved to Eugene in Summer 2020,
+
+- am married with two kids (7 and 10).
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Course Overview
+
+**<center> This review doesn't replace reading the syllabus! </center>**
+
+---
+
+## Course Modality
+
+- This is an in-person course: that means that, unlike asynchronous online/WEB courses, we will meet during scheduled class meeting times in Lokey 176. 
+
+- There is no Zoom link to attend the classes synchronously.
+
+- The lectures will be recorded using Panopto and the links will be posted on CANVAS. 
+  
+- If you need accommodation related to a medical or other disability, you can set those up through AEC (https://aec.uoregon.edu).
+
+---
+
+## Course Description
+
+EDLD 654: Machine Learning for Educational Data Science
+
+- is the fourth in a sequence of courses on educational data science (EDS) specialization, 
+
+- is taught using free and open-source statistical programming languages,
+
+- aims to teach how to apply several predictive modeling approaches to educational and social science datasets, 
+
+- emphasizes supervised learning methods that have emerged over the last several decades.
+
+The primary goal of the methods covered in this course is to create models capable of making accurate predictions, which generally implies less emphasis on statistical inference.
+
+
+See the syllabus for a detailed list of learning outcomes.
+---
+## Office hours
+
+- Online office hours: 
+  
+  - Monday, 4pm – 5pm (in person), 5pm - 6pm (Zoom)
+  
+  - by appointment
+  
+  - If possible, notify me in advance to avoid waiting time.
+
+- Please use Canvas course website for communication related to this class.
+
+---
+## Textbook
+
+- All course readings are freely available online or will be provided by the instructor. 
+
+- The primary content will be delivered through lecture notes prepared by the instructor and posted on the course website. 
+
+- In addition to the lecture notes, several chapters from the following books will be assigned as supplemental readings. Students are strongly encouraged to read these assigned supplemental readings.
+
+  - Bohemke, B. & Greenwell, B. (2019). Hands on Machine Learning with R. New York, NY: Taylor & Francis.
+
+  - James, Gareth et al. (2017). An Introduction to Statistical Learning with R, 2nd Edition. New York, NY: Springer.
+
+  - Kuhn, M and Johnson, Kjell (2014). Applied Predictive Modeling in R, New York, NY: Springer. (available through UO libraries)
+
+  - Kuhn M., & Johnson, K. (2019). Feature Engineering and Selection: A Practical Approach for Predictive Models. New York, NY: Taylor & Francis.
+
+My lecture notes will be prepared using these books as primary sources.
+
+---
+
+## Statistical Computing
+
+- The primary tool used for statistical computing in this class is R.
+
+- Lecture notes will provide the R code to demonstrate all computations 
+
+- Every lecture will be accompanied by a Kaggle R notebook so students can easily reproduce the analysis demonstrated in the lectures.
+
+- The HEDCO Learning Commons (https://learningcommons.uoregon.edu/) is located in Room 110 and equipped with Windows and macOS computer workstations, small and large study rooms. It is currently open from 8am to 8pm Monday – Thursday, 8am - 5pm on Fridays.
+
+---
+
+## Course Website
+
+- The unofficial course website is 
+
+  https://edld654-fall22.netlify.app/
+  
+  All course material and information will be publicly accessible on this website.
+
+- The official course website is Canvas. Course material and information will also be available on Canvas.
+
+- We will primarily use Canvas for class communication, questions, and keep track of class assignments.
+
+---
+
+## Course Structure
+
+- In-person lectures
+
+- Supplemental Lecture Notes, Readings, and Kaggle notebooks
+
+- Three Homework Assignments
+
+  - A total of three assignments will be delivered through Canvas
+  
+  - These assignments are open-book. You can use your notes, books, slides, or Web to search while you respond to these questions. 
+  
+  - I will post them as Kaggle notebooks. You can either copy the notebook, complete the assignment, and submit a link to your notebook on Canvas. Or, you can complete the assignment as an R markdown document, and submit a knitted version on Canvas (either as HTML or pdf).
+
+- A final project (see the syllabus for details)
+
+---
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<center>
+
+# Introduction to Toy Datasets  
+
+---
+
+## CommonLit Readability Competition
+
+- A Kaggle competition that took place between May 2021 - Aug 2021.
+
+- [Competition website](https://www.kaggle.com/competitions/commonlitreadabilityprize/overview)
+
+- There is a total of 2834 observations. 
+  
+  - The unit of analysis is a text. So, each observation represents a plain text. 
+  
+  - The most significant variables are the `excerpt` and `target` columns. 
+  
+  - The excerpt column includes plain text data.
+  
+  - The target column includes a corresponding measure of readability for each excerpt.
+
+---
+
+A snapshot:
+
+```{r, echo=FALSE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+readability <- read.csv(here('data/readability.csv'),header=TRUE)
+
+readability[c(1706,2830),c('excerpt','target')]%>%
+    kbl(format = 'html',
+        escape = FALSE) %>%
+    kable_paper(c("striped", "hover"),full_width = F) %>%
+    kable_styling(font_size = 14) %>%
+    column_spec(2, width = "50em")
+              
+  
+```
+
+- *"the target value is the result of a Bradley-Terry analysis of more than 111,000 pairwise comparisons between excerpts. Teachers spanning grades 3-12 served as the raters for these comparisons."* 
+
+- A lower target value indicates a more challenging text to read. 
+
+- The highest target score is equivalent to the 3rd-grade level
+
+- The lowest target score is equivalent to the 12th-grade level. 
+
+---
+
+- The purpose is to develop a model that predicts a readability score for a given text.
+
+- A successful model may serve for important purposes in education such as identifying an appropriate reading level for a given text.
+
+```{r, echo=FALSE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+txt <- matrix(c("In the freezing ocean waters of Antarctica, the planet's largest seals make their home in a frozen world. These giants are southern elephant seals, and they can grow as long as the length of a car and weigh as much as two cars combined. The name “elephant seal” comes from both the males' enormous size and from their giant trunk-like nose, called a proboscis. Females do not have a proboscis and they are much smaller. A thick layer of blubber keeps southern elephant seals warm in their icy habitat. The seals are clumsy on land, but in water they’re graceful swimmers and incredible divers. They can easily dive 1,000 to 4,000 feet to hunt for squid, octopus, and various kinds of fish. Elephant seals are able to stay underwater for 20 minutes or more. The longest underwater session researchers observed is an amazing two hours! When they return to the surface to breathe, it’s only for a few minutes. Then they dive again.",'?'),1,2)
+
+colnames(txt) <- c('excerpt','score')
+
+txt %>%
+    kbl(format = 'html',
+        escape = FALSE) %>%
+    kable_paper(c("striped", "hover"),full_width = F) %>%
+    kable_styling(font_size = 14) %>%
+    column_spec(1, width = "50em")
+              
+  
+```
+
+
+- Other potential use cases of skills learned in this class relevant to education:
+
+  - automated essay scoring: essay ---> rating
+  
+  - sentiment analysis: feedback ---> positive, negative, neutral
+  
+  - automated writing evaluation: argumentative writing ---> effective, adequate, ineffective
+  
+  - automated item generation: a reading passage ---> questions and answers
+
+---
+
+## NIJ's Recidivism Challenge
+
+- The Recidivism dataset comes from The National Institute of Justice’s (NIJ) Recidivism Forecasting Challenge. 
+
+  https://nij.ojp.gov/funding/recidivism-forecasting-challenge
+
+- The challenge aims to increase public safety and improve the fair administration of justice across the United States. 
+
+- This challenge had three stages of prediction, and all three stages require modeling a binary outcome (recidivated vs. not recidivated in Year 1, Year 2, and Year 3). 
+
+- In this class, we will only work on the second stage and try to develop a model for predicting the probability of an individual’s recidivism in the second year after initial release.
+
+---
+
+- There are 25,835 observations in the dataset.
+
+  - 18,028 observations in the training dataset
+  
+  - 7,807 observations in the test dataset 
+
+- 54 variables including 
+
+  - a unique ID variable,
+  
+  - four outcome variables (Recidivism in Year 1, Recidivism in Year 2, and Recidivism in Year 3, Recidivism within three years),
+  
+  - a filter variable to indicate whether an observation is in the training dataset or test dataset,
+  
+  - the remaining 48 variables as potential predictive features. 
+  
+  A complete list of these variables can be found at     
+  
+  https://nij.ojp.gov/funding/recidivism-forecasting-challenge#recidivism-forecasting-challenge-database-fields-defined
+
+---
+  
+## Installing Reticulate, Miniconda, and Sentence Transformers
+
+- We will need to install the reticulate package and sentence_transformers module 
+for the following weeks. 
+
+  - The `reticulate` package provides an R interface to access Python modules and run any Python code without leaving the comfort of RStudio.
+  
+  - `sentence_transformers` is a Python module to access and utilize state-of-the-art pretrained language models
+  
+- You can run the following code in your computer to get prepared for the following weeks. Note that you only have to run the following code once to install the necessary packages.
+
+.indent[
+.single[
+.tiny2[
+```{r,echo=T,eval=F}
+
+# Install the reticulate package
+
+install.packages(pkgs = 'reticulate',
+                 dependencies = TRUE)
+
+
+
+# Install Miniconda
+
+install_miniconda()
+
+```
+]
+]
+]
+
+---
+
+## Kaggle notebooks
+
+- If you are having troubles about installing these packages in your computer, I highly recommend using a Kaggle R notebook which these packages are already installed.
+
+- Please create a Kaggle account if you don't have one.
+
+- A demonstration of how to copy and work with provided Kaggle notebooks.
+
+<center>
+https://www.kaggle.com/code/uocoeeds/week-1-introduction
+
+
+- A demonstration of how to complete and submit an assignment.
+
+<center>
+https://www.kaggle.com/code/uocoeeds/demo-assignment
+
+

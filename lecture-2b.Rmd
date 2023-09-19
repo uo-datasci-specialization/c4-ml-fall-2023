@@ -1,0 +1,344 @@
+---
+title: "Data Pre-processing II: Text Data"
+
+author:
+  - name: Cengiz Zopluoglu
+    affiliation: University of Oregon
+
+date: 07/07/2022
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+    theme: theme.css
+---
+
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "",fig.align='center')
+require(here)
+require(ggplot2)
+require(plot3D)
+require(kableExtra)
+require(knitr)
+require(gifski)
+require(magick)
+require(gridExtra)
+library(scales)
+library(lubridate)
+
+options(scipen=99)
+
+```
+
+`r paste('[Updated:',format(Sys.time(),'%a, %b %d, %Y - %H:%M:%S'),']')`
+
+Generating features from text data is very different than dealing with continuous and categorical data. First, let's remember the dataset we are working with.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+readability <- read.csv(here('data/readability.csv'),header=TRUE)
+
+# The first two observations
+
+readability[1:2,c('excerpt','target')]%>%
+    kbl(format = 'html',
+        escape = FALSE) %>%
+    kable_paper(c("striped", "hover"),full_width = T) %>%
+    kable_styling(font_size = 14)
+```
+
+
+The excerpt column includes plain text data, and the target column includes a corresponding measure of readability for each excerpt. A higher target value indicates a more difficult text to read. What features can we generate from the plain text to predict its readability? 
+
+In the following sections, we will briefly touch on the Transformer models and demonstrate how to derive numerical features to represent a text.
+
+# 1.Natural Language Processing
+
+NLP is a field at the intersection of linguistics and computer science with the ultimate goal of developing algorithms and models to understand and use human language in a way we understand and use it. The goal is not only to understand individual words but also the context in which these words are being used.
+
+The recent advancements in the field of NLP revolutionized the language models. These advanced language models take plain text, put it into smaller pieces (tokens), then use very complex neural network models to convert these tokens into a numerical vector representing the text.
+
+Most recently, a group of scholars called these models as part of [Foundation Models](https://arxiv.org/pdf/2108.07258.pdf). Below shows a development timeline of the most popular language models.
+
+```{r, echo=F,eval=TRUE,layout="l-screen",message=FALSE, warning=FALSE}
+
+# source: https://benalexkeen.com/creating-a-timeline-graphic-using-r-and-ggplot2/
+  
+df <- read.csv(here('data/transformers.csv'))
+df$date <- with(df, ymd(sprintf('%04d%02d%02d', year, month, 1)))
+df <- df[with(df, order(date)), ]
+
+positions <- c(0.05, -0.05, 0.075, -0.075, 0.1, -0.1)
+directions <- c(1, -1)
+
+line_pos <- data.frame(
+    "date"=unique(df$date),
+    "position"=rep(positions, length.out=length(unique(df$date))),
+    "direction"=rep(directions, length.out=length(unique(df$date)))
+)
+
+df <- merge(x=df, y=line_pos, by="date", all = TRUE)
+
+text_offset <- 0.01
+
+df$month_count <- ave(df$date==df$date, df$date, FUN=cumsum)
+df$text_position <- (df$month_count * text_offset * df$direction) + df$position
+
+month_buffer <- 2
+
+month_date_range <- seq(min(df$date) - months(month_buffer), max(df$date) + months(month_buffer), by='month')
+month_format <- format(month_date_range, '%b')
+month_df <- data.frame(month_date_range, month_format)
+
+year_date_range <- seq(min(df$date) - months(month_buffer), max(df$date) + months(month_buffer), by='year')
+year_date_range <- as.Date(
+    intersect(
+        ceiling_date(year_date_range, unit="year"),
+        floor_date(year_date_range, unit="year")
+    ),  origin = "1970-01-01"
+)
+year_format <- format(year_date_range, '%Y')
+year_df <- data.frame(year_date_range, year_format)
+
+#### PLOT ####
+
+ggplot(df,aes(x=date,y=0,label=model)) +
+  theme_classic() +
+  geom_hline(yintercept=0, color = "black", size=0.3)+
+  geom_segment(data=df[df$month_count == 1,], aes(y=position,yend=0,xend=date), color='black', size=0.2)+
+  geom_point(aes(y=0), size=1)+
+  theme(axis.line.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.text.x =element_blank(),
+        axis.ticks.x =element_blank(),
+        axis.line.x =element_blank(),
+        legend.position = "bottom")+
+  geom_text(data=month_df, 
+            aes(x=month_date_range,y=-0.01,label=month_format),size=1,vjust=0.1, color='black', angle=90)+
+  geom_text(data=year_df, aes(x=year_date_range,y=-0.02,label=year_format, fontface="bold"),size=2, color='black')+
+  geom_text(aes(y=text_position,label=model),size=2)
+```
+
+Below is a brief list of some of these NLP models and some information, including links to original papers. These models are very expensive to train and use the enormous amounts of data available. For instance, Bert/Roberta was trained using the entire Wikipedia and a Book Corpus (a total of ~ 4.7 billion words), GPT-2 was trained using 8 million web pages, and GPT3 was trained on 45 TB of data from the internet and books.
+
+| Model                                                                                      | Developer  | Year |# of parameters | Estimated Cost |
+|--------------------------------------------------------------------------------------------|:----------:|:----:|:--------------:|:--------------:|
+| [Bert-Large](https://arxiv.org/pdf/1810.04805.pdf)                                         | Google AI  | 2018 | 336 M          | [$ 7K](https://syncedreview.com/2019/06/27/the-staggering-cost-of-training-sota-ai-models/) |     
+| [Roberta-Large](https://arxiv.org/pdf/1907.11692.pdf)                                      | Facebook AI| 2019 | 335 M          | ? |
+| [GPT2-XL](https://d4mucfpksywv.cloudfront.net/better-language-models/language-models.pdf)  | Open AI    | 2019 | 1.5 B          | [$ 50K](https://medium.com/@vanya_cohen/opengpt-2-we-replicated-gpt-2-because-you-can-too-45e34e6d36dc)|
+| [T5](https://arxiv.org/pdf/1910.10683.pdf)                                                 | Google AI  | 2020 |  11 B          | [$ 1.3 M](https://arxiv.org/pdf/2004.08900.pdf)|
+| [GPT3](https://arxiv.org/pdf/2005.14165.pdf)                                               | OpenAI     | 2020 | 175 B          | [$ 4.6 M](https://venturebeat.com/2020/06/01/ai-machine-learning-openai-gpt-3-size-isnt-everything/)|
+
+All these models except GPT3 are open source. They can be immediately utilized using open libraries (typically Python), and these models can be customized to implement specific tasks (e.g., question answering, sentiment analysis, translation, etc.). GPT3 is the most powerful developed so far, and it can only be accessed through a private API, [https://beta.openai.com/](https://beta.openai.com/). 
+
+You can explore some GPT3 applications on this website, [https://gpt3demo.com/](https://gpt3demo.com/). Below are a few of them:
+
+  - Artificial tweets ([https://thoughts.sushant-kumar.com/word](https://thoughts.sushant-kumar.com/word))
+  
+  - Creative writing ([https://www.gwern.net/GPT-3](https://www.gwern.net/GPT-3))
+  
+  - Interview with (artificial) Einstein ([https://maraoz.com/2021/03/14/einstein-gpt3/](https://maraoz.com/2021/03/14/einstein-gpt3/))
+
+If you have time, [this series of Youtube videos](https://www.youtube.com/watch?v=zJW57aCBCTk) provide some background and accessible information about these models. In particular, Episode 2 will give a good idea about what these numerical embeddings represent. If you want to get in-depth coverage of speech and language processing from scratch, [this freely available book](
+https://web.stanford.edu/~jurafsky/slp3/) provides a good amount of material. Finally, [this free course by Hugging Face](https://huggingface.co/course/chapter1/1) provides a nice an easy introduction to transformer models. While the course primarily utilizes Python, it is still useful to read through to get familiar with concepts.   
+
+In this class, we will only scratch the surface and focus on the tools available to make these models accessible through R.  In particular, we will use `reticulate` package and `sentence_transformers` module (a Python package) to connect with [HuggingFace's Transformers library](https://huggingface.co/transformers/) and explore the word and sentence embeddings derived from the NLP models. 
+
+You can consider Hugging Face like a CRAN of pre-trained AI/ML models, it includes a wide variety of language models. There are thousands of pre-trained models that can be imported and used within seconds at no charge to achieve tasks like text generation, text classification, translation, speech recognition, image classification, object detection, etc.
+
+<center>
+[Hugging Face Model Repository](https://huggingface.co/models)
+</center>
+
+<br>
+
+```{r echo=FALSE, out.width = '100%'}
+knitr::include_graphics(here('figs/huggingface.PNG'))
+```
+
+# 2. Text Encoding the `reticulate` package and `sentence_transformers`
+
+First, we will load the `reticulate` package and `sentence_transformers` module. While we import the `sentence_transformers` module we will assign a name to save as an object so we can utilize it moving forward.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+require(reticulate)
+
+st <- import('sentence_transformers')
+```
+
+Next, we will pick a pre-trained language model to play with. It can be any model listed in the previous section. You have to find the associate Huggingface page for that particular model and use the same tag used for that model. For instance, suppose we want to use the RoBERTa model. The associated Huggingface webpage for this model is https://huggingface.co/roberta-base.
+
+Notice that the tag for this model is 'roberta-base'. Therefore, we will use the same name to load this model. For other models, you can use the search bar at the top. When you run the code in the next chunk the first time, it will install all the relevant model files (https://huggingface.co/roberta-base/tree/main) to a local folder on your machine. The next time you run the same code, it will quickly load the model from the local folder since it is already installed on your computer.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model.name <- 'roberta-base'
+
+roberta       <- st$models$Transformer(model.name)
+pooling_model <- st$models$Pooling(roberta$get_word_embedding_dimension())
+model         <- st$SentenceTransformer(modules = list(roberta,pooling_model))
+  
+```
+
+One important thing to be aware of about these models is the maximum number of characters they can process. It can be found by using the following code. For instance, RoBERTa can handle a text sequence with a maximum number of 512 characters. If we submit any text with more than 512 characters, it will only process the first 512 characters.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model$get_max_seq_length()
+
+```
+
+Another essential characteristic is the length of the output vector when a language model returns numerical embeddings. The following code reveals that RoBERTa returns a vector with a length of 768.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model$get_sentence_embedding_dimension()
+
+```
+
+In short, RoBERTa can take any text sequence up to 512 characters as input and then return a numerical vector with a length of 768 that represent this text sequence. This process is also called ***encoding***.
+
+For instance, we can get the embeddings for a single word 'sofa'. The following will return a vector with a length of 768.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model$encode('sofa')
+
+```
+
+Similarly, we can get the vector of numerical embeddings for a whole sentence.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model$encode('I like to drink Turkish coffee')
+
+```
+
+The input can be many sentences. For instance, if I submit a vector of three sentences as an input, the model returns a 3 x 768 matrix containng sentence embeddings. Each row contains the embeddings for a sentence.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+my.sentences <- c('The weather today is great.',
+                  'I live in Eugene.',
+                  'I am a graduate student.')
+
+embeddings <- model$encode(my.sentences)
+
+dim(embeddings)
+
+head(embeddings)
+```
+
+# 3. Generating sentence embeddings for the CommonLit Readability dataset
+
+In summary, NLP models may provide meaningful contextual numerical representations of words or sentences. These numerical representations can be used as input features for predictive models to predict a particular outcome. In our case, we can generate the embeddings for each reading passage. In the coming weeks, we will use them to predict the target score using various prediction algorithms.
+
+First, we will check the length of the reading excerpts in the dataset.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+sentence_length <- nchar(readability$excerpt)
+
+summary(sentence_length)
+
+```
+
+The number of characters ranges from 669 to 1343. In this case, I want to use a model that can handle long texts. For instance, RoBERTa would ignore any text after the first 512 characters in a reading excerpt, and we may lose some vital information regarding the outcome.
+
+An alternative model to process longer texts is the Longformer model. The Hugging Face page for this model is https://huggingface.co/allenai/longformer-base-4096. 
+
+Let's load this model as we did for RoBERTa.
+
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+model.name <- 'allenai/longformer-base-4096'
+
+longformer      <- st$models$Transformer(model.name)
+pooling_model   <- st$models$Pooling(longformer$get_word_embedding_dimension())
+LFmodel         <- st$SentenceTransformer(modules = list(longformer,pooling_model))
+  
+```
+
+This model can handle texts up to 4096 characters, and returns a vector of length 768.
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+LFmodel$get_max_seq_length()
+
+LFmodel$get_sentence_embedding_dimension()
+
+```
+
+Now, we can submit the reading excerpts from our dataset all at once, and get the sentence embeddings for each one. Since our dataset has 2834 observations, this should return a matrix with 2834 rows and 768 columns.
+
+```{r, echo=TRUE,eval=FALSE,message=FALSE, warning=FALSE}
+
+
+read.embeddings <- LFmodel$encode(readability$excerpt,
+                                  show_progress_bar = TRUE)
+
+```
+
+```{r, echo=FALSE,eval=TRUE,message=FALSE, warning=FALSE}
+
+load(here('donotupload/read.embeddings.RData'))
+
+```
+
+```{r, echo=TRUE,eval=TRUE,message=FALSE, warning=FALSE}
+
+# Check the embedding matrix
+
+dim(read.embeddings)
+
+head(read.embeddings)
+
+```
+
+It took about 51 minutes on my computer. So, you may want to export these embeddings as an external file to save time. It is not a good idea to run this repeatedly every time we need these embeddings. So, you run it first and then export this embedding matrix as a .csv file. Whenever we need this matrix, we can just read them into our R environment instead of re-doing this analysis. Below, I am appending the target outcome to the embedding matrix, and then exporting them all as a .csv file.
+
+```{r, echo=TRUE,eval=FALSE,message=FALSE, warning=FALSE}
+
+
+read.embeddings <- as.data.frame(read.embeddings)
+read.embeddings$target <- readability$target
+
+
+write.csv(read.embeddings, 
+          here('data/readability_features.csv'),
+          row.names = FALSE)
+
+
+```
+
+Note that it takes significantly less time to compute sentence embeddings if you have access to computational resources with GPU. For instance, if you run the same analysis above on a Kaggle notebook with GPU turned on, it only takes 70 seconds. So, it is important to use GPU resources when using these models if you have access. You can check the associated Kaggle notebook for the analysis in this post.
+
+https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii
+

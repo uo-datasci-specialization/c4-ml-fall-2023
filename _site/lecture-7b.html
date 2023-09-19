@@ -1,0 +1,4002 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+  <meta name="generator" content="distill" />
+
+  <style type="text/css">
+  /* Hide doc at startup (prevent jankiness while JS renders/transforms) */
+  body {
+    visibility: hidden;
+  }
+  </style>
+
+ <!--radix_placeholder_import_source-->
+ <!--/radix_placeholder_import_source-->
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  { color: #00769e; background-color: #f1f3f5; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #00769e; } /* Normal */
+code span.al { color: #ad0000; } /* Alert */
+code span.an { color: #5e5e5e; } /* Annotation */
+code span.at { color: #657422; } /* Attribute */
+code span.bn { color: #ad0000; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #00769e; } /* ControlFlow */
+code span.ch { color: #20794d; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #5e5e5e; } /* Comment */
+code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+code span.dt { color: #ad0000; } /* DataType */
+code span.dv { color: #ad0000; } /* DecVal */
+code span.er { color: #ad0000; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #ad0000; } /* Float */
+code span.fu { color: #4758ab; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #5e5e5e; } /* Information */
+code span.kw { color: #00769e; } /* Keyword */
+code span.op { color: #5e5e5e; } /* Operator */
+code span.ot { color: #00769e; } /* Other */
+code span.pp { color: #ad0000; } /* Preprocessor */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
+code span.ss { color: #20794d; } /* SpecialString */
+code span.st { color: #20794d; } /* String */
+code span.va { color: #111111; } /* Variable */
+code span.vs { color: #20794d; } /* VerbatimString */
+code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+</style>
+
+
+  <!--radix_placeholder_meta_tags-->
+  <title>Applied Machine Learning for Educational Data Science: Gradient Boosting Trees (GBM)</title>
+
+
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/"/>
+
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2022-11-23"/>
+  <meta property="article:created" itemprop="dateCreated" content="2022-11-23"/>
+  <meta name="article:author" content="Cengiz Zopluoglu"/>
+
+  <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
+  <meta property="og:title" content="Applied Machine Learning for Educational Data Science: Gradient Boosting Trees (GBM)"/>
+  <meta property="og:type" content="article"/>
+  <meta property="og:locale" content="en_US"/>
+  <meta property="og:site_name" content="Applied Machine Learning for Educational Data Science"/>
+
+  <!--  https://dev.twitter.com/cards/types/summary -->
+  <meta property="twitter:card" content="summary"/>
+  <meta property="twitter:title" content="Applied Machine Learning for Educational Data Science: Gradient Boosting Trees (GBM)"/>
+
+  <!--/radix_placeholder_meta_tags-->
+  <!--radix_placeholder_rmarkdown_metadata-->
+
+  <script type="text/json" id="radix-rmarkdown-metadata">
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Gradient Boosting Trees (GBM)"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","affiliation"]}},"value":[{"type":"character","attributes":{},"value":["Cengiz Zopluoglu"]},{"type":"character","attributes":{},"value":["University of Oregon"]}]}]},{"type":"character","attributes":{},"value":["11/23/2022"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc","toc_float","theme"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"logical","attributes":{},"value":[true]},{"type":"character","attributes":{},"value":["theme.css"]}]}]}]}
+  </script>
+  <!--/radix_placeholder_rmarkdown_metadata-->
+  <!--radix_placeholder_navigation_in_header-->
+  <meta name="distill:offset" content=""/>
+
+  <script type="application/javascript">
+
+    window.headroom_prevent_pin = false;
+
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+
+      // initialize headroom for banner
+      var header = $('header').get(0);
+      var headerHeight = header.offsetHeight;
+      var headroom = new Headroom(header, {
+        tolerance: 5,
+        onPin : function() {
+          if (window.headroom_prevent_pin) {
+            window.headroom_prevent_pin = false;
+            headroom.unpin();
+          }
+        }
+      });
+      headroom.init();
+      if(window.location.hash)
+        headroom.unpin();
+      $(header).addClass('headroom--transition');
+
+      // offset scroll location for banner on hash change
+      // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
+      window.addEventListener("hashchange", function(event) {
+        window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
+      });
+
+      // responsive menu
+      $('.distill-site-header').each(function(i, val) {
+        var topnav = $(this);
+        var toggle = topnav.find('.nav-toggle');
+        toggle.on('click', function() {
+          topnav.toggleClass('responsive');
+        });
+      });
+
+      // nav dropdowns
+      $('.nav-dropbtn').click(function(e) {
+        $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
+        $(this).parent().siblings('.nav-dropdown')
+           .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
+      });
+      $("body").click(function(e){
+        $('.nav-dropdown-content').removeClass('nav-dropdown-active');
+      });
+      $(".nav-dropdown").click(function(e){
+        e.stopPropagation();
+      });
+    });
+  </script>
+
+  <style type="text/css">
+
+  /* Theme (user-documented overrideables for nav appearance) */
+
+  .distill-site-nav {
+    color: rgba(255, 255, 255, 0.8);
+    background-color: #0F2E3D;
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  .distill-site-nav a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .distill-site-nav a:hover {
+    color: white;
+  }
+
+  @media print {
+    .distill-site-nav {
+      display: none;
+    }
+  }
+
+  .distill-site-header {
+
+  }
+
+  .distill-site-footer {
+
+  }
+
+
+  /* Site Header */
+
+  .distill-site-header {
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+
+  .distill-site-header .nav-left {
+    display: inline-block;
+    margin-left: 8px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header .nav-left {
+      margin-left: 0;
+    }
+  }
+
+
+  .distill-site-header .nav-right {
+    float: right;
+    margin-right: 8px;
+  }
+
+  .distill-site-header a,
+  .distill-site-header .title {
+    display: inline-block;
+    text-align: center;
+    padding: 14px 10px 14px 10px;
+  }
+
+  .distill-site-header .title {
+    font-size: 18px;
+    min-width: 150px;
+  }
+
+  .distill-site-header .logo {
+    padding: 0;
+  }
+
+  .distill-site-header .logo img {
+    display: none;
+    max-height: 20px;
+    width: auto;
+    margin-bottom: -4px;
+  }
+
+  .distill-site-header .nav-image img {
+    max-height: 18px;
+    width: auto;
+    display: inline-block;
+    margin-bottom: -3px;
+  }
+
+
+
+  @media screen and (min-width: 1000px) {
+    .distill-site-header .logo img {
+      display: inline-block;
+    }
+    .distill-site-header .nav-left {
+      margin-left: 20px;
+    }
+    .distill-site-header .nav-right {
+      margin-right: 20px;
+    }
+    .distill-site-header .title {
+      padding-left: 12px;
+    }
+  }
+
+
+  .distill-site-header .nav-toggle {
+    display: none;
+  }
+
+  .nav-dropdown {
+    display: inline-block;
+    position: relative;
+  }
+
+  .nav-dropdown .nav-dropbtn {
+    border: none;
+    outline: none;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 16px 10px;
+    background-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+    margin-top: 1px;
+    z-index: 2;
+  }
+
+  .nav-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 200px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 4px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+    z-index: 1;
+    margin-top: 2px;
+    white-space: nowrap;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .nav-dropdown-content hr {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-dropdown-active {
+    display: block;
+  }
+
+  .nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
+    color: black;
+    padding: 6px 24px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+
+  .nav-dropdown-content .nav-dropdown-header {
+    display: block;
+    padding: 5px 24px;
+    padding-bottom: 0;
+    text-transform: uppercase;
+    font-size: 14px;
+    color: #999999;
+    white-space: nowrap;
+  }
+
+  .nav-dropdown:hover .nav-dropbtn {
+    color: white;
+  }
+
+  .nav-dropdown-content a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+
+  .nav-right .nav-dropdown-content {
+    margin-left: -45%;
+    right: 0;
+  }
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
+    .distill-site-header a.nav-toggle {
+      float: right;
+      display: block;
+    }
+    .distill-site-header .title {
+      margin-left: 0;
+    }
+    .distill-site-header .nav-right {
+      margin-right: 0;
+    }
+    .distill-site-header {
+      overflow: hidden;
+    }
+    .nav-right .nav-dropdown-content {
+      margin-left: 0;
+    }
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .distill-site-header.responsive {position: relative; min-height: 500px; }
+    .distill-site-header.responsive a.nav-toggle {
+      position: absolute;
+      right: 0;
+      top: 0;
+    }
+    .distill-site-header.responsive a,
+    .distill-site-header.responsive .nav-dropdown {
+      display: block;
+      text-align: left;
+    }
+    .distill-site-header.responsive .nav-left,
+    .distill-site-header.responsive .nav-right {
+      width: 100%;
+    }
+    .distill-site-header.responsive .nav-dropdown {float: none;}
+    .distill-site-header.responsive .nav-dropdown-content {position: relative;}
+    .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
+      display: block;
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  /* Site Footer */
+
+  .distill-site-footer {
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    z-index: 3;
+    margin-top: 30px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    text-align: center;
+  }
+
+  /* Headroom */
+
+  d-title {
+    padding-top: 6rem;
+  }
+
+  @media print {
+    d-title {
+      padding-top: 4rem;
+    }
+  }
+
+  .headroom {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .headroom--transition {
+    transition: all .4s ease-in-out;
+  }
+
+  .headroom--unpinned {
+    top: -100px;
+  }
+
+  .headroom--pinned {
+    top: 0;
+  }
+
+  /* adjust viewport for navbar height */
+  /* helps vertically center bootstrap (non-distill) content */
+  .min-vh-100 {
+    min-height: calc(100vh - 100px) !important;
+  }
+
+  </style>
+
+  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
+  <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
+  <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
+
+  <script type="application/javascript">
+
+  function getMeta(metaName) {
+    var metas = document.getElementsByTagName('meta');
+    for (let i = 0; i < metas.length; i++) {
+      if (metas[i].getAttribute('name') === metaName) {
+        return metas[i].getAttribute('content');
+      }
+    }
+    return '';
+  }
+
+  function offsetURL(url) {
+    var offset = getMeta('distill:offset');
+    return offset ? offset + '/' + url : url;
+  }
+
+  function createFuseIndex() {
+
+    // create fuse index
+    var options = {
+      keys: [
+        { name: 'title', weight: 20 },
+        { name: 'categories', weight: 15 },
+        { name: 'description', weight: 10 },
+        { name: 'contents', weight: 5 },
+      ],
+      ignoreLocation: true,
+      threshold: 0
+    };
+    var fuse = new window.Fuse([], options);
+
+    // fetch the main search.json
+    return fetch(offsetURL('search.json'))
+      .then(function(response) {
+        if (response.status == 200) {
+          return response.json().then(function(json) {
+            // index main articles
+            json.articles.forEach(function(article) {
+              fuse.add(article);
+            });
+            // download collections and index their articles
+            return Promise.all(json.collections.map(function(collection) {
+              return fetch(offsetURL(collection)).then(function(response) {
+                if (response.status === 200) {
+                  return response.json().then(function(articles) {
+                    articles.forEach(function(article) {
+                      fuse.add(article);
+                    });
+                  })
+                } else {
+                  return Promise.reject(
+                    new Error('Unexpected status from search index request: ' +
+                              response.status)
+                  );
+                }
+              });
+            })).then(function() {
+              return fuse;
+            });
+          });
+
+        } else {
+          return Promise.reject(
+            new Error('Unexpected status from search index request: ' +
+                        response.status)
+          );
+        }
+      });
+  }
+
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+
+    // get search element (bail if we don't have one)
+    var searchEl = window.document.getElementById('distill-search');
+    if (!searchEl)
+      return;
+
+    createFuseIndex()
+      .then(function(fuse) {
+
+        // make search box visible
+        searchEl.classList.remove('hidden');
+
+        // initialize autocomplete
+        var options = {
+          autoselect: true,
+          hint: false,
+          minLength: 2,
+        };
+        window.autocomplete(searchEl, options, [{
+          source: function(query, callback) {
+            const searchOptions = {
+              isCaseSensitive: false,
+              shouldSort: true,
+              minMatchCharLength: 2,
+              limit: 10,
+            };
+            var results = fuse.search(query, searchOptions);
+            callback(results
+              .map(function(result) { return result.item; })
+            );
+          },
+          templates: {
+            suggestion: function(suggestion) {
+              var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
+                ? `<img src="${offsetURL(suggestion.preview)}"</img>`
+                : '';
+              var html = `
+                <div class="search-item">
+                  <h3>${suggestion.title}</h3>
+                  <div class="search-item-description">
+                    ${suggestion.description || ''}
+                  </div>
+                  <div class="search-item-preview">
+                    ${img}
+                  </div>
+                </div>
+              `;
+              return html;
+            }
+          }
+        }]).on('autocomplete:selected', function(event, suggestion) {
+          window.location.href = offsetURL(suggestion.path);
+        });
+        // remove inline display style on autocompleter (we want to
+        // manage responsive display via css)
+        $('.algolia-autocomplete').css("display", "");
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+
+  });
+
+  </script>
+
+  <style type="text/css">
+
+  .nav-search {
+    font-size: x-small;
+  }
+
+  /* Algolioa Autocomplete */
+
+  .algolia-autocomplete {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: sub;
+    background-color: white;
+    color: black;
+    padding: 6px;
+    padding-top: 8px;
+    padding-bottom: 0;
+    border-radius: 6px;
+    border: 1px #0F2E3D solid;
+    width: 180px;
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .distill-site-nav .algolia-autocomplete {
+      display: none;
+      visibility: hidden;
+    }
+    .distill-site-nav.responsive .algolia-autocomplete {
+      display: inline-block;
+      visibility: visible;
+    }
+    .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
+      margin-left: 0;
+      width: 400px;
+      max-height: 400px;
+    }
+  }
+
+  .algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
+    width: 90%;
+    outline: none;
+    border: none;
+  }
+
+  .algolia-autocomplete .aa-hint {
+    color: #999;
+  }
+  .algolia-autocomplete .aa-dropdown-menu {
+    width: 550px;
+    max-height: 70vh;
+    overflow-x: visible;
+    overflow-y: scroll;
+    padding: 5px;
+    margin-top: 3px;
+    margin-left: -150px;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 1px solid #999;
+    border-top: none;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
+    cursor: pointer;
+    padding: 5px 4px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
+    border-bottom: none;
+    margin-bottom: 2px;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
+    overflow: hidden;
+    font-size: 0.8em;
+    line-height: 1.4em;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
+    font-size: 1rem;
+    margin-block-start: 0;
+    margin-block-end: 5px;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
+    display: inline-block;
+    overflow: hidden;
+    height: 2.8em;
+    width: 80%;
+    margin-right: 4%;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
+    display: inline-block;
+    width: 15%;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
+    height: 3em;
+    width: auto;
+    display: none;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
+    display: initial;
+  }
+
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
+    background-color: #eee;
+  }
+  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  </style>
+
+
+  <!--/radix_placeholder_navigation_in_header-->
+  <!--radix_placeholder_distill-->
+
+  <style type="text/css">
+
+  body {
+    background-color: white;
+  }
+
+  .pandoc-table {
+    width: 100%;
+  }
+
+  .pandoc-table>caption {
+    margin-bottom: 10px;
+  }
+
+  .pandoc-table th:not([align]) {
+    text-align: left;
+  }
+
+  .pagedtable-footer {
+    font-size: 15px;
+  }
+
+  d-byline .byline {
+    grid-template-columns: 2fr 2fr;
+  }
+
+  d-byline .byline h3 {
+    margin-block-start: 1.5em;
+  }
+
+  d-byline .byline .authors-affiliations h3 {
+    margin-block-start: 0.5em;
+  }
+
+  .authors-affiliations .orcid-id {
+    width: 16px;
+    height:16px;
+    margin-left: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+    padding-bottom: 2px;
+  }
+
+  d-title .dt-tags {
+    margin-top: 1em;
+    grid-column: text;
+  }
+
+  .dt-tags .dt-tag {
+    text-decoration: none;
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0em 0.4em;
+    margin-right: 0.5em;
+    margin-bottom: 0.4em;
+    font-size: 70%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  d-article table.gt_table td,
+  d-article table.gt_table th {
+    border-bottom: none;
+  }
+
+  .html-widget {
+    margin-bottom: 2.0em;
+  }
+
+  .l-screen-inset {
+    padding-right: 16px;
+  }
+
+  .l-screen .caption {
+    margin-left: 10px;
+  }
+
+  .shaded {
+    background: rgb(247, 247, 247);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .html-widget {
+    margin-bottom: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .shaded .shaded-content {
+    background: white;
+  }
+
+  .text-output {
+    margin-top: 0;
+    line-height: 1.5em;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  d-article {
+    padding-top: 2.5rem;
+    padding-bottom: 30px;
+  }
+
+  d-appendix {
+    padding-top: 30px;
+  }
+
+  d-article>p>img {
+    width: 100%;
+  }
+
+  d-article h2 {
+    margin: 1rem 0 1.5rem 0;
+  }
+
+  d-article h3 {
+    margin-top: 1.5rem;
+  }
+
+  d-article iframe {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 2.0em;
+    width: 100%;
+  }
+
+  /* Tweak code blocks */
+
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  }
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: auto;
+  }
+
+  d-article div.sourceCode {
+    background-color: white;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 10px;
+    font-size: 12px;
+    border-left: 2px solid rgba(0,0,0,0.1);
+  }
+
+  d-article pre {
+    font-size: 12px;
+    color: black;
+    background: none;
+    margin-top: 0;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  d-article pre a {
+    border-bottom: none;
+  }
+
+  d-article pre a:hover {
+    border-bottom: none;
+    text-decoration: underline;
+  }
+
+  d-article details {
+    grid-column: text;
+    margin-bottom: 0.8em;
+  }
+
+  @media(min-width: 768px) {
+
+  d-article pre,
+  d-article div.sourceCode,
+  d-article div.sourceCode pre {
+    overflow: visible !important;
+  }
+
+  d-article div.sourceCode pre {
+    padding-left: 18px;
+    font-size: 14px;
+  }
+
+  d-article pre {
+    font-size: 14px;
+  }
+
+  }
+
+  figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  /* CSS for d-contents */
+
+  .d-contents {
+    grid-column: text;
+    color: rgba(0,0,0,0.8);
+    font-size: 0.9em;
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    margin-bottom: 1em;
+    padding-left: 0.25em;
+    justify-self: start;
+  }
+
+  @media(min-width: 1000px) {
+    .d-contents.d-contents-float {
+      height: 0;
+      grid-column-start: 1;
+      grid-column-end: 4;
+      justify-self: center;
+      padding-right: 3em;
+      padding-left: 2em;
+    }
+  }
+
+  .d-contents nav h3 {
+    font-size: 18px;
+    margin-top: 0;
+    margin-bottom: 1em;
+  }
+
+  .d-contents li {
+    list-style-type: none
+  }
+
+  .d-contents nav > ul {
+    padding-left: 0;
+  }
+
+  .d-contents ul {
+    padding-left: 1em
+  }
+
+  .d-contents nav ul li {
+    margin-top: 0.6em;
+    margin-bottom: 0.2em;
+  }
+
+  .d-contents nav a {
+    font-size: 13px;
+    border-bottom: none;
+    text-decoration: none
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .d-contents nav a:hover {
+    text-decoration: underline solid rgba(0, 0, 0, 0.6)
+  }
+
+  .d-contents nav > ul > li > a {
+    font-weight: 600;
+  }
+
+  .d-contents nav > ul > li > ul {
+    font-weight: inherit;
+  }
+
+  .d-contents nav > ul > li > ul > li {
+    margin-top: 0.2em;
+  }
+
+
+  .d-contents nav ul {
+    margin-top: 0;
+    margin-bottom: 0.25em;
+  }
+
+  .d-article-with-toc h2:nth-child(2) {
+    margin-top: 0;
+  }
+
+
+  /* Figure */
+
+  .figure {
+    position: relative;
+    margin-bottom: 2.5em;
+    margin-top: 1.5em;
+  }
+
+  .figure .caption {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 12px;
+    line-height: 1.5em;
+  }
+
+  .figure img.external {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    padding: 18px;
+    box-sizing: border-box;
+  }
+
+  .figure .caption a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  .figure .caption b,
+  .figure .caption strong, {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 1.0);
+  }
+
+  /* Citations */
+
+  d-article .citation {
+    color: inherit;
+    cursor: inherit;
+  }
+
+  div.hanging-indent{
+    margin-left: 1em; text-indent: -1em;
+  }
+
+  /* Citation hover box */
+
+  .tippy-box[data-theme~=light-border] {
+    background-color: rgba(250, 250, 250, 0.95);
+  }
+
+  .tippy-content > p {
+    margin-bottom: 0;
+    padding: 2px;
+  }
+
+
+  /* Tweak 1000px media break to show more text */
+
+  @media(min-width: 1000px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 80px [middle-start] 50px [text-start kicker-end] 65px 65px 65px 65px 65px 65px 65px 65px [text-end gutter-start] 65px [middle-end] 65px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 16px;
+    }
+
+    .grid {
+      grid-column-gap: 16px;
+    }
+
+    d-article {
+      font-size: 1.06rem;
+      line-height: 1.7em;
+    }
+    figure .caption, .figure .caption, figure figcaption {
+      font-size: 13px;
+    }
+  }
+
+  @media(min-width: 1180px) {
+    .base-grid,
+    distill-header,
+    d-title,
+    d-abstract,
+    d-article,
+    d-appendix,
+    distill-appendix,
+    d-byline,
+    d-footnote-list,
+    d-citation-list,
+    distill-footer {
+      grid-template-columns: [screen-start] 1fr [page-start kicker-start] 60px [middle-start] 60px [text-start kicker-end] 60px 60px 60px 60px 60px 60px 60px 60px [text-end gutter-start] 60px [middle-end] 60px [page-end gutter-end] 1fr [screen-end];
+      grid-column-gap: 32px;
+    }
+
+    .grid {
+      grid-column-gap: 32px;
+    }
+  }
+
+
+  /* Get the citation styles for the appendix (not auto-injected on render since
+     we do our own rendering of the citation appendix) */
+
+  d-appendix .citation-appendix,
+  .d-appendix .citation-appendix {
+    font-size: 11px;
+    line-height: 15px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    padding-left: 18px;
+    border: 1px solid rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.02);
+    padding: 10px 18px;
+    border-radius: 3px;
+    color: rgba(150, 150, 150, 1);
+    overflow: hidden;
+    margin-top: -12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Include appendix styles here so they can be overridden */
+
+  d-appendix {
+    contain: layout style;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-top: 60px;
+    margin-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: rgba(0,0,0,0.5);
+    padding-top: 60px;
+    padding-bottom: 48px;
+  }
+
+  d-appendix h3 {
+    grid-column: page-start / text-start;
+    font-size: 15px;
+    font-weight: 500;
+    margin-top: 1em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.65);
+  }
+
+  d-appendix h3 + * {
+    margin-top: 1em;
+  }
+
+  d-appendix ol {
+    padding: 0 0 0 15px;
+  }
+
+  @media (min-width: 768px) {
+    d-appendix ol {
+      padding: 0 0 0 30px;
+      margin-left: -30px;
+    }
+  }
+
+  d-appendix li {
+    margin-bottom: 1em;
+  }
+
+  d-appendix a {
+    color: rgba(0, 0, 0, 0.6);
+  }
+
+  d-appendix > * {
+    grid-column: text;
+  }
+
+  d-appendix > d-footnote-list,
+  d-appendix > d-citation-list,
+  d-appendix > distill-appendix {
+    grid-column: screen;
+  }
+
+  /* Include footnote styles here so they can be overridden */
+
+  d-footnote-list {
+    contain: layout style;
+  }
+
+  d-footnote-list > * {
+    grid-column: text;
+  }
+
+  d-footnote-list a.footnote-backlink {
+    color: rgba(0,0,0,0.3);
+    padding-left: 0.5em;
+  }
+
+
+
+  /* Anchor.js */
+
+  .anchorjs-link {
+    /*transition: all .25s linear; */
+    text-decoration: none;
+    border-bottom: none;
+  }
+  *:hover > .anchorjs-link {
+    margin-left: -1.125em !important;
+    text-decoration: none;
+    border-bottom: none;
+  }
+
+  /* Social footer */
+
+  .social_footer {
+    margin-top: 30px;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.67);
+  }
+
+  .disqus-comments {
+    margin-right: 30px;
+  }
+
+  .disqus-comment-count {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+  }
+
+  #disqus_thread {
+    margin-top: 30px;
+  }
+
+  .article-sharing a {
+    border-bottom: none;
+    margin-right: 8px;
+  }
+
+  .article-sharing a:hover {
+    border-bottom: none;
+  }
+
+  .sidebar-section.subscribe {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .subscribe p {
+    margin-bottom: 0.5em;
+  }
+
+
+  .article-footer .subscribe {
+    font-size: 15px;
+    margin-top: 45px;
+  }
+
+
+  .sidebar-section.custom {
+    font-size: 12px;
+    line-height: 1.6em;
+  }
+
+  .custom p {
+    margin-bottom: 0.5em;
+  }
+
+  /* Styles for listing layout (hide title) */
+  .layout-listing d-title, .layout-listing .d-title {
+    display: none;
+  }
+
+  /* Styles for posts lists (not auto-injected) */
+
+
+  .posts-with-sidebar {
+    padding-left: 45px;
+    padding-right: 45px;
+  }
+
+  .posts-list .description h2,
+  .posts-list .description p {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .posts-list .description h2 {
+    font-weight: 700;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .posts-list h2.post-tag {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    padding-bottom: 12px;
+  }
+  .posts-list {
+    margin-top: 60px;
+    margin-bottom: 24px;
+  }
+
+  .posts-list .post-preview {
+    text-decoration: none;
+    overflow: hidden;
+    display: block;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 24px 0;
+  }
+
+  .post-preview-last {
+    border-bottom: none !important;
+  }
+
+  .posts-list .posts-list-caption {
+    grid-column: screen;
+    font-weight: 400;
+  }
+
+  .posts-list .post-preview h2 {
+    margin: 0 0 6px 0;
+    line-height: 1.2em;
+    font-style: normal;
+    font-size: 24px;
+  }
+
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.4em;
+    font-size: 16px;
+  }
+
+  .posts-list .post-preview .thumbnail {
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    position: relative;
+    max-width: 500px;
+  }
+  .posts-list .post-preview img {
+    width: 100%;
+    display: block;
+  }
+
+  .posts-list .metadata {
+    font-size: 12px;
+    line-height: 1.4em;
+    margin-bottom: 18px;
+  }
+
+  .posts-list .metadata > * {
+    display: inline-block;
+  }
+
+  .posts-list .metadata .publishedDate {
+    margin-right: 2em;
+  }
+
+  .posts-list .metadata .dt-authors {
+    display: block;
+    margin-top: 0.3em;
+    margin-right: 2em;
+  }
+
+  .posts-list .dt-tags {
+    display: block;
+    line-height: 1em;
+  }
+
+  .posts-list .dt-tags .dt-tag {
+    display: inline-block;
+    color: rgba(0,0,0,0.6);
+    padding: 0.3em 0.4em;
+    margin-right: 0.2em;
+    margin-bottom: 0.4em;
+    font-size: 60%;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .posts-list img {
+    opacity: 1;
+  }
+
+  .posts-list img[data-src] {
+    opacity: 0;
+  }
+
+  .posts-more {
+    clear: both;
+  }
+
+
+  .posts-sidebar {
+    font-size: 16px;
+  }
+
+  .posts-sidebar h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    font-weight: 400;
+    text-transform: uppercase;
+  }
+
+  .sidebar-section {
+    margin-bottom: 30px;
+  }
+
+  .categories ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .categories li {
+    color: rgba(0, 0, 0, 0.8);
+    margin-bottom: 0;
+  }
+
+  .categories li>a {
+    border-bottom: none;
+  }
+
+  .categories li>a:hover {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  }
+
+  .categories .active {
+    font-weight: 600;
+  }
+
+  .categories .category-count {
+    color: rgba(0, 0, 0, 0.4);
+  }
+
+
+  @media(min-width: 768px) {
+    .posts-list .post-preview h2 {
+      font-size: 26px;
+    }
+    .posts-list .post-preview .thumbnail {
+      float: right;
+      width: 30%;
+      margin-bottom: 0;
+    }
+    .posts-list .post-preview .description {
+      float: left;
+      width: 45%;
+    }
+    .posts-list .post-preview .metadata {
+      float: left;
+      width: 20%;
+      margin-top: 8px;
+    }
+    .posts-list .post-preview p {
+      margin: 0 0 12px 0;
+      line-height: 1.5em;
+      font-size: 16px;
+    }
+    .posts-with-sidebar .posts-list {
+      float: left;
+      width: 75%;
+    }
+    .posts-with-sidebar .posts-sidebar {
+      float: right;
+      width: 20%;
+      margin-top: 60px;
+      padding-top: 24px;
+      padding-bottom: 24px;
+    }
+  }
+
+
+  /* Improve display for browsers without grid (IE/Edge <= 15) */
+
+  .downlevel {
+    line-height: 1.6em;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+  }
+
+  .downlevel .d-title {
+    padding-top: 6rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .downlevel .d-title h1 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.1em;
+    margin: 0 0 0.5rem;
+  }
+
+  .downlevel .d-title p {
+    font-weight: 300;
+    font-size: 1.2rem;
+    line-height: 1.55em;
+    margin-top: 0;
+  }
+
+  .downlevel .d-byline {
+    padding-top: 0.8em;
+    padding-bottom: 0.8em;
+    font-size: 0.8rem;
+    line-height: 1.8em;
+  }
+
+  .downlevel .section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .downlevel .d-article {
+    font-size: 1.06rem;
+    line-height: 1.7em;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+
+  .downlevel .d-appendix {
+    padding-left: 0;
+    padding-right: 0;
+    max-width: none;
+    font-size: 0.8em;
+    line-height: 1.7em;
+    margin-bottom: 0;
+    color: rgba(0,0,0,0.5);
+    padding-top: 40px;
+    padding-bottom: 48px;
+  }
+
+  .downlevel .footnotes ol {
+    padding-left: 13px;
+  }
+
+  .downlevel .base-grid,
+  .downlevel .distill-header,
+  .downlevel .d-title,
+  .downlevel .d-abstract,
+  .downlevel .d-article,
+  .downlevel .d-appendix,
+  .downlevel .distill-appendix,
+  .downlevel .d-byline,
+  .downlevel .d-footnote-list,
+  .downlevel .d-citation-list,
+  .downlevel .distill-footer,
+  .downlevel .appendix-bottom,
+  .downlevel .posts-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  @media(min-width: 768px) {
+    .downlevel .base-grid,
+    .downlevel .distill-header,
+    .downlevel .d-title,
+    .downlevel .d-abstract,
+    .downlevel .d-article,
+    .downlevel .d-appendix,
+    .downlevel .distill-appendix,
+    .downlevel .d-byline,
+    .downlevel .d-footnote-list,
+    .downlevel .d-citation-list,
+    .downlevel .distill-footer,
+    .downlevel .appendix-bottom,
+    .downlevel .posts-container {
+    padding-left: 150px;
+    padding-right: 150px;
+    max-width: 900px;
+  }
+  }
+
+  .downlevel pre code {
+    display: block;
+    border-left: 2px solid rgba(0, 0, 0, .1);
+    padding: 0 0 0 20px;
+    font-size: 14px;
+  }
+
+  .downlevel code, .downlevel pre {
+    color: black;
+    background: none;
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none;
+  }
+
+  .downlevel .posts-list .post-preview {
+    color: inherit;
+  }
+
+
+
+  </style>
+
+  <script type="application/javascript">
+
+  function is_downlevel_browser() {
+    if (bowser.isUnsupportedBrowser({ msie: "12", msedge: "16"},
+                                   window.navigator.userAgent)) {
+      return true;
+    } else {
+      return window.load_distill_framework === undefined;
+    }
+  }
+
+  // show body when load is complete
+  function on_load_complete() {
+
+    // add anchors
+    if (window.anchors) {
+      window.anchors.options.placement = 'left';
+      window.anchors.add('d-article > h2, d-article > h3, d-article > h4, d-article > h5');
+    }
+
+
+    // set body to visible
+    document.body.style.visibility = 'visible';
+
+    // force redraw for leaflet widgets
+    if (window.HTMLWidgets) {
+      var maps = window.HTMLWidgets.findAll(".leaflet");
+      $.each(maps, function(i, el) {
+        var map = this.getMap();
+        map.invalidateSize();
+        map.eachLayer(function(layer) {
+          if (layer instanceof L.TileLayer)
+            layer.redraw();
+        });
+      });
+    }
+
+    // trigger 'shown' so htmlwidgets resize
+    $('d-article').trigger('shown');
+  }
+
+  function init_distill() {
+
+    init_common();
+
+    // create front matter
+    var front_matter = $('<d-front-matter></d-front-matter>');
+    $('#distill-front-matter').wrap(front_matter);
+
+    // create d-title
+    $('.d-title').changeElementType('d-title');
+
+    // create d-byline
+    var byline = $('<d-byline></d-byline>');
+    $('.d-byline').replaceWith(byline);
+
+    // create d-article
+    var article = $('<d-article></d-article>');
+    $('.d-article').wrap(article).children().unwrap();
+
+    // move posts container into article
+    $('.posts-container').appendTo($('d-article'));
+
+    // create d-appendix
+    $('.d-appendix').changeElementType('d-appendix');
+
+    // flag indicating that we have appendix items
+    var appendix = $('.appendix-bottom').children('h3').length > 0;
+
+    // replace footnotes with <d-footnote>
+    $('.footnote-ref').each(function(i, val) {
+      appendix = true;
+      var href = $(this).attr('href');
+      var id = href.replace('#', '');
+      var fn = $('#' + id);
+      var fn_p = $('#' + id + '>p');
+      fn_p.find('.footnote-back').remove();
+      var text = fn_p.html();
+      var dtfn = $('<d-footnote></d-footnote>');
+      dtfn.html(text);
+      $(this).replaceWith(dtfn);
+    });
+    // remove footnotes
+    $('.footnotes').remove();
+
+    // move refs into #references-listing
+    $('#references-listing').replaceWith($('#refs'));
+
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      var id = $(this).attr('id');
+      $('.d-contents a[href="#' + id + '"]').parent().remove();
+      appendix = true;
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('d-appendix'));
+    });
+
+    // show d-appendix if we have appendix content
+    $("d-appendix").css('display', appendix ? 'grid' : 'none');
+
+    // localize layout chunks to just output
+    $('.layout-chunk').each(function(i, val) {
+
+      // capture layout
+      var layout = $(this).attr('data-layout');
+
+      // apply layout to markdown level block elements
+      var elements = $(this).children().not('details, div.sourceCode, pre, script');
+      elements.each(function(i, el) {
+        var layout_div = $('<div class="' + layout + '"></div>');
+        if (layout_div.hasClass('shaded')) {
+          var shaded_content = $('<div class="shaded-content"></div>');
+          $(this).wrap(shaded_content);
+          $(this).parent().wrap(layout_div);
+        } else {
+          $(this).wrap(layout_div);
+        }
+      });
+
+
+      // unwrap the layout-chunk div
+      $(this).children().unwrap();
+    });
+
+    // remove code block used to force  highlighting css
+    $('.distill-force-highlighting-css').parent().remove();
+
+    // remove empty line numbers inserted by pandoc when using a
+    // custom syntax highlighting theme
+    $('code.sourceCode a:empty').remove();
+
+    // load distill framework
+    load_distill_framework();
+
+    // wait for window.distillRunlevel == 4 to do post processing
+    function distill_post_process() {
+
+      if (!window.distillRunlevel || window.distillRunlevel < 4)
+        return;
+
+      // hide author/affiliations entirely if we have no authors
+      var front_matter = JSON.parse($("#distill-front-matter").html());
+      var have_authors = front_matter.authors && front_matter.authors.length > 0;
+      if (!have_authors)
+        $('d-byline').addClass('hidden');
+
+      // article with toc class
+      $('.d-contents').parent().addClass('d-article-with-toc');
+
+      // strip links that point to #
+      $('.authors-affiliations').find('a[href="#"]').removeAttr('href');
+
+      // add orcid ids
+      $('.authors-affiliations').find('.author').each(function(i, el) {
+        var orcid_id = front_matter.authors[i].orcidID;
+        if (orcid_id) {
+          var a = $('<a></a>');
+          a.attr('href', 'https://orcid.org/' + orcid_id);
+          var img = $('<img></img>');
+          img.addClass('orcid-id');
+          img.attr('alt', 'ORCID ID');
+          img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
+          a.append(img);
+          $(this).append(a);
+        }
+      });
+
+      // hide elements of author/affiliations grid that have no value
+      function hide_byline_column(caption) {
+        $('d-byline').find('h3:contains("' + caption + '")').parent().css('visibility', 'hidden');
+      }
+
+      // affiliations
+      var have_affiliations = false;
+      for (var i = 0; i<front_matter.authors.length; ++i) {
+        var author = front_matter.authors[i];
+        if (author.affiliation !== "&nbsp;") {
+          have_affiliations = true;
+          break;
+        }
+      }
+      if (!have_affiliations)
+        $('d-byline').find('h3:contains("Affiliations")').css('visibility', 'hidden');
+
+      // published date
+      if (!front_matter.publishedDate)
+        hide_byline_column("Published");
+
+      // document object identifier
+      var doi = $('d-byline').find('h3:contains("DOI")');
+      var doi_p = doi.next().empty();
+      if (!front_matter.doi) {
+        // if we have a citation and valid citationText then link to that
+        if ($('#citation').length > 0 && front_matter.citationText) {
+          doi.html('Citation');
+          $('<a href="#citation"></a>')
+            .text(front_matter.citationText)
+            .appendTo(doi_p);
+        } else {
+          hide_byline_column("DOI");
+        }
+      } else {
+        $('<a></a>')
+           .attr('href', "https://doi.org/" + front_matter.doi)
+           .html(front_matter.doi)
+           .appendTo(doi_p);
+      }
+
+       // change plural form of authors/affiliations
+      if (front_matter.authors.length === 1) {
+        var grid = $('.authors-affiliations');
+        grid.children('h3:contains("Authors")').text('Author');
+        grid.children('h3:contains("Affiliations")').text('Affiliation');
+      }
+
+      // remove d-appendix and d-footnote-list local styles
+      $('d-appendix > style:first-child').remove();
+      $('d-footnote-list > style:first-child').remove();
+
+      // move appendix-bottom entries to the bottom
+      $('.appendix-bottom').appendTo('d-appendix').children().unwrap();
+      $('.appendix-bottom').remove();
+
+      // hoverable references
+      $('span.citation[data-cites]').each(function() {
+        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
+          var fn = $(this).children()[0]
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
+        }).join("\n");
+        window.tippy(this, {
+          allowHTML: true,
+          content: refHtml,
+          maxWidth: 500,
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start'
+        });
+      });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
+
+      // clear polling timer
+      clearInterval(tid);
+
+      // show body now that everything is ready
+      on_load_complete();
+    }
+
+    var tid = setInterval(distill_post_process, 50);
+    distill_post_process();
+
+  }
+
+  function init_downlevel() {
+
+    init_common();
+
+     // insert hr after d-title
+    $('.d-title').after($('<hr class="section-separator"/>'));
+
+    // check if we have authors
+    var front_matter = JSON.parse($("#distill-front-matter").html());
+    var have_authors = front_matter.authors && front_matter.authors.length > 0;
+
+    // manage byline/border
+    if (!have_authors)
+      $('.d-byline').remove();
+    $('.d-byline').after($('<hr class="section-separator"/>'));
+    $('.d-byline a').remove();
+
+    // remove toc
+    $('.d-contents').remove();
+
+    // move appendix elements
+    $('h1.appendix, h2.appendix').each(function(i, val) {
+      $(this).changeElementType('h3');
+    });
+    $('h3.appendix').each(function(i, val) {
+      $(this).nextUntil($('h1, h2, h3')).addBack().appendTo($('.d-appendix'));
+    });
+
+
+    // inject headers into references and footnotes
+    var refs_header = $('<h3></h3>');
+    refs_header.text('References');
+    $('#refs').prepend(refs_header);
+
+    var footnotes_header = $('<h3></h3');
+    footnotes_header.text('Footnotes');
+    $('.footnotes').children('hr').first().replaceWith(footnotes_header);
+
+    // move appendix-bottom entries to the bottom
+    $('.appendix-bottom').appendTo('.d-appendix').children().unwrap();
+    $('.appendix-bottom').remove();
+
+    // remove appendix if it's empty
+    if ($('.d-appendix').children().length === 0)
+      $('.d-appendix').remove();
+
+    // prepend separator above appendix
+    $('.d-appendix').before($('<hr class="section-separator" style="clear: both"/>'));
+
+    // trim code
+    $('pre>code').each(function(i, val) {
+      $(this).html($.trim($(this).html()));
+    });
+
+    // move posts-container right before article
+    $('.posts-container').insertBefore($('.d-article'));
+
+    $('body').addClass('downlevel');
+
+    on_load_complete();
+  }
+
+
+  function init_common() {
+
+    // jquery plugin to change element types
+    (function($) {
+      $.fn.changeElementType = function(newType) {
+        var attrs = {};
+
+        $.each(this[0].attributes, function(idx, attr) {
+          attrs[attr.nodeName] = attr.nodeValue;
+        });
+
+        this.replaceWith(function() {
+          return $("<" + newType + "/>", attrs).append($(this).contents());
+        });
+      };
+    })(jQuery);
+
+    // prevent underline for linked images
+    $('a > img').parent().css({'border-bottom' : 'none'});
+
+    // mark non-body figures created by knitr chunks as 100% width
+    $('.layout-chunk').each(function(i, val) {
+      var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
+      if ($(this).attr('data-layout') !== "l-body") {
+        figures.css('width', '100%');
+      } else {
+        figures.css('max-width', '100%');
+        figures.filter("[width]").each(function(i, val) {
+          var fig = $(this);
+          fig.css('width', fig.attr('width') + 'px');
+        });
+
+      }
+    });
+
+    // auto-append index.html to post-preview links in file: protocol
+    // and in rstudio ide preview
+    $('.post-preview').each(function(i, val) {
+      if (window.location.protocol === "file:")
+        $(this).attr('href', $(this).attr('href') + "index.html");
+    });
+
+    // get rid of index.html references in header
+    if (window.location.protocol !== "file:") {
+      $('.distill-site-header a[href]').each(function(i,val) {
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
+      });
+    }
+
+    // add class to pandoc style tables
+    $('tr.header').parent('thead').parent('table').addClass('pandoc-table');
+    $('.kable-table').children('table').addClass('pandoc-table');
+
+    // add figcaption style to table captions
+    $('caption').parent('table').addClass("figcaption");
+
+    // initialize posts list
+    if (window.init_posts_list)
+      window.init_posts_list();
+
+    // implmement disqus comment link
+    $('.disqus-comment-count').click(function() {
+      window.headroom_prevent_pin = true;
+      $('#disqus_thread').toggleClass('hidden');
+      if (!$('#disqus_thread').hasClass('hidden')) {
+        var offset = $(this).offset();
+        $(window).resize();
+        $('html, body').animate({
+          scrollTop: offset.top - 35
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (is_downlevel_browser())
+      init_downlevel();
+    else
+      window.addEventListener('WebComponentsReady', init_distill);
+  });
+
+  </script>
+
+  <style type="text/css">
+  /* base variables */
+
+  /* Edit the CSS properties in this file to create a custom
+     Distill theme. Only edit values in the right column
+     for each row; values shown are the CSS defaults.
+     To return any property to the default,
+     you may set its value to: unset
+     All rows must end with a semi-colon.                      */
+
+  /* Optional: embed custom fonts here with `@import`          */
+  /* This must remain at the top of this file.                 */
+
+
+
+  html {
+    /*-- Main font sizes --*/
+    --title-size:      50px;
+    --body-size:       1.06rem;
+    --code-size:       14px;
+    --aside-size:      12px;
+    --fig-cap-size:    13px;
+    /*-- Main font colors --*/
+    --title-color:     #000000;
+    --header-color:    rgba(0, 0, 0, 0.8);
+    --body-color:      rgba(0, 0, 0, 0.8);
+    --aside-color:     rgba(0, 0, 0, 0.6);
+    --fig-cap-color:   rgba(0, 0, 0, 0.6);
+    /*-- Specify custom fonts ~~~ must be imported above   --*/
+    --heading-font:    sans-serif;
+    --mono-font:       monospace;
+    --body-font:       sans-serif;
+    --navbar-font:     sans-serif;  /* websites + blogs only */
+  }
+
+  /*-- ARTICLE METADATA --*/
+  d-byline {
+    --heading-size:    0.6rem;
+    --heading-color:   rgba(0, 0, 0, 0.5);
+    --body-size:       0.8rem;
+    --body-color:      rgba(0, 0, 0, 0.8);
+  }
+
+  /*-- ARTICLE TABLE OF CONTENTS --*/
+  .d-contents {
+    --heading-size:    18px;
+    --contents-size:   13px;
+  }
+
+  /*-- ARTICLE APPENDIX --*/
+  d-appendix {
+    --heading-size:    15px;
+    --heading-color:   rgba(0, 0, 0, 0.65);
+    --text-size:       0.8em;
+    --text-color:      rgba(0, 0, 0, 0.5);
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  /* These properties only apply to Distill sites and blogs  */
+
+  .distill-site-header {
+    --title-size:       18px;
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  .distill-site-footer {
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  /*-- Additional custom styles --*/
+  /* Add any additional CSS rules below                      */
+  </style>
+  <style type="text/css">
+  /* base variables */
+
+  /* Edit the CSS properties in this file to create a custom
+     Distill theme. Only edit values in the right column
+     for each row; values shown are the CSS defaults.
+     To return any property to the default,
+     you may set its value to: unset
+     All rows must end with a semi-colon.                      */
+
+  /* Optional: embed custom fonts here with `@import`          */
+  /* This must remain at the top of this file.                 */
+
+
+
+  html {
+    /*-- Main font sizes --*/
+    --title-size:      50px;
+    --body-size:       1.06rem;
+    --code-size:       14px;
+    --aside-size:      12px;
+    --fig-cap-size:    13px;
+    /*-- Main font colors --*/
+    --title-color:     #000000;
+    --header-color:    rgba(0, 0, 0, 0.8);
+    --body-color:      rgba(0, 0, 0, 0.8);
+    --aside-color:     rgba(0, 0, 0, 0.6);
+    --fig-cap-color:   rgba(0, 0, 0, 0.6);
+    /*-- Specify custom fonts ~~~ must be imported above   --*/
+    --heading-font:    sans-serif;
+    --mono-font:       monospace;
+    --body-font:       sans-serif;
+    --navbar-font:     sans-serif;  /* websites + blogs only */
+  }
+
+  /*-- ARTICLE METADATA --*/
+  d-byline {
+    --heading-size:    0.6rem;
+    --heading-color:   rgba(0, 0, 0, 0.5);
+    --body-size:       0.8rem;
+    --body-color:      rgba(0, 0, 0, 0.8);
+  }
+
+  /*-- ARTICLE TABLE OF CONTENTS --*/
+  .d-contents {
+    --heading-size:    18px;
+    --contents-size:   13px;
+  }
+
+  /*-- ARTICLE APPENDIX --*/
+  d-appendix {
+    --heading-size:    15px;
+    --heading-color:   rgba(0, 0, 0, 0.65);
+    --text-size:       0.8em;
+    --text-color:      rgba(0, 0, 0, 0.5);
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  /* These properties only apply to Distill sites and blogs  */
+
+  .distill-site-header {
+    --title-size:       18px;
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  .distill-site-footer {
+    --text-color:       rgba(255, 255, 255, 0.8);
+    --text-size:        15px;
+    --hover-color:      white;
+    --bkgd-color:       #0F2E3D;
+  }
+
+  /*-- Additional custom styles --*/
+  /* Add any additional CSS rules below                      */
+
+  /* Code chunks */
+
+  d-article pre { /* Chunk output */
+    border-radius: 5px; /* Rounded edges */
+    font-size: 12px;
+    color: black;
+    background-color: #c1daf0;
+    padding: 5px 5px 5px 18px;
+  }
+
+  d-article div.sourceCode pre { /* Chunk code */
+    border-radius: 5px; /* Rounded edges */
+    background-color: #fff2cc;
+    color: black;
+    padding: 5px 5px 5px 18px;
+  }
+
+  d-article div.sourceCode {
+    background-color: transparent;
+  }</style>
+  <style type="text/css">
+  /* base style */
+
+  /* FONT FAMILIES */
+
+  :root {
+    --heading-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+    --mono-default: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    --body-default: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  body,
+  .posts-list .post-preview p,
+  .posts-list .description p {
+    font-family: var(--body-font), var(--body-default);
+  }
+
+  h1, h2, h3, h4, h5, h6,
+  .posts-list .post-preview h2,
+  .posts-list .description h2 {
+    font-family: var(--heading-font), var(--heading-default);
+  }
+
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-family: var(--mono-font), var(--mono-default);
+  }
+
+
+  /*-- TITLE --*/
+  d-title h1,
+  .posts-list > h1 {
+    color: var(--title-color, black);
+  }
+
+  d-title h1 {
+    font-size: var(--title-size, 50px);
+  }
+
+  /*-- HEADERS --*/
+  d-article h1,
+  d-article h2,
+  d-article h3,
+  d-article h4,
+  d-article h5,
+  d-article h6 {
+    color: var(--header-color, rgba(0, 0, 0, 0.8));
+  }
+
+  /*-- BODY --*/
+  d-article > p,  /* only text inside of <p> tags */
+  d-article > ul, /* lists */
+  d-article > ol {
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+    font-size: var(--body-size, 1.06rem);
+  }
+
+
+  /*-- CODE --*/
+  d-article div.sourceCode code,
+  d-article pre code {
+    font-size: var(--code-size, 14px);
+  }
+
+  /*-- ASIDE --*/
+  d-article aside {
+    font-size: var(--aside-size, 12px);
+    color: var(--aside-color, rgba(0, 0, 0, 0.6));
+  }
+
+  /*-- FIGURE CAPTIONS --*/
+  figure .caption,
+  figure figcaption,
+  .figure .caption {
+    font-size: var(--fig-cap-size, 13px);
+    color: var(--fig-cap-color, rgba(0, 0, 0, 0.6));
+  }
+
+  /*-- METADATA --*/
+  d-byline h3 {
+    font-size: var(--heading-size, 0.6rem);
+    color: var(--heading-color, rgba(0, 0, 0, 0.5));
+  }
+
+  d-byline {
+    font-size: var(--body-size, 0.8rem);
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+  }
+
+  d-byline a,
+  d-article d-byline a {
+    color: var(--body-color, rgba(0, 0, 0, 0.8));
+  }
+
+  /*-- TABLE OF CONTENTS --*/
+  .d-contents nav h3 {
+    font-size: var(--heading-size, 18px);
+  }
+
+  .d-contents nav a {
+    font-size: var(--contents-size, 13px);
+  }
+
+  /*-- APPENDIX --*/
+  d-appendix h3 {
+    font-size: var(--heading-size, 15px);
+    color: var(--heading-color, rgba(0, 0, 0, 0.65));
+  }
+
+  d-appendix {
+    font-size: var(--text-size, 0.8em);
+    color: var(--text-color, rgba(0, 0, 0, 0.5));
+  }
+
+  d-appendix d-footnote-list a.footnote-backlink {
+    color: var(--text-color, rgba(0, 0, 0, 0.5));
+  }
+
+  /*-- WEBSITE HEADER + FOOTER --*/
+  .distill-site-header .title {
+    font-size: var(--title-size, 18px);
+    font-family: var(--navbar-font), var(--heading-default);
+  }
+
+  .distill-site-header a,
+  .nav-dropdown .nav-dropbtn {
+    font-family: var(--navbar-font), var(--heading-default);
+  }
+
+  .nav-dropdown .nav-dropbtn {
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    font-size: var(--text-size, 15px);
+  }
+
+  .distill-site-header a:hover,
+  .nav-dropdown:hover .nav-dropbtn {
+    color: var(--hover-color, white);
+  }
+
+  .distill-site-header {
+    font-size: var(--text-size, 15px);
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    background-color: var(--bkgd-color, #0F2E3D);
+  }
+
+  .distill-site-footer {
+    font-size: var(--text-size, 15px);
+    color: var(--text-color, rgba(255, 255, 255, 0.8));
+    background-color: var(--bkgd-color, #0F2E3D);
+  }
+
+  .distill-site-footer a:hover {
+    color: var(--hover-color, white);
+  }</style>
+  <!--/radix_placeholder_distill-->
+  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/popper-2.6.0/popper.min.js"></script>
+  <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="site_libs/anchor-4.2.2/anchor.min.js"></script>
+  <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
+  <script src="site_libs/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="site_libs/distill-2.2.21/template.v2.js"></script>
+  <!--radix_placeholder_site_in_header-->
+  <script type="text/javascript" cookie-consent="tracking" async src="https://www.googletagmanager.com/gtag/js?id=G-1RQZJC7E05"></script>
+  <script type="text/javascript" cookie-consent="tracking">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1RQZJC7E05');
+  </script>
+  <!--/radix_placeholder_site_in_header-->
+
+
+</head>
+
+<body>
+
+<!--radix_placeholder_front_matter-->
+
+<script id="distill-front-matter" type="text/json">
+{"title":"Gradient Boosting Trees (GBM)","authors":[{"author":"Cengiz Zopluoglu","authorURL":"#","affiliation":"University of Oregon","affiliationURL":"#","orcidID":""}],"publishedDate":"2022-11-23T00:00:00.000-08:00","citationText":"Zopluoglu, 2022"}
+</script>
+
+<!--/radix_placeholder_front_matter-->
+<!--radix_placeholder_navigation_before_body-->
+<header class="header header--fixed" role="banner">
+<nav class="distill-site-nav distill-site-header">
+<div class="nav-left">
+<a href="index.html" class="title">Applied Machine Learning for Educational Data Science</a>
+</div>
+<div class="nav-right">
+<a href="index.html">Home</a>
+<a href="syllabus.html">Syllabus</a>
+<a href="schedule.html">Schedule</a>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Lecture Notes
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="lecture-1.html">Lecture-1</a>
+<a href="lecture-2a.html">Lecture-2a</a>
+<a href="lecture-2b.html">Lecture-2b</a>
+<a href="lecture-3a.html">Lecture-3a</a>
+<a href="lecture-3b.html">Lecture-3b</a>
+<a href="lecture-4.html">Lecture-4</a>
+<a href="lecture-5.html">Lecture-5</a>
+<a href="lecture-6a.html">Lecture-6a</a>
+<a href="lecture-6b.html">Lecture-6b</a>
+<a href="lecture-7a.html">Lecture-7a</a>
+<a href="lecture-7b.html">Lecture-7b</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Kaggle Notebooks
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="https://www.kaggle.com/code/uocoeeds/week-1-introduction/notebook">Notebook-1</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i">Notebook-2a</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii">Notebook-2b</a>
+<a href="https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo">The {recipes} demo</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-3a-overview-of-linear-regression">Notebook-3a</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-3b-review-of-bias-variance-tradeoff">Notebook-3b</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-with-cross-validation">Building Linear Models with `caret`</a>
+<a href="https://www.kaggle.com/code/uocoeeds/lecture-4-regularized-penalized-regression">Notebook-4</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model">Building a Ridge Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model">Building a Lasso Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net">Building an Elastic Net Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text">Using the Existing Models to Predict Outcome for New Observations</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook">Building a Logistic Regression Model</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/">Building a Classification Model with Ridge Penalty</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty">Building a Classification Model with Lasso Penalty</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net">Building a Classification Model with Elastic Net</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn">Building a Prediction Model with K-nearest neighbors</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn">Building a Classification Model with K-nearest neighbors</a>
+<a href="https://www.kaggle.com/uocoeeds/building-a-prediction-model-using-a-decision-tree">Building a Prediction Model with a Decision Tree</a>
+<a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm">Building a Classification Model with a Decision Tree</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Slides
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="slides/slide1.html">Week 1</a>
+<a href="slides/slide2.html">Week 2</a>
+<a href="slides/slide3.html">Week 3 &amp; 4</a>
+<a href="slides/slide4.html">Week 5</a>
+<a href="slides/slide5.html">Week 6 &amp; 7</a>
+<a href="slides/slide6a.html">Week 8_Part 1</a>
+<a href="slides/slide6b.html">Week 8_Part 2</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Assignments
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-1">Assignment1</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-2">Assignment2</a>
+<a href="https://www.kaggle.com/code/uocoeeds/assignment-3">Assignment3</a>
+</div>
+</div>
+<a href="https://github.com/uo-datasci-specialization/c4-ml-fall-2022">
+<i class="fa fa-github" aria-hidden="true"></i>
+</a>
+<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
+</div>
+</nav>
+</header>
+<!--/radix_placeholder_navigation_before_body-->
+<!--radix_placeholder_site_before_body-->
+<!--/radix_placeholder_site_before_body-->
+
+<div class="d-title">
+<h1>Gradient Boosting Trees (GBM)</h1>
+<!--radix_placeholder_categories-->
+<!--/radix_placeholder_categories-->
+
+</div>
+
+<div class="d-byline">
+  Cengiz Zopluoglu  (University of Oregon)
+  
+<br/>11/23/2022
+</div>
+
+<div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a
+href="#understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals"
+id="toc-understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1.
+Understanding the Machinery of GBM with Sequential Development of Trees
+from Residuals</a>
+<ul>
+<li><a href="#iteration-0" id="toc-iteration-0">Iteration 0</a></li>
+<li><a href="#iteration-1" id="toc-iteration-1">Iteration 1</a></li>
+<li><a href="#iteration-2" id="toc-iteration-2">Iteration 2</a></li>
+<li><a href="#a-more-formal-introduction-of-gradient-boosting-trees"
+id="toc-a-more-formal-introduction-of-gradient-boosting-trees">2. A more
+formal introduction of Gradient Boosting Trees</a></li>
+</ul></li>
+<li><a href="#fitting-gradient-boosting-trees-using-the-gbm-package"
+id="toc-fitting-gradient-boosting-trees-using-the-gbm-package">3.
+Fitting Gradient Boosting Trees using the <code>gbm</code>
+package</a></li>
+<li><a
+href="#fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning"
+id="toc-fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4.
+Fitting Gradient Boosting Trees using the <code>caret</code> package and
+Hyperparameter Tuning</a></li>
+<li><a
+href="#predicting-readability-scores-using-gradient-boosting-trees"
+id="toc-predicting-readability-scores-using-gradient-boosting-trees">5.
+Predicting Readability Scores Using Gradient Boosting Trees</a></li>
+<li><a href="#predicting-recidivism-using-gradient-boosting-trees"
+id="toc-predicting-recidivism-using-gradient-boosting-trees">6.
+Predicting Recidivism Using Gradient Boosting Trees</a></li>
+</ul>
+</nav>
+</div>
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+</style>
+<p>[Updated: Sun, Nov 27, 2022 - 14:16:59 ]</p>
+<p>In Bagged Trees or Random Forests models, the trees are developed
+independently by taking a random sample of rows and columns from the
+dataset. The main difference between Gradient Boosting Trees and Bagged
+Trees or Random Forests is that the trees are developed sequentially,
+and each tree model is built upon the errors of the previous tree
+models. The sequential process of model building and predictions in
+gradient-boosted trees can be conceptually demonstrated below.</p>
+<p><br></p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="figs/boosting.PNG" width="353" style="display: block; margin: auto;" /></p>
+</div>
+<p><br></p>
+<h1
+id="understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1.
+Understanding the Machinery of GBM with Sequential Development of Trees
+from Residuals</h1>
+<p>Let’s try to implement this idea in a toy dataset we use to predict a
+readability score from the number of sentences.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>'./data/readability_sub.csv'</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V220'</span>,<span class='st'>'V166'</span>,<span class='st'>'target'</span><span class='op'>)</span><span class='op'>]</span></span></code></pre>
+</div>
+<pre><code>          V220        V166      target
+1  -0.13908258  0.19028091 -2.06282395
+2   0.21764143  0.07101288  0.58258607
+3   0.05812133  0.03993277 -1.65313060
+4   0.02526429  0.18845809 -0.87390681
+5   0.22430885  0.06200715 -1.74049148
+6  -0.07795373  0.10754109 -3.63993555
+7   0.43400714  0.12202360 -0.62284268
+8  -0.24364550  0.02454670 -0.34426981
+9   0.15893717  0.10422343 -1.12298826
+10  0.14496475  0.02339597 -0.99857142
+11  0.34222975  0.22065343 -0.87656742
+12  0.25219145  0.10865010 -0.03304643
+13  0.03532625  0.07549474 -0.49529863
+14  0.36410633  0.18675801  0.12453660
+15  0.29988593  0.11618323  0.09678258
+16  0.19837037  0.08272671  0.38422270
+17  0.07807041  0.10235218 -0.58143038
+18  0.07935690  0.11618605 -0.34324576
+19  0.57000953 -0.02385423 -0.39054205
+20  0.34523284  0.09299514 -0.67548411</code></pre>
+</div>
+<h2 id="iteration-0">Iteration 0</h2>
+<p>We start with a simple model that uses the average target outcome to
+predict the readability for all observations in this toy dataset. We
+calculate the predictions and residuals from this initial
+<strong>intercept-only</strong> model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred0</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
+<span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res0</span>  <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V166'</span>,<span class='st'>'V220'</span>,<span class='st'>'target'</span>,<span class='st'>'pred0'</span>,<span class='st'>'res0'</span><span class='op'>)</span><span class='op'>]</span>,<span class='fl'>3</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>     V166   V220 target  pred0   res0
+1   0.190 -0.139 -2.063 -0.763 -1.300
+2   0.071  0.218  0.583 -0.763  1.346
+3   0.040  0.058 -1.653 -0.763 -0.890
+4   0.188  0.025 -0.874 -0.763 -0.111
+5   0.062  0.224 -1.740 -0.763 -0.977
+6   0.108 -0.078 -3.640 -0.763 -2.877
+7   0.122  0.434 -0.623 -0.763  0.140
+8   0.025 -0.244 -0.344 -0.763  0.419
+9   0.104  0.159 -1.123 -0.763 -0.360
+10  0.023  0.145 -0.999 -0.763 -0.235
+11  0.221  0.342 -0.877 -0.763 -0.113
+12  0.109  0.252 -0.033 -0.763  0.730
+13  0.075  0.035 -0.495 -0.763  0.268
+14  0.187  0.364  0.125 -0.763  0.888
+15  0.116  0.300  0.097 -0.763  0.860
+16  0.083  0.198  0.384 -0.763  1.148
+17  0.102  0.078 -0.581 -0.763  0.182
+18  0.116  0.079 -0.343 -0.763  0.420
+19 -0.024  0.570 -0.391 -0.763  0.373
+20  0.093  0.345 -0.675 -0.763  0.088</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># SSE at the end of Iteration 0</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res0</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 17.73309</code></pre>
+</div>
+<h2 id="iteration-1">Iteration 1</h2>
+<p>Now, we fit a tree model to predict the residuals of Iteration 0 from
+the two predictors (Features V220 and V166). Notice that we fix the
+value of specific parameters while fitting the tree model (e.g.,
+<code>cp</code>, <code>minsplit</code>,<code>maxdepth</code>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/bethatkinson/rpart'>rpart</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://rattle.togaware.com/'>rattle</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>model1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>res0</span> <span class='op'>~</span> <span class='va'>V166</span> <span class='op'>+</span> <span class='va'>V220</span>,</span>
+<span>                data    <span class='op'>=</span> <span class='va'>readability_sub</span>,</span>
+<span>                method  <span class='op'>=</span> <span class='st'>"anova"</span>,</span>
+<span>                control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit<span class='op'>=</span><span class='fl'>2</span>,</span>
+<span>                               cp<span class='op'>=</span><span class='fl'>0</span>,</span>
+<span>                               minbucket <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>                               maxdepth <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span>                <span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/pkg/rattle/man/fancyRpartPlot.html'>fancyRpartPlot</a></span><span class='op'>(</span><span class='va'>model1</span>,type<span class='op'>=</span><span class='fl'>2</span>,sub<span class='op'>=</span><span class='st'>''</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-4-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<p>Let’s see the predictions of residuals from Model 1.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>pr.res</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>model1</span>, <span class='va'>readability_sub</span><span class='op'>)</span></span>
+<span><span class='va'>pr.res</span> </span></code></pre>
+</div>
+<pre><code>         1          2          3          4          5          6 
+-1.2523541  0.4220391 -0.4323615  0.4220391 -0.4323615 -1.2523541 
+         7          8          9         10         11         12 
+ 0.4220391 -1.2523541  0.4220391 -0.4323615  0.4220391  0.4220391 
+        13         14         15         16         17         18 
+ 0.4220391  0.4220391  0.4220391  0.4220391  0.4220391  0.4220391 
+        19         20 
+-0.4323615  0.4220391 </code></pre>
+</div>
+<p>Now, let’s add the predicted residuals from Iteration 1 to the
+predictions from Iteration 0 to obtain the new predictions.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred1</span>  <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred0</span> <span class='op'>+</span> <span class='va'>pr.res</span></span>
+<span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res1</span>   <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred1</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V166'</span>,<span class='st'>'V220'</span>,<span class='st'>'target'</span>,<span class='st'>'pred0'</span>,<span class='st'>'res0'</span>,<span class='st'>'pred1'</span>,<span class='st'>'res1'</span><span class='op'>)</span><span class='op'>]</span>,<span class='fl'>3</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>     V166   V220 target  pred0   res0  pred1   res1
+1   0.190 -0.139 -2.063 -0.763 -1.300 -2.016 -0.047
+2   0.071  0.218  0.583 -0.763  1.346 -0.341  0.924
+3   0.040  0.058 -1.653 -0.763 -0.890 -1.196 -0.457
+4   0.188  0.025 -0.874 -0.763 -0.111 -0.341 -0.533
+5   0.062  0.224 -1.740 -0.763 -0.977 -1.196 -0.545
+6   0.108 -0.078 -3.640 -0.763 -2.877 -2.016 -1.624
+7   0.122  0.434 -0.623 -0.763  0.140 -0.341 -0.282
+8   0.025 -0.244 -0.344 -0.763  0.419 -2.016  1.671
+9   0.104  0.159 -1.123 -0.763 -0.360 -0.341 -0.782
+10  0.023  0.145 -0.999 -0.763 -0.235 -1.196  0.197
+11  0.221  0.342 -0.877 -0.763 -0.113 -0.341 -0.535
+12  0.109  0.252 -0.033 -0.763  0.730 -0.341  0.308
+13  0.075  0.035 -0.495 -0.763  0.268 -0.341 -0.154
+14  0.187  0.364  0.125 -0.763  0.888 -0.341  0.466
+15  0.116  0.300  0.097 -0.763  0.860 -0.341  0.438
+16  0.083  0.198  0.384 -0.763  1.148 -0.341  0.726
+17  0.102  0.078 -0.581 -0.763  0.182 -0.341 -0.240
+18  0.116  0.079 -0.343 -0.763  0.420 -0.341 -0.002
+19 -0.024  0.570 -0.391 -0.763  0.373 -1.196  0.805
+20  0.093  0.345 -0.675 -0.763  0.088 -0.341 -0.334</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># SSE at the end of Iteration 1</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res1</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 9.964654</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-7-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<h2 id="iteration-2">Iteration 2</h2>
+<p>We repeat Iteration 1, but the only difference is that we now fit a
+tree model to predict the residuals at the end of Iteration 1.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>model2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>res1</span> <span class='op'>~</span>  <span class='va'>V166</span> <span class='op'>+</span> <span class='va'>V220</span>,</span>
+<span>                data    <span class='op'>=</span> <span class='va'>readability_sub</span>,</span>
+<span>                method  <span class='op'>=</span> <span class='st'>"anova"</span>,</span>
+<span>                control <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span>minsplit<span class='op'>=</span><span class='fl'>2</span>,</span>
+<span>                               cp<span class='op'>=</span><span class='fl'>0</span>,</span>
+<span>                               minbucket <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>                               maxdepth <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span>
+<span>                <span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/pkg/rattle/man/fancyRpartPlot.html'>fancyRpartPlot</a></span><span class='op'>(</span><span class='va'>model2</span>,type<span class='op'>=</span><span class='fl'>2</span>,sub<span class='op'>=</span><span class='st'>''</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-8-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<p>Let’s see the predictions of residuals from Model 2.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>pr.res</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>model2</span>, <span class='va'>readability_sub</span><span class='op'>)</span></span>
+<span><span class='va'>pr.res</span></span></code></pre>
+</div>
+<pre><code>         1          2          3          4          5          6 
+-0.4799134  0.1295162 -0.4799134 -0.4799134  0.1295162 -0.4799134 
+         7          8          9         10         11         12 
+ 0.1295162  0.8912203 -0.4799134  0.8912203  0.1295162  0.1295162 
+        13         14         15         16         17         18 
+-0.4799134  0.1295162  0.1295162  0.1295162 -0.4799134 -0.4799134 
+        19         20 
+ 0.8912203  0.1295162 </code></pre>
+</div>
+<p>Now, add the predicted residuals from Iteration 2 to the predictions
+from Iteration 1 to obtain the new predictions.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred2</span>  <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred1</span> <span class='op'>+</span> <span class='va'>pr.res</span></span>
+<span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res2</span>   <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred2</span></span>
+<span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>[</span>,<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'V166'</span>,<span class='st'>'V220'</span>,<span class='st'>'target'</span>,</span>
+<span>                         <span class='st'>'pred0'</span>,<span class='st'>'res0'</span>,<span class='st'>'pred1'</span>,<span class='st'>'res1'</span>,</span>
+<span>                         <span class='st'>'pred2'</span>,<span class='st'>'res2'</span><span class='op'>)</span><span class='op'>]</span>,<span class='fl'>3</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>     V166   V220 target  pred0   res0  pred1   res1  pred2   res2
+1   0.190 -0.139 -2.063 -0.763 -1.300 -2.016 -0.047 -2.496  0.433
+2   0.071  0.218  0.583 -0.763  1.346 -0.341  0.924 -0.212  0.794
+3   0.040  0.058 -1.653 -0.763 -0.890 -1.196 -0.457 -1.676  0.022
+4   0.188  0.025 -0.874 -0.763 -0.111 -0.341 -0.533 -0.821 -0.053
+5   0.062  0.224 -1.740 -0.763 -0.977 -1.196 -0.545 -1.066 -0.674
+6   0.108 -0.078 -3.640 -0.763 -2.877 -2.016 -1.624 -2.496 -1.144
+7   0.122  0.434 -0.623 -0.763  0.140 -0.341 -0.282 -0.212 -0.411
+8   0.025 -0.244 -0.344 -0.763  0.419 -2.016  1.671 -1.124  0.780
+9   0.104  0.159 -1.123 -0.763 -0.360 -0.341 -0.782 -0.821 -0.302
+10  0.023  0.145 -0.999 -0.763 -0.235 -1.196  0.197 -0.304 -0.694
+11  0.221  0.342 -0.877 -0.763 -0.113 -0.341 -0.535 -0.212 -0.665
+12  0.109  0.252 -0.033 -0.763  0.730 -0.341  0.308 -0.212  0.179
+13  0.075  0.035 -0.495 -0.763  0.268 -0.341 -0.154 -0.821  0.326
+14  0.187  0.364  0.125 -0.763  0.888 -0.341  0.466 -0.212  0.336
+15  0.116  0.300  0.097 -0.763  0.860 -0.341  0.438 -0.212  0.309
+16  0.083  0.198  0.384 -0.763  1.148 -0.341  0.726 -0.212  0.596
+17  0.102  0.078 -0.581 -0.763  0.182 -0.341 -0.240 -0.821  0.240
+18  0.116  0.079 -0.343 -0.763  0.420 -0.341 -0.002 -0.821  0.478
+19 -0.024  0.570 -0.391 -0.763  0.373 -1.196  0.805 -0.304 -0.086
+20  0.093  0.345 -0.675 -0.763  0.088 -0.341 -0.334 -0.212 -0.464</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># SSE at the end of Iteration 2</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>res2</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 5.588329</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-11-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<p>We can keep iterating and add tree models as long as we find a tree
+model that improves our predictions (minimizing SSE).</p>
+<h2 id="a-more-formal-introduction-of-gradient-boosting-trees">2. A more
+formal introduction of Gradient Boosting Trees</h2>
+<p>Let <span class="math inline">\(\mathbf{x}_i =
+(x_{i1},x_{i2},x_{i3},...,x_{ij})\)</span> represent a vector of
+observed values for the <span class="math inline">\(i^{th}\)</span>
+observation on <span class="math inline">\(j\)</span> predictor
+variables, and <span class="math inline">\(y_i\)</span> is the value of
+the target outcome for the <span class="math inline">\(i^{th}\)</span>
+observation. A gradient-boosted tree model is an ensemble of <span
+class="math inline">\(T\)</span> different tree models sequentially
+developed, and the final prediction of the outcome is obtained by using
+an additive function as</p>
+<p><span class="math display">\[ \hat{y_i} =
+\sum_{t=1}^{T}f_t(\mathbf{x}_i),\]</span></p>
+<p>where <span class="math inline">\(f_t\)</span> is a tree model
+obtained at Iteration <span class="math inline">\(t\)</span> from the
+residuals at Iteration <span class="math inline">\(t-1\)</span>.</p>
+<p>The algorithm optimizes an objective function <span
+class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span>
+in an additive manner. This objective loss function can be defined as
+the sum of squared errors when the outcome is continuous or logistic
+loss when the outcome is categorical.</p>
+<p>The algorithm starts with a constant prediction. For instance, we
+start with the average outcome in the above example. Then, a new tree
+model that minimizes the objective loss function is searched and added
+at each iteration.</p>
+<p><span class="math display">\[\hat{y}_{i}^{(0)} = \bar{y}\]</span>
+<span class="math display">\[\hat{y}_{i}^{(1)} = \hat{y}_{i}^{(0)} +
+\alpha f_1(\mathbf{x}_i)\]</span></p>
+<p><span class="math display">\[\hat{y}_{i}^{(2)} = \hat{y}_{i}^{(1)} +
+\alpha f_2(\mathbf{x}_i)\]</span> <span
+class="math display">\[.\]</span> <span
+class="math display">\[.\]</span> <span
+class="math display">\[.\]</span> <span
+class="math display">\[\hat{y}_{i}^{(t)} = \hat{y}_{i}^{(t-1)} + \alpha
+f_t(\mathbf{x}_i)\]</span></p>
+<p>Notice that I added a multiplier, <span
+class="math inline">\(\alpha\)</span> while adding our predictions at
+each iteration. In the above example, we fixed this multiplier to 1,
+<span class="math inline">\(\alpha = 1\)</span>, as we added a whole new
+prediction to the previous prediction. This multiplier in machine
+learning literature is called the <strong>learning rate</strong>. We
+could also choose to add only a fraction of new predictions (e.g., <span
+class="math inline">\(\alpha = 0.1,0.05,0.01,0.001\)</span>) at each
+iteration.</p>
+<p>The smaller the learning rate, the more iterations (more tree models)
+we will need to achieve the same level of performance. So, the number of
+iterations (number of tree models, <span
+class="math inline">\(T\)</span>) and the learning rate (<span
+class="math inline">\(\alpha\)</span>) play in tandem. These two
+parameters are known as the <strong>boosting hyperparameters</strong>
+and need to be tuned.</p>
+<p>Think about choosing a <strong>learning rate</strong> as choosing
+your speed on a highway and <strong>number of trees</strong> as the time
+it takes to arrive at your destination. Suppose you are traveling from
+Eugene to Portland on I-5. If you drive 40 miles/hour, you are less
+likely to involve in an accident because you are more aware of your
+surroundings, but it will take 3-4 hours to arrive at your destination.
+If you are 200 miles/hour, it will only take an hour to arrive at your
+destination, assuming you will not have an accident on the way (which is
+very likely). So, you try to find a speed level that is fast enough to
+arrive at your destination and safe enough not to have an accident.</p>
+<hr />
+<div id="infobox">
+<center style="color:black;">
+<p><strong>TECHNICAL NOTE</strong></p>
+</center>
+<p>Why do people call it <strong>Gradient</strong> Boosting? It turns
+out that the updates at each iteration based on the residuals from a
+previous model are related to the concept of negative gradient (first
+derivative) of the objective loss function with respect to the predicted
+values from the previous step.</p>
+<p><span class="math display">\[-g_i^t = -\frac{\partial
+\mathfrak{L}(y_i,\hat{y}_i^{t-1})}{\partial \hat{y}_i^{t-1}} =
+\hat{y}_{i}^{(t)} - \hat{y}_{i}^{(t-1)} \]</span></p>
+<p>The general logic of gradient boosting works as</p>
+<ul>
+<li><p>take a differentiable loss function, <span
+class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span>,
+that summarizes the distance between observed and predicted
+values,</p></li>
+<li><p>start with an initial model to obtain initial predictions, <span
+class="math inline">\(f_0(\mathbf{x}_i)\)</span>,</p></li>
+<li><p>iterate until termination:</p>
+<ul>
+<li><p>calculate the negative gradients of the loss function with
+respect to predictions from the previous step</p></li>
+<li><p>fit a tree model to the negative gradients</p></li>
+<li><p>update the predictions (with a multiplier, a.k.a learning
+rate).</p></li>
+</ul></li>
+</ul>
+<p>Most software uses mathematical approximations and computational
+hocus pocus to do these computations for faster implementation.</p>
+</div>
+<hr />
+<h1 id="fitting-gradient-boosting-trees-using-the-gbm-package">3.
+Fitting Gradient Boosting Trees using the <code>gbm</code> package</h1>
+<p>The gradient boosting trees can be fitted using the <code>gbm</code>
+function from the `gbm package. The code below tries to replicate our
+example above using the toy dataset.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/gbm-developers/gbm'>gbm</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gbm.model</span> <span class='op'>&lt;-</span>   <span class='fu'><a href='https://rdrr.io/pkg/gbm/man/gbm.html'>gbm</a></span><span class='op'>(</span>formula           <span class='op'>=</span> <span class='va'>target</span> <span class='op'>~</span> <span class='va'>V166</span> <span class='op'>+</span> <span class='va'>V220</span>,</span>
+<span>                   data              <span class='op'>=</span> <span class='va'>readability_sub</span>,</span>
+<span>                   distribution       <span class='op'>=</span> <span class='st'>'gaussian'</span>,</span>
+<span>                   n.trees           <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>                   shrinkage         <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                   interaction.depth <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>                   n.minobsinnode    <span class='op'>=</span> <span class='fl'>2</span>,</span>
+<span>                   bag.fraction      <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                   cv.folds          <span class='op'>=</span> <span class='fl'>0</span>,</span>
+<span>                   n.cores           <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p><strong>Model and Data:</strong></p>
+<ul>
+<li><p><code>formula</code>, a description of the outcome and predictive
+variables in the model using column names</p></li>
+<li><p><code>data</code>, the name of the data object to look for the
+variables in the formula statement</p></li>
+<li><p><code>distribution</code>, a character to specify the type of
+objective loss function to optimize. ‘gaussian’ is typically used for
+continuous outcomes(minimize the squared error), and ‘bernoulli’ is
+typically used for the binary outcomes (minimizes the logistic
+loss)</p></li>
+</ul>
+<p><strong>Hyperparameters:</strong></p>
+<ul>
+<li><p><code>n.trees</code>, number of trees to fit (the number of
+iterations)</p></li>
+<li><p><code>shrinkage</code>, learning rate.</p></li>
+<li><p><code>interaction.depth</code>, the maximum depth of each tree
+developed at each iteration</p></li>
+<li><p><code>n.minobsinnode</code>, the minimum number of observations
+in each terminal note of tree models at each iteration</p></li>
+</ul>
+<p><strong>Stochastic Gradient Boosting:</strong></p>
+<ul>
+<li><code>bag.fraction</code>, the proportion of observations to be
+randomly selected for developing a new tree at each iteration.</li>
+</ul>
+<p>In Gradient Boosting Trees, we use all observations (100% of rows)
+when we develop a new tree model at each iteration. So, we can set
+<code>bag.fraction=1</code>, and <code>gbm</code> fits a gradient
+boosting tree model. On the other hand, adding a random component may
+help yield better performance. You can think about this as a marriage of
+Bagging and Boosting. So, we may want to take a random sample of
+observations to develop a tree model at each iteration. For instance, if
+you set <code>bag.fraction=.9</code>, the algorithm will randomly sample
+90% of the observations at each iteration before fitting the new tree
+model to residuals from the previous step. When
+<code>bag.fraction</code> is lower than 1, this is called
+<strong>Stochastic Gradient Boosting Trees</strong>.
+<code>bag.fraction</code> can also be considered a hyperparameter to
+tune by trying different values to find an optimal value, or it can be
+fixed to a certain number.</p>
+<p><strong>Cross-validation:</strong></p>
+<ul>
+<li><code>cv.folds</code>, number of cross-validation folds to
+perform.</li>
+</ul>
+<p><strong>Parallel Processing:</strong></p>
+<ul>
+<li><code>n.cores</code>, the number of CPU cores to use.</li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Obtain predictions from the model</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>gbm.model</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code> [1] -2.4955898 -0.2117671 -1.6755972 -0.8211966 -1.0661677 -2.4955898
+ [7] -0.2117671 -1.1244561 -0.8211966 -0.3044636 -0.2117671 -0.2117671
+[13] -0.8211966 -0.2117671 -0.2117671 -0.2117671 -0.8211966 -0.8211966
+[19] -0.3044636 -0.2117671</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Plot the final model</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm.model</span>,i.var <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="lecture-7b_files/figure-html5/unnamed-chunk-13-1.png" width="624" style="display: block; margin: auto;" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm.model</span>,i.var <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-13-2.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<h1
+id="fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4.
+Fitting Gradient Boosting Trees using the <code>caret</code> package and
+Hyperparameter Tuning</h1>
+<p>The <code>gbm</code> algorithm is available in the <code>caret</code>
+package. Let’s check the hyperparameters available to tune.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/topepo/caret/'>caret</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/modelLookup.html'>getModelInfo</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='va'>gbm</span><span class='op'>$</span><span class='va'>parameters</span></span></code></pre>
+</div>
+<pre><code>          parameter   class                   label
+1           n.trees numeric   # Boosting Iterations
+2 interaction.depth numeric          Max Tree Depth
+3         shrinkage numeric               Shrinkage
+4    n.minobsinnode numeric Min. Terminal Node Size</code></pre>
+</div>
+<p>The four most critical parameters are all available to tune. It is
+very challenging to find the best combination of values for all these
+four hyperparameters unless you implement a full grid search which may
+take a very long time. You may apply a general sub-optimal strategy to
+tune the hyperparameters step by step, either in pairs or one by one.
+Below is one way to implement such a strategy:</p>
+<ol type="1">
+<li><p>Fix the <code>interaction.depth</code> and
+<code>n.minobsinnode</code> to a certain value (e.g., interaction.depth
+= 5, n.minobsinnode = 10),</p></li>
+<li><p>Pick a small value of learning rate (<code>shrinkage</code>),
+such as 0.05 or 0.1,</p></li>
+<li><p>Do a grid search and find the optimal number of trees
+(<code>n.trees</code>) using the fixed values at #1 and #2,</p></li>
+<li><p>Fix the <code>n.trees</code> at its optimal value from #3, keep
+<code>shrinkage</code> the same as in #2, and do a two-dimensional grid
+search for <code>interaction.depth</code> and
+<code>n.minobsinnode</code> and find the optimal number of depth and
+minimum observation in a terminal node,</p></li>
+<li><p>Fix the <code>interaction.depth</code> and `n.minobsinnode’at
+their optimal values from #4, lower the learning rate and increase the
+number of trees to see if the model performance can be further
+improved.</p></li>
+<li><p>Fix <code>interaction.depth</code>,<code>n.minobsinnode</code>,
+<code>shrinkage</code>, and <code>n.trees</code> at their optimal values
+from previus steps, and do a grid search for
+<code>bag.fraction</code>.</p></li>
+</ol>
+<p>You will find an interactive app you can play at the link below to
+understand the dynamics among these hyperparameters and optimize them in
+toy examples.</p>
+<p><a
+href="http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html"
+class="uri">http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html</a></p>
+<h1 id="predicting-readability-scores-using-gradient-boosting-trees">5.
+Predicting Readability Scores Using Gradient Boosting Trees</h1>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>First, we import and prepare data for modeling. Then, we split the
+data into training and test pieces.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/recipes'>recipes</a></span><span class='op'>)</span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/topepo/caret/'>caret</a></span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='co'># Import the dataset</span></span>
+<span>                                                     </span>
+<span><span class='va'>readability</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data/readability_features.csv'</span><span class='op'>)</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span>                                                     </span>
+<span><span class='co'># Write the recipe</span></span>
+<span>                                                     </span>
+<span><span class='va'>blueprint_readability</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://recipes.tidymodels.org/reference/recipe.html'>recipe</a></span><span class='op'>(</span>x     <span class='op'>=</span> <span class='va'>readability</span>,</span>
+<span>                                vars  <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='op'>(</span><span class='va'>readability</span><span class='op'>)</span>,</span>
+<span>                                roles <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>'predictor'</span>,<span class='fl'>768</span><span class='op'>)</span>,<span class='st'>'outcome'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>                                <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_zv.html'>step_zv</a></span><span class='op'>(</span><span class='fu'><a href='https://recipes.tidymodels.org/reference/has_role.html'>all_numeric</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>                                <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_nzv.html'>step_nzv</a></span><span class='op'>(</span><span class='fu'><a href='https://recipes.tidymodels.org/reference/has_role.html'>all_numeric</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>                                <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_normalize.html'>step_normalize</a></span><span class='op'>(</span><span class='fu'><a href='https://recipes.tidymodels.org/reference/has_role.html'>all_numeric_predictors</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='co'># Train/Test Split</span></span>
+<span>                                                     </span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>10152021</span><span class='op'>)</span>  <span class='co'># for reproducibility</span></span>
+<span>                                                     </span>
+<span><span class='va'>loc</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>readability</span><span class='op'>)</span>, <span class='fu'><a href='https://rdrr.io/r/base/Round.html'>round</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>readability</span><span class='op'>)</span> <span class='op'>*</span> <span class='fl'>0.9</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>read_tr</span>  <span class='op'>&lt;-</span> <span class='va'>readability</span><span class='op'>[</span><span class='va'>loc</span>, <span class='op'>]</span></span>
+<span><span class='va'>read_te</span>  <span class='op'>&lt;-</span> <span class='va'>readability</span><span class='op'>[</span><span class='op'>-</span><span class='va'>loc</span>, <span class='op'>]</span></span>
+<span>                                                     </span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>read_tr</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/dim.html'>dim</a></span><span class='op'>(</span><span class='va'>read_te</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>[1] 2551  769</code></pre>
+<pre><code>[1] 283 769</code></pre>
+</div>
+<p>Prepare the data partitions for 10-fold cross validation.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Cross validation settings </span></span>
+<span>                                                     </span>
+<span><span class='va'>read_tr</span> <span class='op'>=</span> <span class='va'>read_tr</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>read_tr</span><span class='op'>)</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span>                                                     </span>
+<span><span class='co'># Create 10 folds with equal size</span></span>
+<span>                                                     </span>
+<span><span class='va'>folds</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>read_tr</span><span class='op'>)</span><span class='op'>)</span>,breaks<span class='op'>=</span><span class='fl'>10</span>,labels<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='co'># Create the list for each fold </span></span>
+<span>                                                     </span>
+<span><span class='va'>my.indices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>'list'</span>,<span class='fl'>10</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>my.indices</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='va'>folds</span><span class='op'>!=</span><span class='va'>i</span><span class='op'>)</span></span>
+<span><span class='op'>}</span></span>
+<span>                                                     </span>
+<span><span class='va'>cv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/trainControl.html'>trainControl</a></span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"cv"</span>,</span>
+<span>                   index  <span class='op'>=</span> <span class='va'>my.indices</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p>Set the multiple cores for parallel processing.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/RevolutionAnalytics/doparallel'>doParallel</a></span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>ncores</span> <span class='op'>&lt;-</span> <span class='fl'>10</span></span>
+<span>                                                     </span>
+<span><span class='va'>cl</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/parallel/makeCluster.html'>makePSOCKcluster</a></span><span class='op'>(</span><span class='va'>ncores</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='fu'><a href='https://rdrr.io/pkg/doParallel/man/registerDoParallel.html'>registerDoParallel</a></span><span class='op'>(</span><span class='va'>cl</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p><strong>Step 1: Tune the number of trees</strong></p>
+<p>Now, we will fix the learning rate at 0.1
+(<code>shrinkage=0.1</code>), interaction depth at 5
+(<code>interaction.depth=5</code>), and the minimum number of
+observations at 10 (<code>n.minobsinnode = 10</code>). We will do a grid
+search for the number of trees from 1 to 500
+(<code>n.trees = 1:500</code>). Note that I fix the bag fraction at one
+and passed it as an argument in the <code>caret::train</code> function
+because it is not allowed in the hyperparameter grid.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Grid Settings  </span></span>
+<span>                                                     </span>
+<span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>500</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>5</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span>                                                     </span>
+<span><span class='va'>gbm1</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_readability</span>,</span>
+<span>                    data         <span class='op'>=</span> <span class='va'>read_tr</span>,</span>
+<span>                    method       <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                    trControl    <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                    tuneGrid     <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                    bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                    verbose      <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>gbm1</span><span class='op'>$</span><span class='va'>times</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>$everything
+   user  system elapsed 
+  65.00    1.59  160.42 
+
+$final
+   user  system elapsed 
+  52.47    0.14   52.61 
+
+$prediction
+[1] NA NA NA</code></pre>
+</div>
+<p>It took about 3 minutes to run. We can now look at the plot and
+examine how the cross-validated RMSE changes as a function of the number
+of trees.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm1</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-22-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<p>It indicates there is not much improvement after 300 trees with these
+settings (this is just eyeballing, there is nothing specific about how
+to come up with this number). So, I will fix the number of trees to 300
+for the next step.</p>
+<p><strong>Step 2: Tune the interaction depth and minimum number of
+observations</strong></p>
+<p>Now, we will fix the number of trees at 300
+(<code>n.trees = 300</code>) and the learning rate at 0.1
+(<code>shrinkage=0.1</code>).</p>
+<p>Then, we will do a grid search by assigning values for the
+interaction depth from 1 to 15 and values for the minimum number of
+observations at 5, 10, 20, 30, 40, and 50. We still keep the bag
+fraction as 1.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>300</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>15</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>10</span>,<span class='fl'>20</span>,<span class='fl'>30</span>,<span class='fl'>40</span>,<span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span>                                                     </span>
+<span><span class='va'>gbm2</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_readability</span>,</span>
+<span>                     data      <span class='op'>=</span> <span class='va'>read_tr</span>,</span>
+<span>                     method    <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                     trControl <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                     tuneGrid  <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                     bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                     verbose <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>gbm2</span><span class='op'>$</span><span class='va'>times</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>$everything
+   user  system elapsed 
+  87.53    1.55 7433.68 
+
+$final
+   user  system elapsed 
+  75.17    0.14   75.30 
+
+$prediction
+[1] NA NA NA</code></pre>
+</div>
+<p>This search took about 1 hour and 10 minutes. If we look at the
+cross-validates RMSE for all these 90 possible conditions, we see that
+the best result comes out when the interaction depth is equal to 9, and
+the minimum number of observations is equal to 50.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm2</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="lecture-7b_files/figure-html5/unnamed-chunk-25-1.png" width="624" style="display: block; margin: auto;" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gbm2</span><span class='op'>$</span><span class='va'>bestTune</span></span></code></pre>
+</div>
+<pre><code>   n.trees interaction.depth shrinkage n.minobsinnode
+54     300                 9       0.1             50</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gbm2</span><span class='op'>$</span><span class='va'>results</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>gbm2</span><span class='op'>$</span><span class='va'>results</span><span class='op'>$</span><span class='va'>RMSE</span><span class='op'>)</span>,<span class='op'>]</span></span></code></pre>
+</div>
+<pre><code>   shrinkage interaction.depth n.minobsinnode n.trees      RMSE
+54       0.1                 9             50     300 0.5759197
+    Rsquared       MAE     RMSESD RsquaredSD      MAESD
+54 0.6904758 0.4582852 0.02670278 0.03351747 0.02441325</code></pre>
+</div>
+<p><strong>Step 3: Lower the learning rate and increase the number of
+trees</strong></p>
+<p>Now, we will fix the interaction depth at 9
+(<code>interaction.depth = 9</code>) and the minimum number of
+observations at 50 (<code>n.minobsinnode = 50</code>). We will lower the
+learning rate to 0.01 (<code>shrinkage=0.01</code>) and increase the
+number of trees to 8000 (<code>n.trees = 1:8000</code>) to explore if a
+lower learning rate improves the performance.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>8000</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>9</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span>                                                     </span>
+<span><span class='va'>gbm3</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_readability</span>,</span>
+<span>                     data      <span class='op'>=</span> <span class='va'>read_tr</span>,</span>
+<span>                     method    <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                     trControl <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                     tuneGrid  <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                     bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                     verbose<span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>gbm3</span><span class='op'>$</span><span class='va'>times</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code>$everything
+   user  system elapsed 
+1703.83    0.94 3821.78 
+
+$final
+   user  system elapsed 
+1689.69    0.09 1719.50 
+
+$prediction
+[1] NA NA NA</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm3</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="lecture-7b_files/figure-html5/unnamed-chunk-28-1.png" width="624" style="display: block; margin: auto;" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gbm3</span><span class='op'>$</span><span class='va'>bestTune</span></span></code></pre>
+</div>
+<pre><code>     n.trees interaction.depth shrinkage n.minobsinnode
+7948    7948                 9      0.01             50</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>gbm3</span><span class='op'>$</span><span class='va'>results</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>gbm3</span><span class='op'>$</span><span class='va'>results</span><span class='op'>$</span><span class='va'>RMSE</span><span class='op'>)</span>,<span class='op'>]</span></span></code></pre>
+</div>
+<pre><code>     shrinkage interaction.depth n.minobsinnode n.trees     RMSE
+7948      0.01                 9             50    7948 0.568526
+      Rsquared      MAE     RMSESD RsquaredSD      MAESD
+7948 0.6990292 0.453076 0.02218744 0.02806958 0.01829231</code></pre>
+</div>
+<p>This run took about another 40 minutes. The best performance was
+obtained with a model of 7948 trees, and yielded an RMSE value of
+0.5685. We can stop here and decide that this is our final model. Or, we
+can play with <code>bag.fraction</code> and see if we can improve the
+performance a little more.</p>
+<p><strong>Step 4: Tune Bag Fraction</strong></p>
+<p>To play with the <code>bag.fraction</code>, we should write our own
+syntax as <code>caret::train</code> does not allow it to be manipulated
+as a hyperparameter.</p>
+<p>Notice that I fixed the values of <code>shrinkage</code>,
+<code>n.trees</code>,<code>interaction.depth</code>,<code>n.minobsinnode</code>
+at their optimal values.</p>
+<p>Then, I write a <code>for</code> loop to iterate over different
+values of <code>bag.fraction</code> from 0.1 to 1 with increments of
+0.05. I save the model object from each iteration in a list object.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>7948</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>9</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>50</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>bag.fr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0.1</span>,<span class='fl'>1</span>,<span class='fl'>.05</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span><span class='va'>my.models</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>'list'</span>,<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span></span>
+<span>                                                     </span>
+<span>  <span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>                                                         </span>
+<span>  <span class='va'>my.models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_readability</span>,</span>
+<span>                                 data      <span class='op'>=</span> <span class='va'>read_tr</span>,</span>
+<span>                                 method    <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                                 trControl <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                                 tuneGrid  <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                                 bag.fraction <span class='op'>=</span> <span class='va'>bag.fr</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span>,</span>
+<span>                                 verbose<span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>  <span class='op'>}</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>It took about 17 hours to complete with ten cores. Let’s check if it
+improved the performance.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>cv.rmse</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>cv.rmse</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>my.models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>results</span><span class='op'>$</span><span class='va'>RMSE</span></span>
+<span><span class='op'>}</span></span>
+<span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>bag.fr</span>,y<span class='op'>=</span><span class='va'>cv.rmse</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>'Bag Fraction'</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>'RMSE (Cross-validated)'</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span><span class='op'>(</span>breaks <span class='op'>=</span> <span class='va'>bag.fr</span><span class='op'>)</span></span></code></pre>
+</div>
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-31-1.png" width="624" style="display: block; margin: auto;" /></p>
+</div>
+<p>The best performance was obtained when <code>bag.fr</code> is equal
+to 0.40.</p>
+<p>Finally, we can check the performance of the final model with these
+settings on the test dataset and compare it to other methods.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>final.gbm</span> <span class='op'>&lt;-</span> <span class='va'>my.models</span><span class='op'>[[</span><span class='fl'>7</span><span class='op'>]</span><span class='op'>]</span></span>
+<span></span>
+<span><span class='co'># Predictions from a Bagged tree model with 158 trees</span></span>
+<span></span>
+<span><span class='va'>predicted_te</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>final.gbm</span>,<span class='va'>read_te</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># MAE</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>abs</a></span><span class='op'>(</span><span class='va'>read_te</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>predicted_te</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.4479047</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># RMSE</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>read_te</span><span class='op'>$</span><span class='va'>target</span> <span class='op'>-</span> <span class='va'>predicted_te</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.5509891</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># R-square</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='op'>(</span><span class='va'>read_te</span><span class='op'>$</span><span class='va'>target</span>,<span class='va'>predicted_te</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span></span></code></pre>
+</div>
+<pre><code>[1] 0.7135852</code></pre>
+</div>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">R-square</th>
+<th style="text-align: center;">MAE</th>
+<th style="text-align: center;">RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ridge Regression</td>
+<td style="text-align: center;">0.727</td>
+<td style="text-align: center;">0.435</td>
+<td style="text-align: center;">0.536</td>
+</tr>
+<tr class="even">
+<td>Lasso Regression</td>
+<td style="text-align: center;">0.725</td>
+<td style="text-align: center;">0.434</td>
+<td style="text-align: center;">0.538</td>
+</tr>
+<tr class="odd">
+<td>Gradient Boosting</td>
+<td style="text-align: center;">0.714</td>
+<td style="text-align: center;">0.448</td>
+<td style="text-align: center;">0.551</td>
+</tr>
+<tr class="even">
+<td>Random Forests</td>
+<td style="text-align: center;">0.671</td>
+<td style="text-align: center;">0.471</td>
+<td style="text-align: center;">0.596</td>
+</tr>
+<tr class="odd">
+<td>Bagged Trees</td>
+<td style="text-align: center;">0.656</td>
+<td style="text-align: center;">0.481</td>
+<td style="text-align: center;">0.604</td>
+</tr>
+<tr class="even">
+<td>Linear Regression</td>
+<td style="text-align: center;">0.644</td>
+<td style="text-align: center;">0.522</td>
+<td style="text-align: center;">0.644</td>
+</tr>
+<tr class="odd">
+<td>KNN</td>
+<td style="text-align: center;">0.623</td>
+<td style="text-align: center;">0.500</td>
+<td style="text-align: center;">0.629</td>
+</tr>
+<tr class="even">
+<td>Decision Tree</td>
+<td style="text-align: center;">0.497</td>
+<td style="text-align: center;">0.577</td>
+<td style="text-align: center;">0.729</td>
+</tr>
+</tbody>
+</table>
+<h1 id="predicting-recidivism-using-gradient-boosting-trees">6.
+Predicting Recidivism Using Gradient Boosting Trees</h1>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>The code below implements a similar strategy and demonstrates how to
+fit a Gradient Boosting Tree model for the Recidivism dataset to predict
+recidivism in Year 2.</p>
+<p><strong>Import the dataset and initial data preparation</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Import data</span></span>
+<span></span>
+<span>  <span class='va'>recidivism</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data/recidivism_y1 removed and recoded.csv'</span><span class='op'>)</span>,</span>
+<span>                         header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='co'># List of variable types in the dataset</span></span>
+<span></span>
+<span>  <span class='va'>outcome</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'Recidivism_Arrest_Year2'</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>id</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'ID'</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>categorical</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'Residence_PUMA'</span>,</span>
+<span>                   <span class='st'>'Prison_Offense'</span>,</span>
+<span>                   <span class='st'>'Age_at_Release'</span>,</span>
+<span>                   <span class='st'>'Supervision_Level_First'</span>,</span>
+<span>                   <span class='st'>'Education_Level'</span>,</span>
+<span>                   <span class='st'>'Prison_Years'</span>,</span>
+<span>                   <span class='st'>'Gender'</span>,</span>
+<span>                   <span class='st'>'Race'</span>,</span>
+<span>                   <span class='st'>'Gang_Affiliated'</span>,</span>
+<span>                   <span class='st'>'Prior_Arrest_Episodes_DVCharges'</span>,</span>
+<span>                   <span class='st'>'Prior_Arrest_Episodes_GunCharges'</span>,</span>
+<span>                   <span class='st'>'Prior_Conviction_Episodes_Viol'</span>,</span>
+<span>                   <span class='st'>'Prior_Conviction_Episodes_PPViolationCharges'</span>,</span>
+<span>                   <span class='st'>'Prior_Conviction_Episodes_DomesticViolenceCharges'</span>,</span>
+<span>                   <span class='st'>'Prior_Conviction_Episodes_GunCharges'</span>,</span>
+<span>                   <span class='st'>'Prior_Revocations_Parole'</span>,</span>
+<span>                   <span class='st'>'Prior_Revocations_Probation'</span>,</span>
+<span>                   <span class='st'>'Condition_MH_SA'</span>,</span>
+<span>                   <span class='st'>'Condition_Cog_Ed'</span>,</span>
+<span>                   <span class='st'>'Condition_Other'</span>,</span>
+<span>                   <span class='st'>'Violations_ElectronicMonitoring'</span>,</span>
+<span>                   <span class='st'>'Violations_Instruction'</span>,</span>
+<span>                   <span class='st'>'Violations_FailToReport'</span>,</span>
+<span>                   <span class='st'>'Violations_MoveWithoutPermission'</span>,</span>
+<span>                   <span class='st'>'Employment_Exempt'</span><span class='op'>)</span> </span>
+<span></span>
+<span>  <span class='va'>numeric</span>   <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'Supervision_Risk_Score_First'</span>,</span>
+<span>                 <span class='st'>'Dependents'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_Felony'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_Misd'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_Violent'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_Property'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_Drug'</span>,</span>
+<span>                 <span class='st'>'Prior_Arrest_Episodes_PPViolationCharges'</span>,</span>
+<span>                 <span class='st'>'Prior_Conviction_Episodes_Felony'</span>,</span>
+<span>                 <span class='st'>'Prior_Conviction_Episodes_Misd'</span>,</span>
+<span>                 <span class='st'>'Prior_Conviction_Episodes_Prop'</span>,</span>
+<span>                 <span class='st'>'Prior_Conviction_Episodes_Drug'</span>,</span>
+<span>                 <span class='st'>'Delinquency_Reports'</span>,</span>
+<span>                 <span class='st'>'Program_Attendances'</span>,</span>
+<span>                 <span class='st'>'Program_UnexcusedAbsences'</span>,</span>
+<span>                 <span class='st'>'Residence_Changes'</span>,</span>
+<span>                 <span class='st'>'Avg_Days_per_DrugTest'</span>,</span>
+<span>                 <span class='st'>'Jobs_Per_Year'</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>props</span>      <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'DrugTests_THC_Positive'</span>,</span>
+<span>                  <span class='st'>'DrugTests_Cocaine_Positive'</span>,</span>
+<span>                  <span class='st'>'DrugTests_Meth_Positive'</span>,</span>
+<span>                  <span class='st'>'DrugTests_Other_Positive'</span>,</span>
+<span>                  <span class='st'>'Percent_Days_Employed'</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='co'># Convert all nominal, ordinal, and binary variables to factors</span></span>
+<span>  </span>
+<span>  <span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='va'>categorical</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>    </span>
+<span>    <span class='va'>recidivism</span><span class='op'>[</span>,<span class='va'>i</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>as.factor</a></span><span class='op'>(</span><span class='va'>recidivism</span><span class='op'>[</span>,<span class='va'>i</span><span class='op'>]</span><span class='op'>)</span></span>
+<span>    </span>
+<span>  <span class='op'>}</span></span>
+<span></span>
+<span><span class='co'># Write the recipe</span></span>
+<span>  </span>
+<span>  <span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/recipes'>recipes</a></span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>blueprint_recidivism</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://recipes.tidymodels.org/reference/recipe.html'>recipe</a></span><span class='op'>(</span>x  <span class='op'>=</span> <span class='va'>recidivism</span>,</span>
+<span>                      vars  <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>categorical</span>,<span class='va'>numeric</span>,<span class='va'>props</span>,<span class='va'>outcome</span>,<span class='va'>id</span><span class='op'>)</span>,</span>
+<span>                      roles <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='st'>'predictor'</span>,<span class='fl'>48</span><span class='op'>)</span>,<span class='st'>'outcome'</span>,<span class='st'>'ID'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_indicate_na.html'>step_indicate_na</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>categorical</span><span class='op'>)</span>,<span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>numeric</span><span class='op'>)</span>,<span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>props</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_zv.html'>step_zv</a></span><span class='op'>(</span><span class='fu'><a href='https://recipes.tidymodels.org/reference/has_role.html'>all_numeric</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_impute_mean.html'>step_impute_mean</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>numeric</span><span class='op'>)</span>,<span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>props</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_impute_mode.html'>step_impute_mode</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>categorical</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_logit.html'>step_logit</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>props</span><span class='op'>)</span>,offset<span class='op'>=</span><span class='fl'>.001</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_poly.html'>step_poly</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>numeric</span><span class='op'>)</span>,<span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>props</span><span class='op'>)</span>,degree<span class='op'>=</span><span class='fl'>2</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_normalize.html'>step_normalize</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>numeric</span>,<span class='st'>'_poly_1'</span><span class='op'>)</span>,</span>
+<span>                   <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>numeric</span>,<span class='st'>'_poly_2'</span><span class='op'>)</span>,</span>
+<span>                   <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>props</span>,<span class='st'>'_poly_1'</span><span class='op'>)</span>,</span>
+<span>                   <span class='fu'><a href='https://rdrr.io/r/base/paste.html'>paste0</a></span><span class='op'>(</span><span class='va'>props</span>,<span class='st'>'_poly_2'</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_dummy.html'>step_dummy</a></span><span class='op'>(</span><span class='fu'><a href='https://tidyselect.r-lib.org/reference/all_of.html'>all_of</a></span><span class='op'>(</span><span class='va'>categorical</span><span class='op'>)</span>,one_hot<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span></span>
+<span>    <span class='fu'><a href='https://recipes.tidymodels.org/reference/step_num2factor.html'>step_num2factor</a></span><span class='op'>(</span><span class='va'>Recidivism_Arrest_Year2</span>,</span>
+<span>                    transform <span class='op'>=</span> <span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span><span class='op'>)</span> <span class='va'>x</span> <span class='op'>+</span> <span class='fl'>1</span>,</span>
+<span>                    levels<span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'No'</span>,<span class='st'>'Yes'</span><span class='op'>)</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='va'>blueprint_recidivism</span></span></code></pre>
+</div>
+</div>
+<p><strong>Train/Test Split and Cross-validation Settings</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Train/Test Split</span></span>
+<span>  </span>
+<span>  <span class='va'>loc</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='va'>recidivism</span><span class='op'>$</span><span class='va'>Training_Sample</span><span class='op'>==</span><span class='fl'>1</span><span class='op'>)</span></span>
+<span></span>
+<span>  <span class='va'>recidivism_tr</span>  <span class='op'>&lt;-</span> <span class='va'>recidivism</span><span class='op'>[</span><span class='va'>loc</span>, <span class='op'>]</span></span>
+<span>  <span class='va'>recidivism_te</span>  <span class='op'>&lt;-</span> <span class='va'>recidivism</span><span class='op'>[</span><span class='op'>-</span><span class='va'>loc</span>, <span class='op'>]</span></span>
+<span>  </span>
+<span><span class='co'># Cross validation settings </span></span>
+<span>    </span>
+<span>    <span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>10302021</span><span class='op'>)</span> <span class='co'># for reproducibility</span></span>
+<span>    </span>
+<span>    <span class='va'>recidivism_tr</span> <span class='op'>=</span> <span class='va'>recidivism_tr</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>recidivism_tr</span><span class='op'>)</span><span class='op'>)</span>,<span class='op'>]</span></span>
+<span>  </span>
+<span>  <span class='co'># Create 10 folds with equal size</span></span>
+<span>  </span>
+<span>    <span class='va'>folds</span> <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cut.html'>cut</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>1</span>,<span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='op'>(</span><span class='va'>recidivism_tr</span><span class='op'>)</span><span class='op'>)</span>,breaks<span class='op'>=</span><span class='fl'>10</span>,labels<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span>  </span>
+<span>  <span class='co'># Create the list for each fold </span></span>
+<span>  </span>
+<span>    <span class='va'>my.indices</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>'list'</span>,<span class='fl'>10</span><span class='op'>)</span></span>
+<span>    <span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>      <span class='va'>my.indices</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/which.html'>which</a></span><span class='op'>(</span><span class='va'>folds</span><span class='op'>!=</span><span class='va'>i</span><span class='op'>)</span></span>
+<span>    <span class='op'>}</span></span>
+<span>    </span>
+<span>      </span>
+<span>  <span class='va'>cv</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/caret/man/trainControl.html'>trainControl</a></span><span class='op'>(</span>method <span class='op'>=</span> <span class='st'>"cv"</span>,</span>
+<span>                     index  <span class='op'>=</span> <span class='va'>my.indices</span>,</span>
+<span>                     classProbs <span class='op'>=</span> <span class='cn'>TRUE</span>,</span>
+<span>                     summaryFunction <span class='op'>=</span> <span class='va'>mnLogLoss</span><span class='op'>)</span></span></code></pre>
+</div>
+</div>
+<p><strong>Step 1: Initial model fit to tune the number of
+trees</strong></p>
+<p>We fix the learning rate at 0.1 (<code>shrinkage=0.1</code>),
+interaction depth at 5 (interaction.depth=5), and the minimum number of
+observations at 10 (<code>n.minobsinnode = 10</code>). We do a grid
+search for the optimal number of trees from 1 to 1000
+(<code>n.trees = 1:1000</code>).</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>1000</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>5</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>10</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='va'>gbm1</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_recidivism</span>,</span>
+<span>                     data         <span class='op'>=</span> <span class='va'>recidivism_tr</span>,</span>
+<span>                     method       <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                     trControl    <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                     tuneGrid     <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                     bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                     metric       <span class='op'>=</span> <span class='st'>'logLoss'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm1</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gbm1</span><span class='op'>$</span><span class='va'>bestTune</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-37-1.png" width="624" style="display: block; margin: auto;" /></p>
+<pre><code>    n.trees interaction.depth shrinkage n.minobsinnode
+178     178                 5       0.1             10</code></pre>
+</div>
+<p>It indicates that a model with 178 trees is optimal at the initial
+search.</p>
+<p><strong>Step 2: Tune the interaction depth and minimum number of
+observations</strong></p>
+<p>We fix the number of trees at 178 (<code>n.trees = 178</code>) and
+the learning rate at 0.1 (<code>shrinkage=0.1</code>). Then, we do a
+grid search by assigning values for the interaction depth from 1 to 15
+and the minimum number of observations at 5, 10, 20, 30, 40, and 50.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>178</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>15</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>5</span>,<span class='fl'>10</span>,<span class='fl'>20</span>,<span class='fl'>30</span>,<span class='fl'>40</span>,<span class='fl'>50</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gbm2</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_recidivism</span>,</span>
+<span>                     data         <span class='op'>=</span> <span class='va'>recidivism_tr</span>,</span>
+<span>                     method       <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                     trControl    <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                     tuneGrid     <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                     bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                     metric       <span class='op'>=</span> <span class='st'>'logLoss'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm2</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gbm2</span><span class='op'>$</span><span class='va'>bestTune</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-39-1.png" width="624" style="display: block; margin: auto;" /></p>
+<pre><code>   n.trees interaction.depth shrinkage n.minobsinnode
+41     178                 7       0.1             40</code></pre>
+</div>
+<p>The search indicates that the best performance is obtained when the
+interaction depth equals 7 and the minimum number of observations equals
+40.</p>
+<p><strong>Step 3: Lower the learning rate and increase the number of
+trees</strong></p>
+<p>We fix the interaction depth at 7
+(<code>interaction.depth = 4</code>) and the minimum number of
+observations at 40 (<code>n.minobsinnode = 40</code>). We will lower the
+learning rate to 0.01 (shrinkage=0.01) and increase the number of trees
+to 10000 (<code>n.trees = 1:10000</code>) to explore if a lower learning
+rate improves the performance.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>10000</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>7</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>40</span><span class='op'>)</span></span>
+<span></span>
+<span></span>
+<span><span class='va'>gbm3</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_recidivism</span>,</span>
+<span>                     data         <span class='op'>=</span> <span class='va'>recidivism_tr</span>,</span>
+<span>                     method       <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                     trControl    <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                     tuneGrid     <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                     bag.fraction <span class='op'>=</span> <span class='fl'>1</span>,</span>
+<span>                     metric       <span class='op'>=</span> <span class='st'>'logLoss'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm3</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>gbm3</span><span class='op'>$</span><span class='va'>bestTune</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="lecture-7b_files/figure-html5/unnamed-chunk-41-1.png" width="624" style="display: block; margin: auto;" /></p>
+<pre><code>     n.trees interaction.depth shrinkage n.minobsinnode
+1731    1731                 7      0.01             40</code></pre>
+</div>
+<p><strong>Step 4: Tune the bag fraction</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
+<span>                    n.trees           <span class='op'>=</span> <span class='fl'>1731</span>,</span>
+<span>                    interaction.depth <span class='op'>=</span> <span class='fl'>7</span>,</span>
+<span>                    n.minobsinnode    <span class='op'>=</span> <span class='fl'>40</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>bag.fr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='fl'>0.1</span>,<span class='fl'>1</span>,<span class='fl'>.05</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>my.models</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/vector.html'>vector</a></span><span class='op'>(</span><span class='st'>'list'</span>,<span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  </span>
+<span>  <span class='va'>my.models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fu'>caret</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='op'>(</span><span class='va'>blueprint_recidivism</span>,</span>
+<span>                                 data      <span class='op'>=</span> <span class='va'>recidivism_tr</span>,</span>
+<span>                                 method    <span class='op'>=</span> <span class='st'>'gbm'</span>,</span>
+<span>                                 trControl <span class='op'>=</span> <span class='va'>cv</span>,</span>
+<span>                                 tuneGrid  <span class='op'>=</span> <span class='va'>grid</span>,</span>
+<span>                                 bag.fraction <span class='op'>=</span> <span class='va'>bag.fr</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>)</span></span>
+<span><span class='op'>}</span></span></code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>cv.LogL</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='kw'>for</span><span class='op'>(</span><span class='va'>i</span> <span class='kw'>in</span> <span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='op'>(</span><span class='va'>bag.fr</span><span class='op'>)</span><span class='op'>)</span><span class='op'>{</span></span>
+<span>  <span class='va'>cv.LogL</span><span class='op'>[</span><span class='va'>i</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='va'>my.models</span><span class='op'>[[</span><span class='va'>i</span><span class='op'>]</span><span class='op'>]</span><span class='op'>$</span><span class='va'>results</span><span class='op'>$</span><span class='va'>logLoss</span></span>
+<span><span class='op'>}</span></span>
+<span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_path.html'>geom_line</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>bag.fr</span>,y<span class='op'>=</span><span class='va'>cv.LogL</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>'Bag Fraction'</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>ylab</a></span><span class='op'>(</span><span class='st'>'LogLoss (Cross-validated)'</span><span class='op'>)</span><span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_continuous.html'>scale_x_continuous</a></span><span class='op'>(</span>breaks <span class='op'>=</span> <span class='va'>bag.fr</span><span class='op'>)</span></span></code></pre>
+</div>
+<img src="lecture-7b_files/figure-html5/unnamed-chunk-43-1.png" width="624" style="display: block; margin: auto;" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>bag.fr</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/which.min.html'>which.min</a></span><span class='op'>(</span><span class='va'>cv.LogL</span><span class='op'>)</span><span class='op'>]</span></span></code></pre>
+</div>
+<pre><code>[1] 0.7</code></pre>
+</div>
+<p>The best result is obtained when the bag fraction is 0.7. So, we will
+proceed with that as our final model.</p>
+<p><strong>Step 5: Final Predictions on Test Set</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>final.gbm</span> <span class='op'>&lt;-</span> <span class='va'>my.models</span><span class='op'>[[</span><span class='fl'>13</span><span class='op'>]</span><span class='op'>]</span></span>
+<span></span>
+<span><span class='co'># Predict the probabilities for the observations in the test dataset</span></span>
+<span></span>
+<span><span class='va'>predicted_te</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>final.gbm</span>, <span class='va'>recidivism_te</span>, type<span class='op'>=</span><span class='st'>'prob'</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='op'>(</span><span class='va'>predicted_te</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>         No        Yes
+1 0.9479557 0.05204431
+2 0.6394094 0.36059065
+3 0.7002056 0.29979444
+4 0.6725847 0.32741529
+5 0.8364610 0.16353899
+6 0.7666956 0.23330437</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Compute the AUC</span></span>
+<span></span>
+<span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/thie1e/cutpointr'>cutpointr</a></span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>cut.obj</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/cutpointr/man/cutpointr.html'>cutpointr</a></span><span class='op'>(</span>x     <span class='op'>=</span> <span class='va'>predicted_te</span><span class='op'>$</span><span class='va'>Yes</span>,</span>
+<span>                     class <span class='op'>=</span> <span class='va'>recidivism_te</span><span class='op'>$</span><span class='va'>Recidivism_Arrest_Year2</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='fu'><a href='https://rdrr.io/pkg/cutpointr/man/auc.html'>auc</a></span><span class='op'>(</span><span class='va'>cut.obj</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.7465408</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Confusion matrix assuming the threshold is 0.5</span></span>
+<span></span>
+<span><span class='va'>pred_class</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='op'>(</span><span class='va'>predicted_te</span><span class='op'>$</span><span class='va'>Yes</span><span class='op'>&gt;</span><span class='fl'>.5</span>,<span class='fl'>1</span>,<span class='fl'>0</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>confusion</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>recidivism_te</span><span class='op'>$</span><span class='va'>Recidivism_Arrest_Year2</span>,<span class='va'>pred_class</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>confusion</span></span></code></pre>
+</div>
+<pre><code>   pred_class
+       0    1
+  0 3957  189
+  1 1109  205</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># True Negative Rate</span></span>
+<span></span>
+<span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>/</span><span class='op'>(</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>+</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.9544139</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># False Positive Rate</span></span>
+<span></span>
+<span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>/</span><span class='op'>(</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>+</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.04558611</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># True Positive Rate</span></span>
+<span></span>
+<span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>/</span><span class='op'>(</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>2</span>,<span class='fl'>1</span><span class='op'>]</span><span class='op'>+</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.1560122</code></pre>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Precision</span></span>
+<span></span>
+<span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>/</span><span class='op'>(</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>1</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>+</span><span class='va'>confusion</span><span class='op'>[</span><span class='fl'>2</span>,<span class='fl'>2</span><span class='op'>]</span><span class='op'>)</span></span></code></pre>
+</div>
+<pre><code>[1] 0.5203046</code></pre>
+</div>
+<p><strong>Comparison of Results</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th style="text-align: center;">-LL</th>
+<th style="text-align: center;">AUC</th>
+<th style="text-align: center;">ACC</th>
+<th style="text-align: center;">TPR</th>
+<th style="text-align: center;">TNR</th>
+<th style="text-align: center;">FPR</th>
+<th style="text-align: center;">PRE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Gradient Boosting Trees</td>
+<td style="text-align: center;">0.499</td>
+<td style="text-align: center;">0.747</td>
+<td style="text-align: center;">0.763</td>
+<td style="text-align: center;">0.156</td>
+<td style="text-align: center;">0.954</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.520</td>
+</tr>
+<tr class="even">
+<td>Random Forests</td>
+<td style="text-align: center;">0.507</td>
+<td style="text-align: center;">0.725</td>
+<td style="text-align: center;">0.761</td>
+<td style="text-align: center;">0.153</td>
+<td style="text-align: center;">0.954</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.514</td>
+</tr>
+<tr class="odd">
+<td>Bagged Trees</td>
+<td style="text-align: center;">0.506</td>
+<td style="text-align: center;">0.724</td>
+<td style="text-align: center;">0.759</td>
+<td style="text-align: center;">0.144</td>
+<td style="text-align: center;">0.954</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.500</td>
+</tr>
+<tr class="even">
+<td>Logistic Regression</td>
+<td style="text-align: center;">0.510</td>
+<td style="text-align: center;">0.719</td>
+<td style="text-align: center;">0.755</td>
+<td style="text-align: center;">0.142</td>
+<td style="text-align: center;">0.949</td>
+<td style="text-align: center;">0.051</td>
+<td style="text-align: center;">0.471</td>
+</tr>
+<tr class="odd">
+<td>Logistic Regression with Ridge Penalty</td>
+<td style="text-align: center;">0.511</td>
+<td style="text-align: center;">0.718</td>
+<td style="text-align: center;">0.754</td>
+<td style="text-align: center;">0.123</td>
+<td style="text-align: center;">0.954</td>
+<td style="text-align: center;">0.046</td>
+<td style="text-align: center;">0.461</td>
+</tr>
+<tr class="even">
+<td>Logistic Regression with Lasso Penalty</td>
+<td style="text-align: center;">0.509</td>
+<td style="text-align: center;">0.720</td>
+<td style="text-align: center;">0.754</td>
+<td style="text-align: center;">0.127</td>
+<td style="text-align: center;">0.952</td>
+<td style="text-align: center;">0.048</td>
+<td style="text-align: center;">0.458</td>
+</tr>
+<tr class="odd">
+<td>Logistic Regression with Elastic Net</td>
+<td style="text-align: center;">0.509</td>
+<td style="text-align: center;">0.720</td>
+<td style="text-align: center;">0.753</td>
+<td style="text-align: center;">0.127</td>
+<td style="text-align: center;">0.952</td>
+<td style="text-align: center;">0.048</td>
+<td style="text-align: center;">0.456</td>
+</tr>
+<tr class="even">
+<td>KNN</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+<td style="text-align: center;">?</td>
+</tr>
+<tr class="odd">
+<td>Decision Tree</td>
+<td style="text-align: center;">0.558</td>
+<td style="text-align: center;">0.603</td>
+<td style="text-align: center;">0.757</td>
+<td style="text-align: center;">0.031</td>
+<td style="text-align: center;">0.986</td>
+<td style="text-align: center;">0.014</td>
+<td style="text-align: center;">0.423</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb35"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<!--radix_placeholder_article_footer-->
+<!--/radix_placeholder_article_footer-->
+</div>
+
+<div class="d-appendix">
+</div>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+<!--radix_placeholder_site_after_body-->
+<!--/radix_placeholder_site_after_body-->
+<!--radix_placeholder_appendices-->
+<div class="appendix-bottom">
+<h3 id="reuse">Reuse</h3>
+<p>Text and figures are licensed under Creative Commons Attribution <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The figures that have been reused from other sources don't fall under this license and can be recognized by a note in their caption: "Figure from ...".</p>
+</div>
+<!--/radix_placeholder_appendices-->
+<!--radix_placeholder_navigation_after_body-->
+<div class="distill-site-nav distill-site-footer">
+<center>
+<p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
+<p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
+<a href = "https://www.rstudio.com"> RStudio.</a></p>
+<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+</center>
+</div>
+<!--/radix_placeholder_navigation_after_body-->
+
+
+</body>
+
+</html>

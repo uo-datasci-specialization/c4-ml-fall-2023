@@ -1,0 +1,156 @@
+---
+title: "Schedule"
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+---
+
+```{r, include=FALSE}
+require(here)
+require(kableExtra)
+
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+
+tab <- read.csv(here('data/schedule.csv'))
+```
+
+```{r}
+
+tbl <- function(tab,d){
+  
+  loc <- which(tab$date==d)
+  
+  tab2 <- tab[loc,]
+  
+  if(!is.na(tab2$notes)){
+    
+    tab2$notes_       <- paste0(cell_spec(strsplit(tab2$notes,';')[[1]],
+                                          'html',
+                                          link=strsplit(tab2$notes_link,';')[[1]]),
+                                collapse = '<br>')
+  } else {
+    tab2$notes_ <- ''
+  }
+  
+  
+  if(!is.na(tab2$kaggle)){
+    
+    tab2$kaggle_      <- paste0(cell_spec(strsplit(tab2$kaggle,';')[[1]],
+                                          'html',
+                                          link=strsplit(tab2$kaggle_link,';')[[1]]),
+                                collapse = '<br>')
+  } else {
+    
+    tab2$kaggle_ <- ''
+    
+  }
+  
+  
+  if(!is.na(tab2$slides)){
+      
+    tab2$slides_      <- paste0(cell_spec(strsplit(tab2$slides,';')[[1]],
+                                          'html',
+                                          link=strsplit(tab2$slides_link,';')[[1]]),
+                                collapse = '<br>')
+  } else {
+    tab2$slides_ <- ''
+  }
+  
+  
+  
+  if(!is.na(tab2$reading)){
+     
+    tab2$reading_     <- paste0(cell_spec(strsplit(tab2$reading,';')[[1]],
+                                            'html',
+                                            link=strsplit(tab2$reading_link,';')[[1]]),
+                                  collapse = '<br>')
+  } else{
+    tab2$reading_ <- ''
+  }
+  
+  if(!is.na(tab2$assignments)){
+    
+    tab2$assignments_ <- paste0(cell_spec(strsplit(tab2$assignments,';')[[1]],
+                                            'html',
+                                            link=strsplit(tab2$assignments_link,';')[[1]]),
+                                  collapse = '<br>')
+  } else{
+    tab2$assignments_ <- ''
+  }
+  
+  
+  tab2 <- tab2[,c('date','notes_','kaggle_','slides_','reading_','assignments_')]
+  
+  rownames(tab2) <- NULL
+  
+  tab2 %>%
+    kbl(format = 'html',
+        escape = FALSE,
+        col.names = c('Date','Notes','Kaggle Notebooks','Slides','Optional Supplemental Readings','Assignments')) %>%
+    kable_material(c("striped", "hover"),full_width = T) %>%
+    row_spec(0, background = "#F6FBF4") %>%
+    row_spec(0:1, extra_css = "border-bottom: solid;") %>%
+    row_spec(0:1, extra_css = "border-top: solid;") %>%
+    row_spec(0:1, extra_css = "border-left: solid;") %>%
+    row_spec(0:1, extra_css = "border-right: solid;")
+  
+}
+```
+
+### Week 1: Introduction
+
+```{r}
+
+tbl(tab,d='3-Oct')
+
+```
+
+### Week 2: Data Preprocessing
+
+```{r}
+
+tbl(tab,d='10-Oct')
+
+```
+
+### Week 3 & Week 4: Introduction to Linear Regression, Bias/Variance Tradeoff, and Cross-validation
+
+```{r}
+
+tbl(tab,d='17-Oct & 24-Oct')
+
+```
+
+### Week 5: Regularized Linear Regression
+```{r}
+
+tbl(tab,d='31-Oct')
+
+```
+
+### Week 6 & 7: (Regularized) Logistic Regression
+```{r}
+
+tbl(tab,d='7-Nov & 14-Nov')
+
+```
+
+### Week 8: Introduction to K-Nearest Neighbors and Decision Tree Algorithms
+```{r}
+
+tbl(tab,d='21-Nov')
+
+```
+
+### Week 9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting Trees
+```{r}
+
+tbl(tab,d='28-Nov')
+
+```
+

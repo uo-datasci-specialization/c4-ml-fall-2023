@@ -1,0 +1,593 @@
+---
+title: "K-Nearest Neighbors"
+
+author:
+  - name: Cengiz Zopluoglu
+    affiliation: University of Oregon
+
+date: 11/10/2022
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+    theme: theme.css
+---
+
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "",fig.align='center')
+require(here)
+require(ggplot2)
+require(plot3D)
+require(kableExtra)
+require(knitr)
+require(gifski)
+require(magick)
+require(gridExtra)
+library(scales)
+library(lubridate)
+require(plotly)
+
+options(scipen=99)
+
+```
+
+`r paste('[Updated:',format(Sys.time(),'%a, %b %d, %Y - %H:%M:%S'),']')`
+
+# 1. Distance Between Two Vectors
+
+Measuring the distance between two data points is at the core of the K Nearest Neighbors (KNN) algorithm, and it is essential to understand the concept of distance between two vectors. 
+
+Imagine that each observation in a dataset lives in a *P*-dimensional space, where *P* is the number of predictors. 
+
+- Obsevation 1: $\mathbf{A} = (A_1, A_2, A_3, ..., A_P)$
+- Obsevation 2: $\mathbf{B} = (B_1, B_2, B_3, ..., B_P)$
+
+A general definition of distance between two vectors is the **Minkowski Distance**. The Minkowski Distance can be defined as 
+
+$$\left ( \sum_{i=1}^{P}|A_i-B_i|^q \right )^{\frac{1}{q}},$$
+where $q$ can take any positive value.
+
+For simplicity, suppose that we have two observations and three predictors, and we observe the following values for the two observations on these three predictors.
+
+- Observation 1:  (20,25,30)
+
+- Observation 2:  (80,90,75)
+
+```{r, echo = FALSE, eval=TRUE, warning=FALSE}
+
+x1 <- c(20,80)
+x2 <- c(25,90)
+x3 <- c(30,75)
+
+plot_ly(x = x1, y = x2, z = x3,type='scatter3d',mode='markers',
+        width=800,height=500) %>%
+  layout(scene = list(xaxis = list(range = c(0,100),title='X1'),
+                      yaxis = list(range = c(0,100),title='X2'),
+                      zaxis = list(range = c(0,100),title='X3'))) %>%
+  layout(scene = list(camera = list(eye = list(x = 1.25,y = 1.25,z = 0))))
+```
+
+
+If we assume that the $q=1$ for the Minkowski equation above, then we can calculate the distance as the following:
+
+```{r, echo = TRUE, eval=TRUE, warning=FALSE}
+
+A <- c(20,25,30)
+B <- c(80,90,75)
+
+
+sum(abs(A - B))
+
+
+```
+
+When $q$ is equal to 1 for the Minkowski equation, it becomes a special case known as **Manhattan Distance**. Manhattan Distance between these two data points is visualized below.
+
+```{r, echo = FALSE, eval=TRUE,warning=FALSE}
+
+
+plot_ly(x = x1, y = x2, z = x3,type='scatter3d',mode='markers',
+        width=800,height=500) %>%
+  layout(scene = list(xaxis = list(range = c(0,100),title='X1'),
+                      yaxis = list(range = c(0,100),title='X2'),
+                      zaxis = list(range = c(0,100),title='X3'),
+                      camera= list(eye = list(x = 1.25,y=1.25,z=1.25)))) %>%
+  add_trace(x =c(x1[1],x1[1]),y=c(x2[1],x2[1]),z=c(x3[1],x3[2]), mode="lines") %>%
+  add_trace(x =c(x1[1],x1[1]),y=c(x2[1],x2[2]),z=c(x3[2],x3[2]), mode="lines") %>%
+  add_trace(x =c(x1[1],x1[2]),y=c(x2[2],x2[2]),z=c(x3[2],x3[2]), mode="lines") %>%
+  layout(showlegend = FALSE) %>%
+  layout(scene = list(camera = list(eye = list(x = 1.25,y = 1.25,z = 0))))
+
+```
+
+If we assume that the $q=2$ for the Minkowski equation above, then we can calculate the distance as the following:
+
+```{r, echo = TRUE, eval=TRUE, warning=FALSE}
+
+A <- c(20,25,30)
+B <- c(80,90,75)
+
+
+(sum(abs(A - B)^2))^(1/2)
+
+
+```
+
+When $q$ is equal to 2 for the Minkowski equation, it is also a special case known as **Euclidian Distance**. The euclidian distance between these two data points is visualized below.
+
+```{r, echo = FALSE, eval=TRUE,warning=FALSE}
+
+plot_ly(x = x1, y = x2, z = x3,type='scatter3d',mode='markers',
+        width=800,height=500) %>%
+  layout(scene = list(xaxis = list(range = c(0,100),title='X1'),
+                      yaxis = list(range = c(0,100),title='X2'),
+                      zaxis = list(range = c(0,100),title='X3'))) %>%
+  add_trace(x =x1,y=x2,z=x3,mode='lines') %>%
+  layout(showlegend = FALSE) %>%
+  layout(scene = list(camera = list(eye = list(x = 1.25,y = 1,z = 0))))
+
+```
+
+# 2. K-Nearest Neighbors
+
+Given that there are $N$ observations in a dataset, a distance between any observation and $N-1$ remaining observations can be computed using Minkowski distance (with a user-defined choice of $q$ value). Then, for any given observation, we can rank order the remaining observations based on how close they are to the given observation and then decide the K nearest neighbors ($K = 1, 2, 3, ..., N-1$), K observations closest to the given observation based on their distance.
+
+Suppose that there are ten observations measured on three predictor variables (X1, X2, and X3) with the following values. 
+
+```{r, echo = TRUE, eval=TRUE,warning=FALSE}
+
+d <- data.frame(x1 =c(20,25,30,42,10,60,65,55,80,90),
+                x2 =c(10,15,12,20,45,75,70,80,85,90),
+                x3 =c(25,30,35,20,40,80,85,90,92,95),
+                label= c('A','B','C','D','E','F','G','H','I','J'))
+
+d
+
+```
+
+```{r, echo = FALSE, eval=TRUE,warning=FALSE}
+
+x1 <- c(20,25,30,42,10)
+x2 <- c(10,15,12,20,45)
+x3 <- c(25,30,35,20,40)
+
+y1 <- c(60,65,55,80,90)
+y2 <- c(75,70,80,85,90)
+y3 <- c(80,85,90,92,95)
+
+plot_ly(x = x1, y = x2, z = x3,type='scatter3d',mode='markers',
+        width=800,height=500) %>%
+  layout(scene = list(xaxis = list(range = c(0,100),title='X1'),
+                      yaxis = list(range = c(0,100),title='X2'),
+                      zaxis = list(range = c(0,100),title='X3'))) %>%
+  add_trace(x = y1, y = y2, z = y3,mode='markers',marker = list(color='orange')) %>%
+  layout(showlegend = FALSE) %>%
+  add_text(x = x1, y = x2, z = x3,text=c('A','B','C','D','E')) %>%
+  add_text(x = y1, y = y2, z = y3,text=c('F','G','H','I','J')) %>%
+  layout(scene = list(camera = list(eye = list(x = 1.5,y = 1,z = 1))))
+```
+
+Given that there are ten observations, we can calculate the distance between all 45 pairs of observations (e.g., Euclidian distance). 
+
+```{r, echo = TRUE, eval=TRUE,warning=FALSE}
+dist <- as.data.frame(t(combn(1:10,2)))
+dist$euclidian <- NA
+
+for(i in 1:nrow(dist)){
+  
+  a <- d[dist[i,1],1:3]
+  b <- d[dist[i,2],1:3]
+  dist[i,]$euclidian <- sqrt(sum((a-b)^2))
+  
+}
+
+dist
+```
+
+For instance, we can find the three closest observations to **Point E** (3-Nearest Neighbors). As seen below, the 3-Nearest Neighbors for **Point E** in this dataset would be **Point B**, **Point C**, and **Point A**.
+
+```{r, echo = TRUE, eval=TRUE,warning=FALSE}
+
+# Point E is the fifth observation in the dataset
+
+loc <- which(dist[,1]==5 | dist[,2]==5)
+
+tmp <- dist[loc,]
+
+tmp[order(tmp$euclidian),]
+
+```
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE 1** </center>
+
+The $q$ in the Minkowski distance equation and $K$ in the K-nearest neighbor are user-defined hyperparameters in the KNN algorithm. As a researcher and model builder, you can pick any values for $q$ and $K$. They can be tuned using a similar approach applied in earlier classes for regularized regression models. One can pick a set of values for these hyperparameters and apply a grid search to find the combination that provides the best predictive performance.
+
+It is typical to observe overfitting (high model variance, low model bias) for small values of K and underfitting (low model variance, high model bias) for large values of K. In general, people tend to focus their grid search for K around $\sqrt{N}$.
+
+</div>
+***
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE 2** </center>
+
+It is essential to remember that the distance calculation between two observations is highly dependent on the scale of measurement for the predictor variables. If predictors are on different scales, the distance metric formula will favor the differences in predictors with larger scales, and it is not ideal. Therefore, it is essential to center and scale all predictors before the KNN algorithm so each predictor similarly contributes to the distance metric calculation.
+
+</div>
+***
+
+# 3. Prediction with K-Nearest Neighbors (Do-It-Yourself)
+
+Given that we learned about distance calculation and how to identify K-nearest neighbors based on a distance metric, the prediction in KNN is straightforward.
+
+Below is a list of steps for predicting an outcome for a given observation.
+
+1. Calculate the distance between the observation and the remaining $N-1$ observations in the data (with a user choice of $q$ in Minkowski distance).
+
+2. Rank order the observations based on the calculated distance, and choose the K-nearest neighbor. (with a user choice of $K$)
+
+3. Calculate the mean of the observed outcome in the K-nearest neighbors as your prediction.
+
+Note that Step 3 applies regardless of the type of outcome. If the outcome variable is continuous, we calculate the average outcome for the K-nearest neighbors as our prediction. If the outcome variable is binary (e.g., 0 vs. 1), then the proportion of observing each class among the K-nearest neighbors yields predicted probabilities for each class.
+
+Below, I provide an example for both types of outcome using the Readability and Recidivism datasets.
+
+## 3.1. Predicting a continuous outcome with the KNN algorithm
+
+The code below is identical to the code we used in earlier classes for data preparation of the Readability datasets. Note that this is only to demonstrate the logic of model predictions in the context of K-nearest neighbors. So, we are using the whole dataset. In the next section, we will demonstrate the full workflow of model training and tuning with 10-fold cross-validation using the `caret::train()` function. 
+1. Import the data
+2. Write a recipe for processing variables
+3. Apply the recipe to the dataset
+
+```{r, echo=TRUE,eval=FALSE}
+
+# Import the dataset
+
+readability <- read.csv('./data/readability_features.csv',header=TRUE)
+
+# Write the recipe
+
+require(recipes)
+
+blueprint_readability <- recipe(x     = readability,
+                                vars  = colnames(readability),
+                                roles = c(rep('predictor',768),'outcome')) %>%
+  step_zv(all_numeric()) %>%
+  step_nzv(all_numeric()) %>%
+  step_normalize(all_numeric_predictors()) 
+
+# Apply the recipe
+
+baked_read <- blueprint_readability %>% 
+  prep(training = readability) %>%
+  bake(new_data = readability)
+```
+
+Our final dataset (`baked_read`) has 2834 observations and 769 columns (768 predictors; the last column is target outcome). Suppose we would like to predict the readability score for the first observation. The code below will calculate the Minkowski distance (with $q=2$) between the first observation and each of the remaining 2833 observations by using the first 768 columns of the dataset (predictors).
+
+```{r, echo=TRUE,eval=FALSE}
+
+dist <- data.frame(obs = 2:2834,dist = NA,target=NA)
+
+for(i in 1:2833){
+  
+  a <- as.matrix(baked_read[1,1:768])
+  b <- as.matrix(baked_read[i+1,1:768])
+  dist[i,]$dist   <- sqrt(sum((a-b)^2))
+  dist[i,]$target <- baked_read[i+1,]$target
+
+  #print(i)
+}
+
+```
+
+```{r, echo=FALSE,eval=TRUE}
+load("./donotupload/knn_readability_prediction_demo.RData")
+rownames(dist) <- c()
+```
+
+We now rank-order the observations from closest to the most distant and then choose the 20 nearest observations (K=20). Finally, we can calculate the average of the observed outcome for the 20 nearest neighbors, which will become our prediction of the readability score for the first observation.
+
+```{r, echo=TRUE,eval=TRUE}
+
+# Rank order the observations from closest to the most distant
+
+dist <- dist[order(dist$dist),]
+
+# Check the 20-nearest neighbors
+
+dist[1:20,]
+```
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+# Mean target for the 20-nearest observations
+
+mean(dist[1:20,]$target)
+```
+
+```{r, echo=TRUE,eval=TRUE}
+
+# Check the actual observed value of reability for the first observation
+
+readability[1,]$target
+
+```
+
+## 3.2. Predicting a binary outcome with the KNN algorithm
+
+
+We can follow the same procedures to predict Recidivism in the second year after an individual's initial release from prison. 
+
+```{r, echo=TRUE,eval=FALSE}
+
+# Import data
+
+recidivism <- read.csv('./data/recidivism_y1 removed and recoded.csv',header=TRUE)
+
+# Write the recipe
+
+  outcome <- c('Recidivism_Arrest_Year2')
+  
+  id      <- c('ID')
+  
+  categorical <- c('Residence_PUMA',
+                   'Prison_Offense',
+                   'Age_at_Release',
+                   'Supervision_Level_First',
+                   'Education_Level',
+                   'Prison_Years',
+                   'Gender',
+                   'Race',
+                   'Gang_Affiliated',
+                   'Prior_Arrest_Episodes_DVCharges',
+                   'Prior_Arrest_Episodes_GunCharges',
+                   'Prior_Conviction_Episodes_Viol',
+                   'Prior_Conviction_Episodes_PPViolationCharges',
+                   'Prior_Conviction_Episodes_DomesticViolenceCharges',
+                   'Prior_Conviction_Episodes_GunCharges',
+                   'Prior_Revocations_Parole',
+                   'Prior_Revocations_Probation',
+                   'Condition_MH_SA',
+                   'Condition_Cog_Ed',
+                   'Condition_Other',
+                   'Violations_ElectronicMonitoring',
+                   'Violations_Instruction',
+                   'Violations_FailToReport',
+                   'Violations_MoveWithoutPermission',
+                   'Employment_Exempt') 
+
+  numeric   <- c('Supervision_Risk_Score_First',
+                 'Dependents',
+                 'Prior_Arrest_Episodes_Felony',
+                 'Prior_Arrest_Episodes_Misd',
+                 'Prior_Arrest_Episodes_Violent',
+                 'Prior_Arrest_Episodes_Property',
+                 'Prior_Arrest_Episodes_Drug',
+                 'Prior_Arrest_Episodes_PPViolationCharges',
+                 'Prior_Conviction_Episodes_Felony',
+                 'Prior_Conviction_Episodes_Misd',
+                 'Prior_Conviction_Episodes_Prop',
+                 'Prior_Conviction_Episodes_Drug',
+                 'Delinquency_Reports',
+                 'Program_Attendances',
+                 'Program_UnexcusedAbsences',
+                 'Residence_Changes',
+                 'Avg_Days_per_DrugTest',
+                 'Jobs_Per_Year')
+  
+  props      <- c('DrugTests_THC_Positive',
+                  'DrugTests_Cocaine_Positive',
+                  'DrugTests_Meth_Positive',
+                  'DrugTests_Other_Positive',
+                  'Percent_Days_Employed')
+  
+
+  for(i in categorical){
+    
+    recidivism[,i] <- as.factor(recidivism[,i])
+    
+  }
+  # Blueprint for processing variables
+    
+  blueprint_recidivism <- recipe(x  = recidivism,
+                    vars  = c(categorical,numeric,props,outcome,id),
+                    roles = c(rep('predictor',48),'outcome','ID')) %>%
+    step_indicate_na(all_of(categorical),all_of(numeric),all_of(props)) %>%
+    step_zv(all_numeric()) %>%
+    step_impute_mean(all_of(numeric),all_of(props)) %>%
+    step_impute_mode(all_of(categorical)) %>%
+    step_logit(all_of(props),offset=.001) %>%
+    step_poly(all_of(numeric),all_of(props),degree=2) %>%
+    step_normalize(paste0(numeric,'_poly_1'),
+                   paste0(numeric,'_poly_2'),
+                   paste0(props,'_poly_1'),
+                   paste0(props,'_poly_2')) %>%
+    step_dummy(all_of(categorical),one_hot=TRUE) %>%
+    step_num2factor(Recidivism_Arrest_Year2,
+                  transform = function(x) x + 1,
+                  levels=c('No','Yes'))
+
+# Apply the recipe
+
+baked_recidivism <- blueprint_recidivism %>% 
+  prep(training = recidivism) %>% 
+  bake(new_data = recidivism)
+```
+
+The final dataset (`baked_recidivism`) has 18111 observations and 144 columns (the first column is the outcome variable, the second column is the ID variable, and remaining 142 columns are predictors). Now, suppose that we would like to predict the probability of Recidivism for the first individual. The code below will calculate the Minkowski distance (with $q=2$) between the first individual and each of the remaining 18,110 individuals by using values of the 142 predictors in this dataset.
+
+```{r, echo=TRUE,eval=FALSE}
+
+dist2 <- data.frame(obs = 2:18111,dist = NA,target=NA)
+
+for(i in 1:18110){
+  
+  a <- as.matrix(baked_recidivism[1,3:144])
+  b <- as.matrix(baked_recidivism[i+1,3:144])
+  dist2[i,]$dist   <- sqrt(sum((a-b)^2))
+  dist2[i,]$target <- as.character(baked_recidivism[i+1,]$Recidivism_Arrest_Year2)
+
+  #print(i)
+}
+
+```
+
+
+```{r, echo=FALSE,eval=TRUE}
+load("./donotupload/knn_recidivism_prediction_demo.RData")
+rownames(dist2) <- c()
+```
+
+We now rank-order the individuals from closest to the most distant and then choose the 100-nearest observations (K=100). Then, we calculate proportion of individuals who were recidivated (YES) and not recidivated (NO) among these 100-nearest neighbors. These proportions predict the probability of being recidivated or not recidivated for the first individual.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+# Rank order the observations from closest to the most distant
+
+dist2 <- dist2[order(dist2$dist),]
+
+# Check the 100-nearest neighbors
+
+dist2[1:100,]
+```
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+# Mean target for the 100-nearest observations
+
+table(dist2[1:100,]$target)
+
+  # This indicates that the predicted probability of being recidivated is 0.28
+  # for the first individual given the observed data for 100 most similar 
+  # observations
+```
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+# Check the actual observed outcome for the first individual
+
+recidivism[1,]$Recidivism_Arrest_Year2
+
+```
+
+# 4. Kernels to Weight the Neighbors
+
+In the previous section, we tried to understand how KNN predicts a target outcome by simply averaging the observed value for the target outcome from K-nearest neighbors. It was a simple average by equally weighing each neighbor. 
+
+Another way of averaging the target outcome from K-nearest neighbors would be to weigh each neighbor according to its distance and calculate a weighted average. A simple way to weigh each neighbor is to use the inverse of the distance. For instance, consider the earlier example where we find the 20-nearest neighbor for the first observation in the readability dataset.
+
+```{r, echo=TRUE,eval=TRUE}
+
+dist <- dist[order(dist$dist),]
+
+k_neighbors <- dist[1:20,]
+
+k_neighbors
+```
+
+We can assign a weight to each neighbor by taking the inverse of their distance and rescaling them such that the sum of the weights equals 1.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',message=FALSE, warning=FALSE}
+
+k_neighbors$weight <- 1/k_neighbors$dist
+k_neighbors$weight <- k_neighbors$weight/sum(k_neighbors$weight)
+
+
+k_neighbors
+```
+
+Then, we can compute a weighted average of the target scores instead of a simple average.
+
+```{r, echo=TRUE,eval=TRUE}
+
+# Weighted Mean target for the 20-nearest observations
+
+sum(k_neighbors$target*k_neighbors$weight)
+
+```
+
+Several kernel functions can be used to assign weight to K-nearest neighbors (e.g., epanechnikov, quartic, triweight, tricube, gaussian, cosine). For all of them, closest neighbors are assigned higher weights while the weight gets smaller as the distance increases, and they slightly differ the way they assign the weight. Below is a demonstration of how assigned weight changes as a function of distance for different kernel functions.
+
+```{r, echo=FALSE,eval=TRUE, fig.width=8,fig.height=5}
+
+require(rdd)
+
+X   <-seq(0.01,1,.01)
+
+wts.epanechnikov <-kernelwts(X,0,1,kernel="epanechnikov")
+wts.quartic      <-kernelwts(X,0,1,kernel="quartic")
+wts.triweight    <-kernelwts(X,0,1,kernel="triweight")
+wts.tricube      <-kernelwts(X,0,1,kernel="tricube")
+wts.gaussian     <-kernelwts(X,0,1,kernel="gaussian")
+wts.cosine       <-kernelwts(X,0,1,kernel="cosine")
+wts.tri       <-kernelwts(X,0,1,kernel="triangular")
+
+
+
+p1 <- ggplot() + geom_line(aes(x=X,y=wts.epanechnikov)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Epanechnikov')+ylim(c(0,.025))
+
+p2 <- ggplot() + geom_line(aes(x=X,y=wts.quartic)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Quartic')+ylim(c(0,.025))
+
+p3 <- ggplot() + geom_line(aes(x=X,y=wts.triweight)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Triweight')+ylim(c(0,.025))
+
+p4 <- ggplot() + geom_line(aes(x=X,y=wts.tricube)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Tricube')+ylim(c(0,.025))
+
+p5 <- ggplot() + geom_line(aes(x=X,y=wts.gaussian)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Gaussian')+ylim(c(0,.025))
+
+p6 <- ggplot() + geom_line(aes(x=X,y=wts.cosine)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Cosine')+ylim(c(0,.025))
+
+p7 <- ggplot() + geom_line(aes(x=X,y=wts.tri)) + theme_bw() + xlab('Distance')+ylab('Weight')+ggtitle('Triangular')+ylim(c(0,.025))
+
+grid.arrange(p1,p2,p3,p4,p5,p6,p7,nrow=3)
+
+```
+
+***
+<div id="infobox">
+
+<center style="color:black;"> **NOTE 3** </center>
+
+Which kernel function should we use for weighing the distance? The type of kernel function can also be considered a hyperparameter to tune.
+
+</div>
+***
+
+# 5. Predicting a continuous outcome with the KNN algorithm via `caret:train()`
+
+Please review the following notebook that builds a prediction model using the K-nearest neighbor algorithm for the readability dataset.
+
+[Building a Prediction Model using KNN](https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn)
+
+# 6. Predicting a binary outcome with the KNN algorithm via `caret:train()`
+
+Please review the following notebook that builds a classification model using the K-nearest neighbor algorithm for the full recidivism dataset.
+
+[Building a Classification Model using KNN](https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn)
+

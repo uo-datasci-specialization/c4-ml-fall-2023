@@ -1,0 +1,169 @@
+name: "EDLD 654 - UO COE"
+
+title: "Applied Machine Learning for Educational Data Science"
+
+description: |
+
+  This course focuses on applied machine learning (ML), with an emphasis on 
+  supervised learning methods that have emerged over the last several decades.
+  
+  The primary goal of these methods is to create models capable of making
+  accurate predictions, which generally implies less emphasis on statistical 
+  inference.
+ 
+base_url: https://edld654-fall22.netlify.app/
+
+google_analytics: "G-1RQZJC7E05"
+
+output_dir: "_site"
+
+creative_commons: CC BY
+
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    
+    - text: "Syllabus"
+      href: syllabus.html
+      
+    - text: "Schedule"
+      href: schedule.html
+    
+    - text: "Lecture Notes"
+      menu:
+        - text: "Lecture-1"
+          href: lecture-1.html
+          
+        - text: "Lecture-2a"
+          href: lecture-2a.html
+          
+        - text: "Lecture-2b"
+          href: lecture-2b.html
+        
+        - text: "Lecture-3a"
+          href: lecture-3a.html
+          
+        - text: "Lecture-3b"
+          href: lecture-3b.html
+          
+        - text: "Lecture-4"
+          href: lecture-4.html
+          
+        - text: "Lecture-5"
+          href: lecture-5.html
+
+        - text: "Lecture-6a"
+          href: lecture-6a.html
+          
+        - text: "Lecture-6b"
+          href: lecture-6b.html
+          
+        - text: "Lecture-7a"
+          href: lecture-7a.html
+          
+        - text: "Lecture-7b"
+          href: lecture-7b.html  
+          
+    - text: "Kaggle Notebooks"
+      menu:
+        - text: "Notebook-1"
+          href: https://www.kaggle.com/code/uocoeeds/week-1-introduction/notebook
+        
+        - text: "Notebook-2a"
+          href: https://www.kaggle.com/code/uocoeeds/lecture-2a-data-preprocessing-i
+        
+        - text: "Notebook-2b"
+          href: https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii
+          
+        - text: "The {recipes} demo"
+          href: https://www.kaggle.com/code/uocoeeds/the-recipes-package-demo
+          
+        - text: "Notebook-3a"
+          href: https://www.kaggle.com/code/uocoeeds/lecture-3a-overview-of-linear-regression
+          
+        - text: "Notebook-3b"
+          href: https://www.kaggle.com/code/uocoeeds/lecture-3b-review-of-bias-variance-tradeoff
+          
+        - text: "Building Linear Models with `caret`"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-with-cross-validation
+
+        - text: "Notebook-4"
+          href: https://www.kaggle.com/code/uocoeeds/lecture-4-regularized-penalized-regression
+          
+        - text: "Building a Ridge Regression Model"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-ridge-regression-model
+          
+        - text: "Building a Lasso Regression Model"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-lasso-regression-model
+          
+        - text: "Building an Elastic Net Model"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-regression-model-with-elastic-net
+          
+        - text: "Using the Existing Models to Predict Outcome for New Observations"
+          href: https://www.kaggle.com/code/uocoeeds/using-the-prediction-models-for-a-new-text
+
+        - text: "Building a Logistic Regression Model"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-logistic-regression-model/notebook
+          
+        - text: "Building a Classification Model with Ridge Penalty"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-ridge-penalty/
+
+        - text: "Building a Classification Model with Lasso Penalty"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-lasso-penalty
+           
+        - text: "Building a Classification Model with Elastic Net"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-classification-model-with-elastic-net
+ 
+        - text: "Building a Prediction Model with K-nearest neighbors"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn
+
+        - text: "Building a Classification Model with K-nearest neighbors"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn
+          
+        - text: "Building a Prediction Model with a Decision Tree"
+          href: https://www.kaggle.com/uocoeeds/building-a-prediction-model-using-a-decision-tree
+
+        - text: "Building a Classification Model with a Decision Tree"
+          href: https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm
+          
+           
+    - text: "Slides"
+      menu:
+        - text: "Week 1"
+          href: slides/slide1.html
+        
+        - text: "Week 2"
+          href: slides/slide2.html
+          
+        - text: "Week 3 & 4"
+          href: slides/slide3.html
+          
+        - text: "Week 5"
+          href: slides/slide4.html
+ 
+        - text: "Week 6 & 7"
+          href: slides/slide5.html
+
+        - text: "Week 8_Part 1"
+          href: slides/slide6a.html 
+        
+        - text: "Week 8_Part 2"
+          href: slides/slide6b.html 
+          
+    - text: "Assignments"
+      menu:
+        - text: "Assignment1"
+          href: https://www.kaggle.com/code/uocoeeds/assignment-1
+          
+        - text: "Assignment2"
+          href: https://www.kaggle.com/code/uocoeeds/assignment-2
+
+        - text: "Assignment3"
+          href: https://www.kaggle.com/code/uocoeeds/assignment-3
+          
+    - icon: fa fa-github
+      href: https://github.com/uo-datasci-specialization/c4-ml-fall-2022
+
+output: 
+  distill::distill_article:    

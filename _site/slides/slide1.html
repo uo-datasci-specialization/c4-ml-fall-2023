@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>EDLD 654: Introduction to Course</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Cengiz Zopluoglu" />
+    <script src="slide1_files/header-attrs-2.14/header-attrs.js"></script>
+    <link href="slide1_files/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="slide1_files/remark-css-0.0.1/uo.css" rel="stylesheet" />
+    <link href="slide1_files/remark-css-0.0.1/ki-fonts.css" rel="stylesheet" />
+    <script src="slide1_files/kePrint-0.0.1/kePrint.js"></script>
+    <link href="slide1_files/lightable-0.0.1/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="my_custom.css" type="text/css" />
+    <link rel="stylesheet" href="xaringanthemer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# EDLD 654: Introduction to Course
+]
+.author[
+### Cengiz Zopluoglu
+]
+.institute[
+### College of Education, University of Oregon
+]
+.date[
+### Oct 3, 2022 <br> Eugene, OR
+]
+
+---
+
+
+&lt;style&gt;
+
+.blockquote {
+  border-left: 5px solid #007935;
+  background: #f9f9f9;
+  padding: 10px;
+  padding-left: 30px;
+  margin-left: 16px;
+  margin-right: 0;
+  border-radius: 0px 4px 4px 0px;
+}
+
+#infobox {
+  padding: 1em 1em 1em 4em;
+  margin-bottom: 10px;
+  border: 2px solid black;
+  border-radius: 10px;
+  background: #E6F6DC 5px center/3em no-repeat;
+}
+
+.centering[
+  float: center;
+]
+
+.left-column2 {
+  width: 50%;
+  height: 92%;
+  float: left;
+  padding-top: 1em;
+}
+
+.right-column2 {
+  width: 50%;
+  float: right;
+  padding-top: 1em;
+}
+
+.remark-code {
+  font-size: 18px;
+}
+
+.tiny .remark-code { /*Change made here*/
+  font-size: 70% !important;
+}
+
+.tiny2 .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+
+.indent {
+  margin-left: 3em;
+}
+
+.single {
+  line-height: 1 ;
+}
+
+
+.double {
+  line-height: 2 ;
+}
+
+.title-slide h1 {
+  padding-top: 0px;
+  font-size: 40px;
+  text-align: center;
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+}
+
+.title-slide h2 {
+  font-size: 30px;
+  text-align: center;
+  padding-top: 0px;
+  margin-top: 0px;
+}
+
+.title-slide h3 {
+  font-size: 30px;
+  color: #26272A;
+  text-align: center;
+  text-shadow: none;
+  padding: 10px;
+  margin: 10px;
+  line-height: 1.2;
+}
+
+&lt;/style&gt;
+
+
+
+### Today's Goals:
+
+- **Know your instructor**
+
+- **Course overview**
+
+- **Getting familiar with two datasets we will use throughout this course.**
+
+  - These two datasets have a different type of target outcome for prediction.
+
+  - CommonLit Readability Competition --&gt; predicting a continuous outcome from plain text
+  
+  - NIJ's Recidivism  Challenge --&gt; predicting a binary outcome from various numerical and categorical features
+
+- **Getting familiar and installing tools require for later weeks.** 
+
+    - the `reticulate` package: an interface between Python and R
+    
+    - `sentence_transformers`: a Python module to access pretrained language models
+    
+    - This lecture will introduce the installation of these tools as we will use them in the future weeks.
+    
+- **Introduction to Kaggle notebooks**
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Know Your Instructor
+
+---
+
+- How to pronounce my name?
+
+https://namedrop.io/cengizzopluoglu
+
+- Call me whatever you find most convenient (with one exception). I don't have a preference.
+
+    - Cengiz
+    - Dr. Cengiz
+    - Dr. Z
+    - Professor
+    - ~~&lt;div style="color:red"&gt; Hey Doc &lt;/div&gt;~~
+
+- Pronouns: He/Him/His
+    - My native language (Turkish) is a gender-neutral language so please excuse my misuse of pronouns in daily language. My apologies in advance. 
+    
+---
+
+## A little bit about myself…
+
+- was born and raised in Istanbul (Turkey),
+
+- received my BA in Mathematics Teaching from Abant Izzet Baysal University (Bolu, Turkey) in 2005, 
+
+- taught math for a year at 6th grade,
+
+- came to the United States in 2007 for graduate education with a loan from Turkish government,
+
+- received my degree in 2013 from University of Minnesota,
+
+- was a faculty member at the University of Miami (2013-2020),
+
+- moved to Eugene in Summer 2020,
+
+- am married with two kids (7 and 10).
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Course Overview
+
+**&lt;center&gt; This review doesn't replace reading the syllabus! &lt;/center&gt;**
+
+---
+
+## Course Modality
+
+- This is an in-person course: that means that, unlike asynchronous online/WEB courses, we will meet during scheduled class meeting times in Lokey 176. 
+
+- There is no Zoom link to attend the classes synchronously.
+
+- The lectures will be recorded using Panopto and the links will be posted on CANVAS. 
+  
+- If you need accommodation related to a medical or other disability, you can set those up through AEC (https://aec.uoregon.edu).
+
+---
+
+## Course Description
+
+EDLD 654: Machine Learning for Educational Data Science
+
+- is the fourth in a sequence of courses on educational data science (EDS) specialization, 
+
+- is taught using free and open-source statistical programming languages,
+
+- aims to teach how to apply several predictive modeling approaches to educational and social science datasets, 
+
+- emphasizes supervised learning methods that have emerged over the last several decades.
+
+The primary goal of the methods covered in this course is to create models capable of making accurate predictions, which generally implies less emphasis on statistical inference.
+
+
+See the syllabus for a detailed list of learning outcomes.
+---
+## Office hours
+
+- Online office hours: 
+  
+  - Monday, 4pm – 5pm (in person), 5pm - 6pm (Zoom)
+  
+  - by appointment
+  
+  - If possible, notify me in advance to avoid waiting time.
+
+- Please use Canvas course website for communication related to this class.
+
+---
+## Textbook
+
+- All course readings are freely available online or will be provided by the instructor. 
+
+- The primary content will be delivered through lecture notes prepared by the instructor and posted on the course website. 
+
+- In addition to the lecture notes, several chapters from the following books will be assigned as supplemental readings. Students are strongly encouraged to read these assigned supplemental readings.
+
+  - Bohemke, B. &amp; Greenwell, B. (2019). Hands on Machine Learning with R. New York, NY: Taylor &amp; Francis.
+
+  - James, Gareth et al. (2017). An Introduction to Statistical Learning with R, 2nd Edition. New York, NY: Springer.
+
+  - Kuhn, M and Johnson, Kjell (2014). Applied Predictive Modeling in R, New York, NY: Springer. (available through UO libraries)
+
+  - Kuhn M., &amp; Johnson, K. (2019). Feature Engineering and Selection: A Practical Approach for Predictive Models. New York, NY: Taylor &amp; Francis.
+
+My lecture notes will be prepared using these books as primary sources.
+
+---
+
+## Statistical Computing
+
+- The primary tool used for statistical computing in this class is R.
+
+- Lecture notes will provide the R code to demonstrate all computations 
+
+- Every lecture will be accompanied by a Kaggle R notebook so students can easily reproduce the analysis demonstrated in the lectures.
+
+- The HEDCO Learning Commons (https://learningcommons.uoregon.edu/) is located in Room 110 and equipped with Windows and macOS computer workstations, small and large study rooms. It is currently open from 8am to 8pm Monday – Thursday, 8am - 5pm on Fridays.
+
+---
+
+## Course Website
+
+- The unofficial course website is 
+
+  https://edld654-fall22.netlify.app/
+  
+  All course material and information will be publicly accessible on this website.
+
+- The official course website is Canvas. Course material and information will also be available on Canvas.
+
+- We will primarily use Canvas for class communication, questions, and keep track of class assignments.
+
+---
+
+## Course Structure
+
+- In-person lectures
+
+- Supplemental Lecture Notes, Readings, and Kaggle notebooks
+
+- Three Homework Assignments
+
+  - A total of three assignments will be delivered through Canvas
+  
+  - These assignments are open-book. You can use your notes, books, slides, or Web to search while you respond to these questions. 
+  
+  - I will post them as Kaggle notebooks. You can either copy the notebook, complete the assignment, and submit a link to your notebook on Canvas. Or, you can complete the assignment as an R markdown document, and submit a knitted version on Canvas (either as HTML or pdf).
+
+- A final project (see the syllabus for details)
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;center&gt;
+
+# Introduction to Toy Datasets  
+
+---
+
+## CommonLit Readability Competition
+
+- A Kaggle competition that took place between May 2021 - Aug 2021.
+
+- [Competition website](https://www.kaggle.com/competitions/commonlitreadabilityprize/overview)
+
+- There is a total of 2834 observations. 
+  
+  - The unit of analysis is a text. So, each observation represents a plain text. 
+  
+  - The most significant variables are the `excerpt` and `target` columns. 
+  
+  - The excerpt column includes plain text data.
+  
+  - The target column includes a corresponding measure of readability for each excerpt.
+
+---
+
+A snapshot:
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover table" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto; font-size: 14px; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; excerpt &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; target &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1706 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 50em; "&gt; The commutator is peculiar, consisting of only three segments of a copper ring, while in the simplest of other continuous current generators several times that number exist, and frequently 120! segments are to be found. These three segments are made so as to be removable in a moment for cleaning or replacement. They are mounted upon a metal support, and are surrounded on all sides by a free air space, and cannot, therefore, lose their insulated condition. This feature of air insulation is peculiar to this system, and is very important as a factor in the durability of the commutator. Besides this, the commutator is sustained by supports carried in flanges upon the shaft, which flanges, as an additional safeguard, are coated all over with hard rubber, one of the finest known insulators. It may be stated, without fear of contradiction, that no other commutator made is so thoroughly insulated and protected. The three commutator segments virtually constitute a single copper ring, mounted in free air, and cut into three equal pieces by slots across its face. &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -3.676268 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 2830 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 50em; "&gt; When you think of dinosaurs and where they lived, what do you picture? Do you see hot, steamy swamps, thick jungles, or sunny plains? Dinosaurs lived in those places, yes. But did you know that some dinosaurs lived in the cold and the darkness near the North and South Poles?
+This surprised scientists, too. Paleontologists used to believe that dinosaurs lived only in the warmest parts of the world. They thought that dinosaurs could only have lived in places where turtles, crocodiles, and snakes live today. Later, these dinosaur scientists began finding bones in surprising places.
+One of those surprising fossil beds is a place called Dinosaur Cove, Australia. One hundred million years ago, Australia was connected to Antarctica. Both continents were located near the South Pole. Today, paleontologists dig dinosaur fossils out of the ground. They think about what those ancient bones must mean. &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.711390 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+- *"the target value is the result of a Bradley-Terry analysis of more than 111,000 pairwise comparisons between excerpts. Teachers spanning grades 3-12 served as the raters for these comparisons."* 
+
+- A lower target value indicates a more challenging text to read. 
+
+- The highest target score is equivalent to the 3rd-grade level
+
+- The lowest target score is equivalent to the 12th-grade level. 
+
+---
+
+- The purpose is to develop a model that predicts a readability score for a given text.
+
+- A successful model may serve for important purposes in education such as identifying an appropriate reading level for a given text.
+
+&lt;table class=" lightable-paper lightable-striped lightable-hover table" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto; font-size: 14px; margin-left: auto; margin-right: auto;'&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; excerpt &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; score &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 50em; "&gt; In the freezing ocean waters of Antarctica, the planet's largest seals make their home in a frozen world. These giants are southern elephant seals, and they can grow as long as the length of a car and weigh as much as two cars combined. The name “elephant seal” comes from both the males' enormous size and from their giant trunk-like nose, called a proboscis. Females do not have a proboscis and they are much smaller. A thick layer of blubber keeps southern elephant seals warm in their icy habitat. The seals are clumsy on land, but in water they’re graceful swimmers and incredible divers. They can easily dive 1,000 to 4,000 feet to hunt for squid, octopus, and various kinds of fish. Elephant seals are able to stay underwater for 20 minutes or more. The longest underwater session researchers observed is an amazing two hours! When they return to the surface to breathe, it’s only for a few minutes. Then they dive again. &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ? &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+- Other potential use cases of skills learned in this class relevant to education:
+
+  - automated essay scoring: essay ---&gt; rating
+  
+  - sentiment analysis: feedback ---&gt; positive, negative, neutral
+  
+  - automated writing evaluation: argumentative writing ---&gt; effective, adequate, ineffective
+  
+  - automated item generation: a reading passage ---&gt; questions and answers
+
+---
+
+## NIJ's Recidivism Challenge
+
+- The Recidivism dataset comes from The National Institute of Justice’s (NIJ) Recidivism Forecasting Challenge. 
+
+  https://nij.ojp.gov/funding/recidivism-forecasting-challenge
+
+- The challenge aims to increase public safety and improve the fair administration of justice across the United States. 
+
+- This challenge had three stages of prediction, and all three stages require modeling a binary outcome (recidivated vs. not recidivated in Year 1, Year 2, and Year 3). 
+
+- In this class, we will only work on the second stage and try to develop a model for predicting the probability of an individual’s recidivism in the second year after initial release.
+
+---
+
+- There are 25,835 observations in the dataset.
+
+  - 18,028 observations in the training dataset
+  
+  - 7,807 observations in the test dataset 
+
+- 54 variables including 
+
+  - a unique ID variable,
+  
+  - four outcome variables (Recidivism in Year 1, Recidivism in Year 2, and Recidivism in Year 3, Recidivism within three years),
+  
+  - a filter variable to indicate whether an observation is in the training dataset or test dataset,
+  
+  - the remaining 48 variables as potential predictive features. 
+  
+  A complete list of these variables can be found at     
+  
+  https://nij.ojp.gov/funding/recidivism-forecasting-challenge#recidivism-forecasting-challenge-database-fields-defined
+
+---
+  
+## Installing Reticulate, Miniconda, and Sentence Transformers
+
+- We will need to install the reticulate package and sentence_transformers module 
+for the following weeks. 
+
+  - The `reticulate` package provides an R interface to access Python modules and run any Python code without leaving the comfort of RStudio.
+  
+  - `sentence_transformers` is a Python module to access and utilize state-of-the-art pretrained language models
+  
+- You can run the following code in your computer to get prepared for the following weeks. Note that you only have to run the following code once to install the necessary packages.
+
+.indent[
+.single[
+.tiny2[
+
+```r
+# Install the reticulate package
+
+install.packages(pkgs = 'reticulate',
+                 dependencies = TRUE)
+
+
+
+# Install Miniconda
+
+install_miniconda()
+```
+]
+]
+]
+
+---
+
+## Kaggle notebooks
+
+- If you are having troubles about installing these packages in your computer, I highly recommend using a Kaggle R notebook which these packages are already installed.
+
+- Please create a Kaggle account if you don't have one.
+
+- A demonstration of how to copy and work with provided Kaggle notebooks.
+
+&lt;center&gt;
+https://www.kaggle.com/code/uocoeeds/week-1-introduction
+
+
+- A demonstration of how to complete and submit an assignment.
+
+&lt;center&gt;
+https://www.kaggle.com/code/uocoeeds/demo-assignment
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,0 +1,339 @@
+---
+title: "Introduction to Toy Datasets"
+
+author:
+  - name: Cengiz Zopluoglu
+    affiliation: University of Oregon
+
+date: 06/23/2022
+
+output:
+  distill::distill_article:
+    self_contained: true
+    toc: true
+    toc_float: true
+    theme: theme.css
+---
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(position=c('top','right'))
+```
+
+```{=html}
+<style>
+.list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
+    z-index: 2;
+    color: #fff;
+    background-color: #FC4445;
+    border-color: #97CAEF;
+}
+
+</style>
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(comment = "",fig.align='center')
+require(here)
+require(ggplot2)
+require(plot3D)
+require(kableExtra)
+require(knitr)
+require(giski)
+require(magick)
+options(scipen=99)
+
+```
+
+`r paste('[Updated:',format(Sys.time(),'%a, %b %d, %Y - %H:%M:%S'),']')`
+
+There are two datasets we will use throughout this course. The first dataset has a continuous outcome and the second dataset has a binary outcome. We will apply several methods and algorithms to these two datasets during the course. We will have an opportunity to compare and contrast the prediction outcomes from several models and methods on the same datasets.
+
+This section provides some background information and context for these two datasets.
+
+# Readability
+
+The readability dataset comes from a recent [Kaggle Competition (CommonLit Readability Prize)](https://www.kaggle.com/c/commonlitreadabilityprize/). You can directly download the training dataset from the competition website, or you can import it from the course website.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+readability <- read.csv(here('data/readability.csv'),header=TRUE)
+
+str(readability)
+
+```
+
+There is a total of 2834 observations. Each observation represents a reading passage. The most significant variables are the `excerpt` and `target` columns. The excerpt column includes plain text data, and the target column includes a corresponding measure of readability for each excerpt.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+readability[1,]$excerpt
+
+readability[1,]$target
+
+```
+
+[According to the data owner](https://www.kaggle.com/c/commonlitreadabilityprize/discussion/240423), '*the target value is the result of a Bradley-Terry analysis of more than 111,000 pairwise comparisons between excerpts. Teachers spanning grades 3-12 served as the raters for these comparisons.*' A lower target value indicates a more challenging text to read. The highest target score is equivalent to the 3rd-grade level, while the lowest target score is equivalent to the 12th-grade level. The purpose is to develop a model that predicts a readability score for a given text to identify an appropriate reading level.
+
+In the following weeks, we will talk a little bit about the pre-trained language models (e.g., [RoBerta](https://arxiv.org/abs/1907.11692)). Our coverage of this material will be at the surface level. We will primarily cover how we obtain numerical vector representations (sentence embeddings) for given text input from a pre-trained language model using Python through R. Then, we will use the sentence embeddings as features to predict the target score in this dataset using various modeling frameworks.
+
+# Recidivism
+
+The Recidivism dataset comes from The National Institute of Justice's (NIJ) [Recidivism Forecasting Challenge](https://nij.ojp.gov/funding/recidivism-forecasting-challenge). The challenge aims to increase public safety and improve the fair administration of justice across the United States. This challenge had three stages of prediction, and all three stages require modeling a binary outcome (recidivated vs. not recidivated in Year 1, Year 2, and Year 3). In this class, we will only work on the second stage and develop a model for predicting the probability of an individual's recidivism in the second year after initial release.
+
+You can download the training dataset directly from [the competition website](https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk), or from the course website. Either way, please read the [Terms of Use at this link](https://data.ojp.usdoj.gov/stories/s/NIJ-s-Recidivism-Challenge-Overview-and-Term-of-Us/gyxv-98b2/) before working with this dataset.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+recidivism <- read.csv(here('data/recidivism_full.csv'),header=TRUE)
+
+str(recidivism)
+
+```
+
+There are 25,835 observations in the training set and 54 variables, including a unique ID variable, four outcome variables (Recidivism in Year 1, Recidivism in Year 2, and Recidivism in Year 3, Recidivism within three years), and a filter variable to indicate whether an observation was included in the training dataset or test dataset. The remaining 48 variables are potential predictive features. A complete list of these variables can be found at [this link](https://nij.ojp.gov/funding/recidivism-forecasting-challenge#recidivism-forecasting-challenge-database-fields-defined).
+
+We will work on developing a model to predict the outcome variable `Recidivism_Arrest_Year2` using the 48 potential predictive variables. Before moving forward, we must remove the individuals who had already recidivated in Year 1. As you can see below, about 29.9% of the individuals recidivated in Year 1. I am removing these individuals from the dataset.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+table(recidivism$Recidivism_Arrest_Year1)
+recidivism2 <- recidivism[recidivism$Recidivism_Arrest_Year1 == FALSE,]
+
+```
+
+I will also recode some variables before saving the new dataset for later use in class.
+
+-   First, some variables in the dataset are coded as TRUE and FALSE. When these variables are imported into R, R automatically recognizes them as logical variables. I will recode all these variables such that FALSE = 0 and TRUE = 1.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+# Find the columns recognized as logical
+
+  cols <- sapply(recidivism, is.logical)
+
+# Convert them to numeric 0s and 1s
+
+  recidivism2[,cols] <- lapply(recidivism2[,cols], as.numeric)
+  
+```
+
+-   Second, the highest value for some variables are coded as **3 or more**, **4 or more**, **10 or more**, etc. These variables can be considered as numeric, but R recognizes them as character vectors due to phrase **or more** for the highest value. We will recode these variables so 'X or more' will be equal to X.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show',warning=FALSE,message=FALSE}
+
+require(dplyr)
+
+# Dependents
+
+  recidivism2$Dependents <- recode(recidivism2$Dependents,
+                                   '0'=0,
+                                   '1'=1,
+                                   '2'=2,
+                                   '3 or more'=3)
+
+# Prior Arrest Episodes Felony
+
+  recidivism2$Prior_Arrest_Episodes_Felony <- recode(recidivism2$Prior_Arrest_Episodes_Felony,
+                                                     '0'=0,
+                                                     '1'=1,
+                                                     '2'=2,
+                                                     '3'=3,
+                                                     '4'=4,
+                                                     '5'=5,
+                                                     '6'=6,
+                                                     '7'=7,
+                                                     '8'=8,
+                                                     '9'=9,
+                                                     '10 or more'=10)
+# Prior Arrest Episods Misd
+
+  recidivism2$Prior_Arrest_Episodes_Misd <- recode(recidivism2$Prior_Arrest_Episodes_Misd,
+                                                   '0'=0,
+                                                   '1'=1,
+                                                   '2'=2,
+                                                   '3'=3,
+                                                   '4'=4,
+                                                   '5'=5,
+                                                   '6 or more'=6)
+  
+# Prior Arrest Episodes Violent
+
+  recidivism2$Prior_Arrest_Episodes_Violent <- recode(recidivism2$Prior_Arrest_Episodes_Violent,
+                                                      '0'=0,
+                                                      '1'=1,
+                                                      '2'=2,
+                                                      '3 or more'=3)
+
+# Prior Arrest Episods Property
+
+  recidivism2$Prior_Arrest_Episodes_Property <- recode(recidivism2$Prior_Arrest_Episodes_Property,
+                                                       '0'=0,
+                                                       '1'=1,
+                                                       '2'=2,
+                                                       '3'=3,
+                                                       '4'=4,
+                                                       '5 or more'=5)
+  
+# Prior Arrest Episods Drug
+
+  recidivism2$Prior_Arrest_Episodes_Drug <- recode(recidivism2$Prior_Arrest_Episodes_Drug,
+                                                   '0'=0,
+                                                   '1'=1,
+                                                   '2'=2,
+                                                   '3'=3,
+                                                   '4'=4,
+                                                   '5 or more'=5) 
+# Prior Arrest Episods PPViolationCharges
+
+  recidivism2$Prior_Arrest_Episodes_PPViolationCharges <- recode(recidivism2$Prior_Arrest_Episodes_PPViolationCharges,
+                                                                 '0'=0,
+                                                                 '1'=1,
+                                                                 '2'=2,
+                                                                 '3'=3,
+                                                                 '4'=4,
+                                                                 '5 or more'=5)  
+  
+# Prior Conviction Episodes Felony
+
+  recidivism2$Prior_Conviction_Episodes_Felony <- recode(recidivism2$Prior_Conviction_Episodes_Felony,
+                                                         '0'=0,
+                                                         '1'=1,
+                                                         '2'=2,
+                                                         '3 or more'=3)
+
+# Prior Conviction Episodes Misd
+
+  recidivism2$Prior_Conviction_Episodes_Misd <- recode(recidivism2$Prior_Conviction_Episodes_Misd,
+                                                       '0'=0,
+                                                       '1'=1,
+                                                       '2'=2,
+                                                       '3'=3,
+                                                       '4 or more'=4)
+  
+# Prior Conviction Episodes Prop
+
+  recidivism2$Prior_Conviction_Episodes_Prop <- recode(recidivism2$Prior_Conviction_Episodes_Prop,
+                                                       '0'=0,
+                                                       '1'=1,
+                                                       '2'=2,
+                                                       '3 or more'=3)
+
+# Prior Conviction Episodes Drug
+
+  recidivism2$Prior_Conviction_Episodes_Drug <- recode(recidivism2$Prior_Conviction_Episodes_Drug,
+                                                       '0'=0,
+                                                       '1'=1,
+                                                       '2 or more'=2)
+
+# Delinquency Reports
+
+  recidivism2$Delinquency_Reports <- recode(recidivism2$Delinquency_Reports,
+                                            '0'=0,
+                                            '1'=1,
+                                            '2'=2,
+                                            '3'=3,
+                                            '4 or more'=4)
+
+# Program Attendances
+
+  recidivism2$Program_Attendances <- recode(recidivism2$Program_Attendances,
+                                            '0'=0,
+                                            '1'=1,
+                                            '2'=2,
+                                            '3'=3,
+                                            '4'=4,
+                                            '5'=5,
+                                            '6'=6,
+                                            '7'=7,
+                                            '8'=8,
+                                            '9'=9,
+                                            '10 or more'=10)
+
+# Program Unexcused Absences
+
+  recidivism2$Program_UnexcusedAbsences <- recode(recidivism2$Program_UnexcusedAbsences,
+                                                  '0'=0,
+                                                  '1'=1,
+                                                  '2'=2,
+                                                  '3 or more'=3)
+
+# Residence Changes
+
+  recidivism2$Residence_Changes <- recode(recidivism2$Residence_Changes,
+                                          '0'=0,
+                                          '1'=1,
+                                          '2'=2,
+                                          '3 or more'=3)  
+#############################################################
+  
+str(recidivism2)  
+```
+
+Now, we export the final version of the dataset.
+
+```{r, echo=TRUE,eval=knitr::is_html_output(),class.source='klippy',class.source = 'fold-show'}
+
+write.csv(recidivism2, 
+          here('data/recidivism_y1 removed and recoded.csv'),
+          row.names = FALSE)
+
+```
+
+In future weeks, we will work with this version of the dataset.
+
+# Installing Reticulate, Miniconda, and Sentence Transformers
+
+You will need to install the `reticulate` package and `sentence_transformers` module for the following weeks. You can run the following code in your computer to get prepared for the following weeks. Note that you only have to run the following code once to install the necessary packages.
+
+If you are having troubles about installing these packages in your computer, I highly recommend using a Kaggle R notebook which these packages are already installed (I will give more information about this in class).
+
+```{r, echo=TRUE,eval=FALSE,class.source='klippy',class.source = 'fold-show'}
+
+# Install the reticulate package
+
+install.packages(pkgs = 'reticulate',
+                 dependencies = TRUE)
+
+
+
+# Install Miniconda
+
+install_miniconda()
+```
+
+Once you install the reticulate package, run the following code to get python configurations and make sure everything is properly installed.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show'}
+
+# Load the reticulate package
+
+require(reticulate)
+
+conda_list()
+```
+
+You should see `r-reticulate` under the name column as one of your virtual Python environment. Finally, you will also need to install the sentence transformers module. The following code will install the sentence transformers module to the virtual Python environment `r-reticulate`.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show'}
+
+# Install the sentence transformer module 
+
+use_condaenv('r-reticulate')
+
+conda_install(envname  = 'r-reticulate',
+              packages = 'sentence_transformers',
+              pip      = TRUE)
+
+  # try pip=FALSE, if it gives an error message
+
+```
+
+Once you install the Python packages using the code above, you can run the following code. If you are seeing the same output as below, you should be all set to explore some very exciting NLP tools using the Readability dataset.
+
+```{r, echo=TRUE,eval=TRUE,class.source='klippy',class.source = 'fold-show',results='hold'}
+
+require(reticulate)
+
+# Import the sentence transformer module
+
+reticulate::import('sentence_transformers')
+```
