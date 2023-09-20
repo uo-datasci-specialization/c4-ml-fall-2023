@@ -106,7 +106,7 @@ tbl <- function(tab,d){
 
 ```{r}
 
-tbl(tab,d='3-Oct')
+tbl(tab,d=tab$date[1])
 
 ```
 
@@ -114,7 +114,7 @@ tbl(tab,d='3-Oct')
 
 ```{r}
 
-tbl(tab,d='10-Oct')
+tbl(tab,d=tab$date[2])
 
 ```
 
@@ -122,35 +122,35 @@ tbl(tab,d='10-Oct')
 
 ```{r}
 
-tbl(tab,d='17-Oct & 24-Oct')
+tbl(tab,d=tab$date[3])
 
 ```
 
 ### Week 5: Regularized Linear Regression
 ```{r}
 
-tbl(tab,d='31-Oct')
+tbl(tab,d=tab$date[4])
 
 ```
 
 ### Week 6 & 7: (Regularized) Logistic Regression
 ```{r}
 
-tbl(tab,d='7-Nov & 14-Nov')
+tbl(tab,d=tab$date[5])
 
 ```
 
 ### Week 8: Introduction to K-Nearest Neighbors and Decision Tree Algorithms
 ```{r}
 
-tbl(tab,d='21-Nov')
+tbl(tab,d=tab$date[6])
 
 ```
 
 ### Week 9: Introduction to Bagged Trees, Random Forests, and Gradient Boosting Trees
 ```{r}
 
-tbl(tab,d='28-Nov')
+tbl(tab,d=tab$date[7])
 
 ```
 

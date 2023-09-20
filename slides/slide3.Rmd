@@ -3,7 +3,7 @@ title: "An Overview of Linear Regression and Bias-Variance Tradeoff in Predictiv
 subtitle: ""
 author: "Cengiz Zopluoglu"
 institute: "College of Education, University of Oregon"
-date: "Oct 17, 2022 <br> Eugene, OR"
+#date: "Oct 17, 2022 <br> Eugene, OR"
 output:
   xaringan::moon_reader:
     css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']

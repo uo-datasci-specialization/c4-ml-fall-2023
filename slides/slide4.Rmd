@@ -3,7 +3,7 @@ title: "Regularized (Penalized) Linear Regression"
 subtitle: ""
 author: "Cengiz Zopluoglu"
 institute: "College of Education, University of Oregon"
-date: "Oct 31, 2022 <br> Eugene, OR"
+#date: "Oct 31, 2022 <br> Eugene, OR"
 output:
   xaringan::moon_reader:
     css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
