@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
   <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
   <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
@@ -2552,9 +2559,7 @@ Assignments
 <ul>
 <li><a href="#readability" id="toc-readability">Readability</a></li>
 <li><a href="#recidivism" id="toc-recidivism">Recidivism</a></li>
-<li><a href="#installing-reticulate-miniconda-and-sentence-transformers"
-id="toc-installing-reticulate-miniconda-and-sentence-transformers">Installing
-Reticulate, Miniconda, and Sentence Transformers</a></li>
+<li><a href="#installing-reticulate-miniconda-and-sentence-transformers" id="toc-installing-reticulate-miniconda-and-sentence-transformers">Installing Reticulate, Miniconda, and Sentence Transformers</a></li>
 </ul>
 </nav>
 </div>
@@ -2573,21 +2578,11 @@ Reticulate, Miniconda, and Sentence Transformers</a></li>
 }
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:03:44 ]</p>
-<p>There are two datasets we will use throughout this course. The first
-dataset has a continuous outcome and the second dataset has a binary
-outcome. We will apply several methods and algorithms to these two
-datasets during the course. We will have an opportunity to compare and
-contrast the prediction outcomes from several models and methods on the
-same datasets.</p>
-<p>This section provides some background information and context for
-these two datasets.</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:30:01 ]</p>
+<p>There are two datasets we will use throughout this course. The first dataset has a continuous outcome and the second dataset has a binary outcome. We will apply several methods and algorithms to these two datasets during the course. We will have an opportunity to compare and contrast the prediction outcomes from several models and methods on the same datasets.</p>
+<p>This section provides some background information and context for these two datasets.</p>
 <h1 id="readability">Readability</h1>
-<p>The readability dataset comes from a recent <a
-href="https://www.kaggle.com/c/commonlitreadabilityprize/">Kaggle
-Competition (CommonLit Readability Prize)</a>. You can directly download
-the training dataset from the competition website, or you can import it
-from the course website.</p>
+<p>The readability dataset comes from a recent <a href="https://www.kaggle.com/c/commonlitreadabilityprize/">Kaggle Competition (CommonLit Readability Prize)</a>. You can directly download the training dataset from the competition website, or you can import it from the course website.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data/readability.csv'</span><span class='op'>)</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
@@ -2602,11 +2597,7 @@ from the course website.</p>
  $ target        : num  -0.34 -0.315 -0.58 -1.054 0.247 ...
  $ standard_error: num  0.464 0.481 0.477 0.45 0.511 ...</code></pre>
 </div>
-<p>There is a total of 2834 observations. Each observation represents a
-reading passage. The most significant variables are the
-<code>excerpt</code> and <code>target</code> columns. The excerpt column
-includes plain text data, and the target column includes a corresponding
-measure of readability for each excerpt.</p>
+<p>There is a total of 2834 observations. Each observation represents a reading passage. The most significant variables are the <code>excerpt</code> and <code>target</code> columns. The excerpt column includes plain text data, and the target column includes a corresponding measure of readability for each excerpt.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability</span><span class='op'>[</span><span class='fl'>1</span>,<span class='op'>]</span><span class='op'>$</span><span class='va'>excerpt</span></span></code></pre>
@@ -2617,41 +2608,11 @@ measure of readability for each excerpt.</p>
 </div>
 <pre><code>[1] -0.3402591</code></pre>
 </div>
-<p><a
-href="https://www.kaggle.com/c/commonlitreadabilityprize/discussion/240423">According
-to the data owner</a>, ‘<em>the target value is the result of a
-Bradley-Terry analysis of more than 111,000 pairwise comparisons between
-excerpts. Teachers spanning grades 3-12 served as the raters for these
-comparisons.</em>’ A lower target value indicates a more challenging
-text to read. The highest target score is equivalent to the 3rd-grade
-level, while the lowest target score is equivalent to the 12th-grade
-level. The purpose is to develop a model that predicts a readability
-score for a given text to identify an appropriate reading level.</p>
-<p>In the following weeks, we will talk a little bit about the
-pre-trained language models (e.g., <a
-href="https://arxiv.org/abs/1907.11692">RoBerta</a>). Our coverage of
-this material will be at the surface level. We will primarily cover how
-we obtain numerical vector representations (sentence embeddings) for
-given text input from a pre-trained language model using Python through
-R. Then, we will use the sentence embeddings as features to predict the
-target score in this dataset using various modeling frameworks.</p>
+<p><a href="https://www.kaggle.com/c/commonlitreadabilityprize/discussion/240423">According to the data owner</a>, ‘<em>the target value is the result of a Bradley-Terry analysis of more than 111,000 pairwise comparisons between excerpts. Teachers spanning grades 3-12 served as the raters for these comparisons.</em>’ A lower target value indicates a more challenging text to read. The highest target score is equivalent to the 3rd-grade level, while the lowest target score is equivalent to the 12th-grade level. The purpose is to develop a model that predicts a readability score for a given text to identify an appropriate reading level.</p>
+<p>In the following weeks, we will talk a little bit about the pre-trained language models (e.g., <a href="https://arxiv.org/abs/1907.11692">RoBerta</a>). Our coverage of this material will be at the surface level. We will primarily cover how we obtain numerical vector representations (sentence embeddings) for given text input from a pre-trained language model using Python through R. Then, we will use the sentence embeddings as features to predict the target score in this dataset using various modeling frameworks.</p>
 <h1 id="recidivism">Recidivism</h1>
-<p>The Recidivism dataset comes from The National Institute of Justice’s
-(NIJ) <a
-href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge">Recidivism
-Forecasting Challenge</a>. The challenge aims to increase public safety
-and improve the fair administration of justice across the United States.
-This challenge had three stages of prediction, and all three stages
-require modeling a binary outcome (recidivated vs. not recidivated in
-Year 1, Year 2, and Year 3). In this class, we will only work on the
-second stage and develop a model for predicting the probability of an
-individual’s recidivism in the second year after initial release.</p>
-<p>You can download the training dataset directly from <a
-href="https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk">the
-competition website</a>, or from the course website. Either way, please
-read the <a
-href="https://data.ojp.usdoj.gov/stories/s/NIJ-s-Recidivism-Challenge-Overview-and-Term-of-Us/gyxv-98b2/">Terms
-of Use at this link</a> before working with this dataset.</p>
+<p>The Recidivism dataset comes from The National Institute of Justice’s (NIJ) <a href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge">Recidivism Forecasting Challenge</a>. The challenge aims to increase public safety and improve the fair administration of justice across the United States. This challenge had three stages of prediction, and all three stages require modeling a binary outcome (recidivated vs. not recidivated in Year 1, Year 2, and Year 3). In this class, we will only work on the second stage and develop a model for predicting the probability of an individual’s recidivism in the second year after initial release.</p>
+<p>You can download the training dataset directly from <a href="https://data.ojp.usdoj.gov/Courts/NIJ-s-Recidivism-Challenge-Full-Dataset/ynf5-u8nk">the competition website</a>, or from the course website. Either way, please read the <a href="https://data.ojp.usdoj.gov/stories/s/NIJ-s-Recidivism-Challenge-Overview-and-Term-of-Us/gyxv-98b2/">Terms of Use at this link</a> before working with this dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>recidivism</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='fu'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='op'>(</span><span class='st'>'data/recidivism_full.csv'</span><span class='op'>)</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
@@ -2714,21 +2675,8 @@ of Use at this link</a> before working with this dataset.</p>
  $ Recidivism_Arrest_Year3                          : logi  FALSE TRUE FALSE FALSE FALSE FALSE ...
  $ Training_Sample                                  : int  1 1 1 1 1 0 1 0 1 1 ...</code></pre>
 </div>
-<p>There are 25,835 observations in the training set and 54 variables,
-including a unique ID variable, four outcome variables (Recidivism in
-Year 1, Recidivism in Year 2, and Recidivism in Year 3, Recidivism
-within three years), and a filter variable to indicate whether an
-observation was included in the training dataset or test dataset. The
-remaining 48 variables are potential predictive features. A complete
-list of these variables can be found at <a
-href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge#recidivism-forecasting-challenge-database-fields-defined">this
-link</a>.</p>
-<p>We will work on developing a model to predict the outcome variable
-<code>Recidivism_Arrest_Year2</code> using the 48 potential predictive
-variables. Before moving forward, we must remove the individuals who had
-already recidivated in Year 1. As you can see below, about 29.9% of the
-individuals recidivated in Year 1. I am removing these individuals from
-the dataset.</p>
+<p>There are 25,835 observations in the training set and 54 variables, including a unique ID variable, four outcome variables (Recidivism in Year 1, Recidivism in Year 2, and Recidivism in Year 3, Recidivism within three years), and a filter variable to indicate whether an observation was included in the training dataset or test dataset. The remaining 48 variables are potential predictive features. A complete list of these variables can be found at <a href="https://nij.ojp.gov/funding/recidivism-forecasting-challenge#recidivism-forecasting-challenge-database-fields-defined">this link</a>.</p>
+<p>We will work on developing a model to predict the outcome variable <code>Recidivism_Arrest_Year2</code> using the 48 potential predictive variables. Before moving forward, we must remove the individuals who had already recidivated in Year 1. As you can see below, about 29.9% of the individuals recidivated in Year 1. I am removing these individuals from the dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/table.html'>table</a></span><span class='op'>(</span><span class='va'>recidivism</span><span class='op'>$</span><span class='va'>Recidivism_Arrest_Year1</span><span class='op'>)</span></span></code></pre>
@@ -2740,13 +2688,9 @@ FALSE  TRUE
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>recidivism2</span> <span class='op'>&lt;-</span> <span class='va'>recidivism</span><span class='op'>[</span><span class='va'>recidivism</span><span class='op'>$</span><span class='va'>Recidivism_Arrest_Year1</span> <span class='op'>==</span> <span class='cn'>FALSE</span>,<span class='op'>]</span></span></code></pre>
 </div>
 </div>
-<p>I will also recode some variables before saving the new dataset for
-later use in class.</p>
+<p>I will also recode some variables before saving the new dataset for later use in class.</p>
 <ul>
-<li>First, some variables in the dataset are coded as TRUE and FALSE.
-When these variables are imported into R, R automatically recognizes
-them as logical variables. I will recode all these variables such that
-FALSE = 0 and TRUE = 1.</li>
+<li>First, some variables in the dataset are coded as TRUE and FALSE. When these variables are imported into R, R automatically recognizes them as logical variables. I will recode all these variables such that FALSE = 0 and TRUE = 1.</li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2760,12 +2704,7 @@ FALSE = 0 and TRUE = 1.</li>
 </div>
 </div>
 <ul>
-<li>Second, the highest value for some variables are coded as <strong>3
-or more</strong>, <strong>4 or more</strong>, <strong>10 or
-more</strong>, etc. These variables can be considered as numeric, but R
-recognizes them as character vectors due to phrase <strong>or
-more</strong> for the highest value. We will recode these variables so
-‘X or more’ will be equal to X.</li>
+<li>Second, the highest value for some variables are coded as <strong>3 or more</strong>, <strong>4 or more</strong>, <strong>10 or more</strong>, etc. These variables can be considered as numeric, but R recognizes them as character vectors due to phrase <strong>or more</strong> for the highest value. We will recode these variables so ‘X or more’ will be equal to X.</li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2981,18 +2920,9 @@ more</strong> for the highest value. We will recode these variables so
 </div>
 </div>
 <p>In future weeks, we will work with this version of the dataset.</p>
-<h1
-id="installing-reticulate-miniconda-and-sentence-transformers">Installing
-Reticulate, Miniconda, and Sentence Transformers</h1>
-<p>You will need to install the <code>reticulate</code> package and
-<code>sentence_transformers</code> module for the following weeks. You
-can run the following code in your computer to get prepared for the
-following weeks. Note that you only have to run the following code once
-to install the necessary packages.</p>
-<p>If you are having troubles about installing these packages in your
-computer, I highly recommend using a Kaggle R notebook which these
-packages are already installed (I will give more information about this
-in class).</p>
+<h1 id="installing-reticulate-miniconda-and-sentence-transformers">Installing Reticulate, Miniconda, and Sentence Transformers</h1>
+<p>You will need to install the <code>reticulate</code> package and <code>sentence_transformers</code> module for the following weeks. You can run the following code in your computer to get prepared for the following weeks. Note that you only have to run the following code once to install the necessary packages.</p>
+<p>If you are having troubles about installing these packages in your computer, I highly recommend using a Kaggle R notebook which these packages are already installed (I will give more information about this in class).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Install the reticulate package</span></span>
@@ -3007,9 +2937,7 @@ in class).</p>
 <span><span class='fu'>install_miniconda</span><span class='op'>(</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>Once you install the reticulate package, run the following code to
-get python configurations and make sure everything is properly
-installed.</p>
+<p>Once you install the reticulate package, run the following code to get python configurations and make sure everything is properly installed.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Load the reticulate package</span></span>
@@ -3020,16 +2948,18 @@ installed.</p>
 </div>
 <pre><code>          name
 1    Anaconda3
-2 r-reticulate
+2           st
+3     Anacond3
+4       openai
+5 r-reticulate
                                                                           python
 1                                       C:\\Users\\cengiz\\Anaconda3\\python.exe
-2 C:\\Users\\cengiz\\AppData\\Local\\r-miniconda\\envs\\r-reticulate\\python.exe</code></pre>
+2                             C:\\Users\\cengiz\\Anaconda3\\envs\\st\\python.exe
+3     C:\\Users\\cengiz\\AppData\\Local\\r-miniconda\\envs\\Anacond3\\python.exe
+4       C:\\Users\\cengiz\\AppData\\Local\\r-miniconda\\envs\\openai\\python.exe
+5 C:\\Users\\cengiz\\AppData\\Local\\r-miniconda\\envs\\r-reticulate\\python.exe</code></pre>
 </div>
-<p>You should see <code>r-reticulate</code> under the name column as one
-of your virtual Python environment. Finally, you will also need to
-install the sentence transformers module. The following code will
-install the sentence transformers module to the virtual Python
-environment <code>r-reticulate</code>.</p>
+<p>You should see <code>r-reticulate</code> under the name column as one of your virtual Python environment. Finally, you will also need to install the sentence transformers module. The following code will install the sentence transformers module to the virtual Python environment <code>r-reticulate</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Install the sentence transformer module </span></span>
@@ -3045,10 +2975,7 @@ environment <code>r-reticulate</code>.</p>
 <pre class="sourceCode r"><code class="sourceCode r"><span>  <span class='co'># try pip=FALSE, if it gives an error message</span></span></code></pre>
 </div>
 </div>
-<p>Once you install the Python packages using the code above, you can
-run the following code. If you are seeing the same output as below, you
-should be all set to explore some very exciting NLP tools using the
-Readability dataset.</p>
+<p>Once you install the Python packages using the code above, you can run the following code. If you are seeing the same output as below, you should be all set to explore some very exciting NLP tools using the Readability dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/rstudio/reticulate'>reticulate</a></span><span class='op'>)</span></span>
@@ -3059,8 +2986,7 @@ Readability dataset.</p>
 </div>
 <pre><code>Module(sentence_transformers)</code></pre>
 </div>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -3083,7 +3009,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

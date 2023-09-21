@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2548,29 +2555,16 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#how-many-parameters-does-it-take-to-draw-an-elephant"
-id="toc-how-many-parameters-does-it-take-to-draw-an-elephant">How many
-parameters does it take to draw an elephant?</a></li>
-<li><a href="#the-principle-of-parsimony"
-id="toc-the-principle-of-parsimony">The Principle of Parsimony</a>
+<li><a href="#how-many-parameters-does-it-take-to-draw-an-elephant" id="toc-how-many-parameters-does-it-take-to-draw-an-elephant">How many parameters does it take to draw an elephant?</a></li>
+<li><a href="#the-principle-of-parsimony" id="toc-the-principle-of-parsimony">The Principle of Parsimony</a>
 <ul>
-<li><a href="#bias---variance-tradeoff"
-id="toc-bias---variance-tradeoff">Bias - Variance Tradeoff</a></li>
-<li><a href="#bias-and-variance-of-model-predictions"
-id="toc-bias-and-variance-of-model-predictions">Bias and Variance of
-Model Predictions</a></li>
-<li><a href="#moral-of-the-story-underfitting-vs.-overfitting"
-id="toc-moral-of-the-story-underfitting-vs.-overfitting">Moral of the
-Story: Underfitting vs. Overfitting</a></li>
-<li><a href="#facing-the-reality" id="toc-facing-the-reality">Facing the
-Reality</a></li>
+<li><a href="#bias---variance-tradeoff" id="toc-bias---variance-tradeoff">Bias - Variance Tradeoff</a></li>
+<li><a href="#bias-and-variance-of-model-predictions" id="toc-bias-and-variance-of-model-predictions">Bias and Variance of Model Predictions</a></li>
+<li><a href="#moral-of-the-story-underfitting-vs.-overfitting" id="toc-moral-of-the-story-underfitting-vs.-overfitting">Moral of the Story: Underfitting vs. Overfitting</a></li>
+<li><a href="#facing-the-reality" id="toc-facing-the-reality">Facing the Reality</a></li>
 </ul></li>
-<li><a
-href="#use-of-resampling-methods-to-balance-model-bias-and-model-variance"
-id="toc-use-of-resampling-methods-to-balance-model-bias-and-model-variance">Use
-of Resampling Methods to Balance Model Bias and Model Variance</a></li>
-<li><a href="#back-to-the-elephant" id="toc-back-to-the-elephant">Back
-to the Elephant</a></li>
+<li><a href="#use-of-resampling-methods-to-balance-model-bias-and-model-variance" id="toc-use-of-resampling-methods-to-balance-model-bias-and-model-variance">Use of Resampling Methods to Balance Model Bias and Model Variance</a></li>
+<li><a href="#back-to-the-elephant" id="toc-back-to-the-elephant">Back to the Elephant</a></li>
 </ul>
 </nav>
 </div>
@@ -2592,77 +2586,28 @@ to the Elephant</a></li>
 
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:05:30 ]</p>
-<h1 id="how-many-parameters-does-it-take-to-draw-an-elephant">How many
-parameters does it take to draw an elephant?</h1>
-<p>Once upon a time, two physicists met, and one convinced the other
-that the agreement between some model-based calculations and measured
-experimental numbers was only superficial. In that conversation, von
-Neumann was quoted as saying this famous phrase <em>“… with four
-parameters I can fit an elephant, and with five I can make him wiggle
-his trunk.”</em> <a href="https://www.nature.com/articles/427297a">You
-can read the full story here.</a></p>
-<p>Since then, several people have tried to develop mathematical models
-that can draw an elephant with as few parameters as possible. It has
-become an exciting activity when people want to make a point about how
-complex of a model one would need to understand what we observe in the
-real world.</p>
-<p>Now, we will join them. See the following plot that has several data
-points. Would you say there is an elephant there? Can you develop a
-mathematical model to fit these data points? How complex would that
-model be? How many parameters would you need?</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:32:30 ]</p>
+<h1 id="how-many-parameters-does-it-take-to-draw-an-elephant">How many parameters does it take to draw an elephant?</h1>
+<p>Once upon a time, two physicists met, and one convinced the other that the agreement between some model-based calculations and measured experimental numbers was only superficial. In that conversation, von Neumann was quoted as saying this famous phrase <em>“… with four parameters I can fit an elephant, and with five I can make him wiggle his trunk.”</em> <a href="https://www.nature.com/articles/427297a">You can read the full story here.</a></p>
+<p>Since then, several people have tried to develop mathematical models that can draw an elephant with as few parameters as possible. It has become an exciting activity when people want to make a point about how complex of a model one would need to understand what we observe in the real world.</p>
+<p>Now, we will join them. See the following plot that has several data points. Would you say there is an elephant there? Can you develop a mathematical model to fit these data points? How complex would that model be? How many parameters would you need?</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/elephant.png" width="380" style="display: block; margin: auto;" /></p>
 </div>
-<p>Below is a web application with such a model. You can increase the
-number of parameters in this model from 1 to 70, and the model
-predictions will start to look like an elephant. Our quick exploration
-aims to find the number of parameters you would use to model an
-elephant. Start manipulating the <strong>p</strong> (number of
-parameters) and examine how the model predicted contour changes. Stop
-when you believe you can convince someone else that it looks like an
-elephant.</p>
-<p><a href="https://kourentzes.shinyapps.io/FitElephant/"
-class="uri">https://kourentzes.shinyapps.io/FitElephant/</a></p>
+<p>Below is a web application with such a model. You can increase the number of parameters in this model from 1 to 70, and the model predictions will start to look like an elephant. Our quick exploration aims to find the number of parameters you would use to model an elephant. Start manipulating the <strong>p</strong> (number of parameters) and examine how the model predicted contour changes. Stop when you believe you can convince someone else that it looks like an elephant.</p>
+<p><a href="https://kourentzes.shinyapps.io/FitElephant/" class="uri">https://kourentzes.shinyapps.io/FitElephant/</a></p>
 <h1 id="the-principle-of-parsimony">The Principle of Parsimony</h1>
 <h2 id="bias---variance-tradeoff">Bias - Variance Tradeoff</h2>
-<p>When we use a model to predict an outcome, there are two primary
-sources of error: model error and sampling error.</p>
-<p><strong>Model Error</strong>: Given that no model is a complete
-representation of truth underlying observed data, every model is
-misspecified. Conceptually, we can define the model error as the
-distance between the model and the true generating mechanism underlying
-data. Technically, for a given set of predictors, it is the difference
-between the expected value predicted by the model and the true value
-underlying data. The term <strong>bias</strong> is also commonly used
-for model error.</p>
-<p><strong>Sampling Error</strong>: Given that the amount of data is
-fixed during any modeling process, it will decrease the stability of
-parameter estimates for models with increasing complexity across samples
-drawn from the same population. Consequently, this will increase the
-variance of predictions (more variability of a predicted value across
-different samples) for a given set of the same predictors. The terms
-<strong>estimation error</strong> or <strong>variance</strong> is also
-used for sampling error.</p>
-<p>The essence of any modeling activity is to balance these two sources
-of error and find a stable model (generalizable across different
-samples) with the least amount of bias.</p>
-<h2 id="bias-and-variance-of-model-predictions">Bias and Variance of
-Model Predictions</h2>
-<p>We will do a simple Monte Carlo experimentation to understand these
-two sources of error better. Suppose that there is a true generating
-model underlying some observed data. This model is</p>
+<p>When we use a model to predict an outcome, there are two primary sources of error: model error and sampling error.</p>
+<p><strong>Model Error</strong>: Given that no model is a complete representation of truth underlying observed data, every model is misspecified. Conceptually, we can define the model error as the distance between the model and the true generating mechanism underlying data. Technically, for a given set of predictors, it is the difference between the expected value predicted by the model and the true value underlying data. The term <strong>bias</strong> is also commonly used for model error.</p>
+<p><strong>Sampling Error</strong>: Given that the amount of data is fixed during any modeling process, it will decrease the stability of parameter estimates for models with increasing complexity across samples drawn from the same population. Consequently, this will increase the variance of predictions (more variability of a predicted value across different samples) for a given set of the same predictors. The terms <strong>estimation error</strong> or <strong>variance</strong> is also used for sampling error.</p>
+<p>The essence of any modeling activity is to balance these two sources of error and find a stable model (generalizable across different samples) with the least amount of bias.</p>
+<h2 id="bias-and-variance-of-model-predictions">Bias and Variance of Model Predictions</h2>
+<p>We will do a simple Monte Carlo experimentation to understand these two sources of error better. Suppose that there is a true generating model underlying some observed data. This model is</p>
 <p><span class="math display">\[
 y = e^{(x-0.3)^2} - 1 + \epsilon,
 \]</span></p>
-<p>where <span class="math inline">\(x\)</span> is a predictor variable
-equally spaced and ranges from 0 to 1, <span
-class="math inline">\(\epsilon\)</span> is a random error component. The
-errors follow a normal distribution with a mean of zero and a standard
-deviation of 0.1, and <span class="math inline">\(y\)</span> is the
-outcome variable. Suppose we simulate a small observed data following
-this model with a sample size of 20. Then, we use a straightforward
-linear model to represent the observed simulated data.</p>
+<p>where <span class="math inline">\(x\)</span> is a predictor variable equally spaced and ranges from 0 to 1, <span class="math inline">\(\epsilon\)</span> is a random error component. The errors follow a normal distribution with a mean of zero and a standard deviation of 0.1, and <span class="math inline">\(y\)</span> is the outcome variable. Suppose we simulate a small observed data following this model with a sample size of 20. Then, we use a straightforward linear model to represent the observed simulated data.</p>
 <p><span class="math display">\[
 y = \beta_0 + \beta_1x + \epsilon
 \]</span></p>
@@ -2724,19 +2669,8 @@ Coefficients:
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-3b_files/figure-html5/unnamed-chunk-3-1.png" width="576" style="display: block; margin: auto;" /></p>
 </div>
-<p>The solid line in this plot represents the true nature of the
-relationship between <span class="math inline">\(x\)</span> and <span
-class="math inline">\(y\)</span>. The observed data points do not lie on
-this line due to the random error component (noise). If we use a simple
-linear model, the gray dashed line represents the predicted relationship
-between <span class="math inline">\(x\)</span> and <span
-class="math inline">\(y\)</span>.</p>
-<p>This demonstration only represents a single dataset. Now, suppose
-that we repeat the same process ten times. We will produce ten different
-datasets with the same size (N=20) using the same predictor values
-(<span class="math inline">\(x\)</span>) and true data generating model.
-Then, we will fit a simple linear model to each of these ten
-datasets.</p>
+<p>The solid line in this plot represents the true nature of the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. The observed data points do not lie on this line due to the random error component (noise). If we use a simple linear model, the gray dashed line represents the predicted relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>.</p>
+<p>This demonstration only represents a single dataset. Now, suppose that we repeat the same process ten times. We will produce ten different datasets with the same size (N=20) using the same predictor values (<span class="math inline">\(x\)</span>) and true data generating model. Then, we will fit a simple linear model to each of these ten datasets.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>09282021</span><span class='op'>)</span></span>
@@ -2776,14 +2710,7 @@ datasets.</p>
 </div>
 <p><img src="lecture-3b_files/figure-html5/unnamed-chunk-5-1.png" width="576" style="display: block; margin: auto;" /></p>
 </div>
-<p>The solid line again represents the true nature of the relationship
-between <span class="math inline">\(x\)</span> and <span
-class="math inline">\(y\)</span>. There are ten lines (gray, dashed),
-and each line represents a simple linear model fitted to a different
-dataset simulated using the same data generating mechanism. The table
-below provides a more detailed look at the fitted values from each
-replication for every single <span class="math inline">\(x\)</span>
-value.</p>
+<p>The solid line again represents the true nature of the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>. There are ten lines (gray, dashed), and each line represents a simple linear model fitted to a different dataset simulated using the same data generating mechanism. The table below provides a more detailed look at the fitted values from each replication for every single <span class="math inline">\(x\)</span> value.</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class=" lightable-minimal table table-striped table-hover table-condensed table-responsive" style="font-family: &quot;Trebuchet MS&quot;, verdana, sans-serif; margin-left: auto; margin-right: auto; font-size: 10px; margin-left: auto; margin-right: auto;">
 <thead>
@@ -3730,26 +3657,10 @@ SD
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>For instance, when the <span class="math inline">\(x\)</span> is
-equal to 0, the true value of <span class="math inline">\(y\)</span>
-based on the model would be 0.094. However, when we fit a linear model
-to 10 different datasets with the underlying true model, the average
-predicted value was -.107 with a standard deviation of 0.047 across ten
-replications. Similarly, when the <span class="math inline">\(x\)</span>
-is equal to 0.316, the true value of <span
-class="math inline">\(y\)</span> based on the model would be 0, but the
-average prediction was 0.059 with a standard deviation of 0.032 across
-ten replications. A linear model provides biased estimates such that
-there is an underestimation at the lower values of <span
-class="math inline">\(x\)</span> and higher values of <span
-class="math inline">\(x\)</span>. At the same time, there is an
-overestimation in the middle of the range of <span
-class="math inline">\(x\)</span>.</p>
-<p>Let’s do the same experiment by fitting a more complex 6th-degree
-polynomial to the same datasets with the same underlying true model.</p>
+<p>For instance, when the <span class="math inline">\(x\)</span> is equal to 0, the true value of <span class="math inline">\(y\)</span> based on the model would be 0.094. However, when we fit a linear model to 10 different datasets with the underlying true model, the average predicted value was -.107 with a standard deviation of 0.047 across ten replications. Similarly, when the <span class="math inline">\(x\)</span> is equal to 0.316, the true value of <span class="math inline">\(y\)</span> based on the model would be 0, but the average prediction was 0.059 with a standard deviation of 0.032 across ten replications. A linear model provides biased estimates such that there is an underestimation at the lower values of <span class="math inline">\(x\)</span> and higher values of <span class="math inline">\(x\)</span>. At the same time, there is an overestimation in the middle of the range of <span class="math inline">\(x\)</span>.</p>
+<p>Let’s do the same experiment by fitting a more complex 6th-degree polynomial to the same datasets with the same underlying true model.</p>
 <p><span class="math display">\[
-y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 +
-\beta_5 x^5 + \beta_6 x^6 + \epsilon
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + \beta_6 x^6 + \epsilon
 \]</span></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -4741,40 +4652,30 @@ SD
 <center style="color:black;">
 <strong>DISCUSSION</strong>
 </center>
-<p>Compare the numbers in these two tables and discuss the differences
-you observe. What happened to predictions when you fit a more complex
-model (6th-degree polynomial) instead of a simple regression model? You
-can examine the following plot that displays the average and range of
-predictions across 10 replications for every value of <span
-class="math inline">\(x\)</span>.</p>
+<p>Compare the numbers in these two tables and discuss the differences you observe. What happened to predictions when you fit a more complex model (6th-degree polynomial) instead of a simple regression model? You can examine the following plot that displays the average and range of predictions across 10 replications for every value of <span class="math inline">\(x\)</span>.</p>
 </div>
 <hr />
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-3b_files/figure-html5/unnamed-chunk-12-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
-<p>We can expand our experiment and examine a range of models from
-linear to the 6th-degree polynomial. The following plots display what
-you would see if you repeated this experiment by fitting a linear model,
-quadratic, cubic, quartic, quintic, and sextic model to the same
-simulated datasets with the same underlying model. A table follows these
-plots that present the bias and standard deviation of predictions across
-ten replications for comparisons.</p>
+<p>We can expand our experiment and examine a range of models from linear to the 6th-degree polynomial. The following plots display what you would see if you repeated this experiment by fitting a linear model, quadratic, cubic, quartic, quintic, and sextic model to the same simulated datasets with the same underlying model. A table follows these plots that present the bias and standard deviation of predictions across ten replications for comparisons.</p>
 <p><span class="math display">\[
 y = \beta_0 + \beta_1x + \epsilon
-\]</span> <span class="math display">\[
+\]</span>
+<span class="math display">\[
 y = \beta_0 + \beta_1x + \beta_2 x^2 + \epsilon
-\]</span> <span class="math display">\[
+\]</span>
+<span class="math display">\[
 y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \epsilon
-\]</span> <span class="math display">\[
-y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 +
-\epsilon
-\]</span> <span class="math display">\[
-y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 +
-\beta_5 x^5  + \epsilon
+\]</span>
+<span class="math display">\[
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \epsilon
+\]</span>
+<span class="math display">\[
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5  + \epsilon
 \]</span></p>
 <span class="math display">\[
-y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 +
-\beta_5 x^5 + \beta_6 x^6 + \epsilon
+y = \beta_0 + \beta_1x + \beta_2 x^2 + \beta_3 x^3 + \beta_4 x^4 + \beta_5 x^5 + \beta_6 x^6 + \epsilon
 \]</span>
 <div class="layout-chunk" data-layout="l-body">
 
@@ -5759,43 +5660,13 @@ SD
 <center style="color:black;">
 <strong>DISCUSSION</strong>
 </center>
-<p>If you had to choose one of these models for one of the simulated
-datasets, which one would you choose? Why?</p>
+<p>If you had to choose one of these models for one of the simulated datasets, which one would you choose? Why?</p>
 </div>
 <hr />
-<h2 id="moral-of-the-story-underfitting-vs.-overfitting">Moral of the
-Story: Underfitting vs. Overfitting</h2>
-<p>Large model bias happens when we underfit and do not use all the
-information available in the dataset. An example of underfitting for the
-experimentation above would be using a linear model to represent the
-relationship between <span class="math inline">\(x\)</span> and <span
-class="math inline">\(y\)</span> for one of the sample datasets. Note
-that there is always a model bias to some degree for all these six
-models because none of them is the true model. However, it is the most
-obvious for the linear model that doesn’t account for nonlinearity in
-the dataset. On the other hand, you can see that the linear model is the
-most robust to sampling variation. It is the most stable and provides
-the most consistent predictions for different datasets (more minor
-variation in predictions across ten replications).</p>
-<p>Large model variance happens when we overfit and try to extract more
-information than available in the dataset. An example of overfitting for
-the experimentation above would be using any model beyond the quadratic
-model. When this happens, we start modeling noise (error) in the sample
-dataset as if it provides some helpful information. In contrast, such
-information is unique to a specific sample dataset, and there is no
-guarantee that it will be replicable for other samples from the same
-population. Notice that the bias does not improve much for models beyond
-the quadratic model; however, the variance of predictions keeps
-increasing for more complex models. In other words, more complex models
-are less stable and not robust to sampling variation. The predictions
-from more complex models tend to vary more from sample to sample,
-although they are less biased. In other words, there is less confidence
-that the model will be generalizable for observations outside our
-sample.</p>
-<p>Could you find that sweet model that provides a reasonable
-representation of data and a reasonable amount of generalizability
-(consistent/stable predictions for observations other than the ones you
-used to develop the model)?</p>
+<h2 id="moral-of-the-story-underfitting-vs.-overfitting">Moral of the Story: Underfitting vs. Overfitting</h2>
+<p>Large model bias happens when we underfit and do not use all the information available in the dataset. An example of underfitting for the experimentation above would be using a linear model to represent the relationship between <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> for one of the sample datasets. Note that there is always a model bias to some degree for all these six models because none of them is the true model. However, it is the most obvious for the linear model that doesn’t account for nonlinearity in the dataset. On the other hand, you can see that the linear model is the most robust to sampling variation. It is the most stable and provides the most consistent predictions for different datasets (more minor variation in predictions across ten replications).</p>
+<p>Large model variance happens when we overfit and try to extract more information than available in the dataset. An example of overfitting for the experimentation above would be using any model beyond the quadratic model. When this happens, we start modeling noise (error) in the sample dataset as if it provides some helpful information. In contrast, such information is unique to a specific sample dataset, and there is no guarantee that it will be replicable for other samples from the same population. Notice that the bias does not improve much for models beyond the quadratic model; however, the variance of predictions keeps increasing for more complex models. In other words, more complex models are less stable and not robust to sampling variation. The predictions from more complex models tend to vary more from sample to sample, although they are less biased. In other words, there is less confidence that the model will be generalizable for observations outside our sample.</p>
+<p>Could you find that sweet model that provides a reasonable representation of data and a reasonable amount of generalizability (consistent/stable predictions for observations other than the ones you used to develop the model)?</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/bias-variance.png" width="843" style="display: block; margin: auto;" /></p>
 </div>
@@ -5803,76 +5674,18 @@ used to develop the model)?</p>
 
 </div>
 <h2 id="facing-the-reality">Facing the Reality</h2>
-<p>When try to understand/predict a phenomenon measured in some way in
-social and behavioral sciences, there is probably not a true model we
-can use as a reference to understand the bias and variance of our
-predictions, as we had in our experimentation above. If there is such a
-thing that is a ‘true model,’ it is probably a very complex system with
-many, many variables that affect the measured outcome variable. It would
-be reasonable to acknowledge that there are some variables with
-relatively larger important effects, there are many variables with small
-effects, and many others with tapering smaller effects, and the
-interactions among all these variables. Our models are just
-approximations of this whole reality.</p>
-<p>Since we have a fixed amount of data, we only have limited
-information and can reveal these effects only to a certain degree. The
-more data we have, the more and smaller effects we can detect and
-separate from noise. So, the complexity of the model we can afford is
-limited to the amount of data and information available in the data. The
-most challenging part of any modeling activity is finding the amount of
-complexity we can afford with the sample data at hand and a model that
-can perform well enough for out-of-sample observations.</p>
-<h1
-id="use-of-resampling-methods-to-balance-model-bias-and-model-variance">Use
-of Resampling Methods to Balance Model Bias and Model Variance</h1>
-<p>Certain strategies are applied to avoid overfitting and find the
-sweet spot between model bias and model variance. This process is nicely
-illustrated in <a
-href="https://bradleyboehmke.github.io/HOML/process.html">Boehmke and
-Greenwell (2020, Figure 2.1)</a></p>
+<p>When try to understand/predict a phenomenon measured in some way in social and behavioral sciences, there is probably not a true model we can use as a reference to understand the bias and variance of our predictions, as we had in our experimentation above. If there is such a thing that is a ‘true model,’ it is probably a very complex system with many, many variables that affect the measured outcome variable. It would be reasonable to acknowledge that there are some variables with relatively larger important effects, there are many variables with small effects, and many others with tapering smaller effects, and the interactions among all these variables. Our models are just approximations of this whole reality.</p>
+<p>Since we have a fixed amount of data, we only have limited information and can reveal these effects only to a certain degree. The more data we have, the more and smaller effects we can detect and separate from noise. So, the complexity of the model we can afford is limited to the amount of data and information available in the data. The most challenging part of any modeling activity is finding the amount of complexity we can afford with the sample data at hand and a model that can perform well enough for out-of-sample observations.</p>
+<h1 id="use-of-resampling-methods-to-balance-model-bias-and-model-variance">Use of Resampling Methods to Balance Model Bias and Model Variance</h1>
+<p>Certain strategies are applied to avoid overfitting and find the sweet spot between model bias and model variance. This process is nicely illustrated in <a href="https://bradleyboehmke.github.io/HOML/process.html">Boehmke and Greenwell (2020, Figure 2.1)</a></p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/modeling_process2.png" width="896" style="display: block; margin: auto;" /></p>
 </div>
-<p>We first split data into two main components: the training and test
-datasets. While there is no particular rule for the size of training and
-test datasets, it is common to see 80-20 or 70-30 splits based on the
-size of the original dataset. The training dataset is mainly used for
-exploring and model development, while the test set is mainly used to
-validate a final model’s performance. Different approaches may be used
-while doing the initial split of training and test datasets, such as
-<strong>simple random sampling</strong>, <strong>stratified
-sampling</strong>, or <strong>down-sampling/up-sampling</strong> for
-imbalanced data (typically happens for classification problems when
-there is a great imbalance among categories).</p>
-<p>Cross-validating the model performance within the training set during
-the exploration and model development is also a good strategy. It is
-typically done by creating multiple partitions within the training set
-and testing models on each partition while optimizing the parameters.
-There are different approaches for creating different partitions in the
-training dataset, such as <strong><em>k</em>-fold
-cross-validation</strong> or <strong>bootstrapping</strong>, but
-<em>k</em>-fold cross-validation is the most common. In <em>k</em>-fold
-cross-validation, the training sample is randomly partitioned into
-<em>k</em> sets of equal size. A model is fitted to <em>k</em>-1 folds,
-and the remaining fold is used to test the model performance. It can be
-repeated <em>k</em> times by treating a different fold as a hold-out
-set. Finally, the performance evaluation metric is aggregated (e.g.,
-average) across <em>k</em> replications to get a <em>k</em>-fold
-cross-validation estimate of the performance evaluation metric. Once the
-model is optimized, a final model is developed as a result of this
-cross-validation process. The final model is trained using the whole
-training data and evaluated one final time on the test dataset to
-measure the generalizability of model predictions.</p>
+<p>We first split data into two main components: the training and test datasets. While there is no particular rule for the size of training and test datasets, it is common to see 80-20 or 70-30 splits based on the size of the original dataset. The training dataset is mainly used for exploring and model development, while the test set is mainly used to validate a final model’s performance. Different approaches may be used while doing the initial split of training and test datasets, such as <strong>simple random sampling</strong>, <strong>stratified sampling</strong>, or <strong>down-sampling/up-sampling</strong> for imbalanced data (typically happens for classification problems when there is a great imbalance among categories).</p>
+<p>Cross-validating the model performance within the training set during the exploration and model development is also a good strategy. It is typically done by creating multiple partitions within the training set and testing models on each partition while optimizing the parameters. There are different approaches for creating different partitions in the training dataset, such as <strong><em>k</em>-fold cross-validation</strong> or <strong>bootstrapping</strong>, but <em>k</em>-fold cross-validation is the most common. In <em>k</em>-fold cross-validation, the training sample is randomly partitioned into <em>k</em> sets of equal size. A model is fitted to <em>k</em>-1 folds, and the remaining fold is used to test the model performance. It can be repeated <em>k</em> times by treating a different fold as a hold-out set. Finally, the performance evaluation metric is aggregated (e.g., average) across <em>k</em> replications to get a <em>k</em>-fold cross-validation estimate of the performance evaluation metric. Once the model is optimized, a final model is developed as a result of this cross-validation process. The final model is trained using the whole training data and evaluated one final time on the test dataset to measure the generalizability of model predictions.</p>
 <h1 id="back-to-the-elephant">Back to the Elephant</h1>
-<p>If you are curious more about drawing an elephant, <a
-href="https://aapt.scitation.org/doi/full/10.1119/1.3254017">a more
-recent paper by Mayer, Khairy, and Howard (2010)</a> provided a
-mathematical model that can draw an elephant with only four complex
-parameters (just like what von Neumann said). Below is an R code to
-reproduce their model using R.</p>
-<p>Even more, <a href="https://arxiv.org/abs/1904.12320">this paper by
-Boué (2019)</a> argues that you can approximate any dataset of any
-modality with a single parameter. Go figure!</p>
+<p>If you are curious more about drawing an elephant, <a href="https://aapt.scitation.org/doi/full/10.1119/1.3254017">a more recent paper by Mayer, Khairy, and Howard (2010)</a> provided a mathematical model that can draw an elephant with only four complex parameters (just like what von Neumann said). Below is an R code to reproduce their model using R.</p>
+<p>Even more, <a href="https://arxiv.org/abs/1904.12320">this paper by Boué (2019)</a> argues that you can approximate any dataset of any modality with a single parameter. Go figure!</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># 4 complex parameters</span></span>
@@ -5920,8 +5733,7 @@ modality with a single parameter. Go figure!</p>
 </div>
 <p><img src="lecture-3b_files/figure-html5/unnamed-chunk-21-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -5953,7 +5765,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

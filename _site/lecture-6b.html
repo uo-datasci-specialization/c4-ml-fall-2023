@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2546,44 +2553,24 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#decision-trees" id="toc-decision-trees">1. Decision
-Trees</a>
+<li><a href="#decision-trees" id="toc-decision-trees">1. Decision Trees</a>
 <ul>
-<li><a href="#basics-of-a-decision-tree"
-id="toc-basics-of-a-decision-tree">1.1. Basics of a decision tree</a>
+<li><a href="#basics-of-a-decision-tree" id="toc-basics-of-a-decision-tree">1.1. Basics of a decision tree</a>
 <ul>
-<li><a href="#tree-structure" id="toc-tree-structure">1.1.1. Tree
-Structure</a></li>
-<li><a href="#predictions" id="toc-predictions">1.1.2.
-Predictions</a></li>
-<li><a href="#loss-function" id="toc-loss-function">1.1.3. Loss
-function</a></li>
-<li><a href="#growing-a-tree" id="toc-growing-a-tree">1.1.4. Growing a
-tree</a></li>
-<li><a href="#pruning-a-tree" id="toc-pruning-a-tree">1.1.5. Pruning a
-tree</a></li>
+<li><a href="#tree-structure" id="toc-tree-structure">1.1.1. Tree Structure</a></li>
+<li><a href="#predictions" id="toc-predictions">1.1.2. Predictions</a></li>
+<li><a href="#loss-function" id="toc-loss-function">1.1.3. Loss function</a></li>
+<li><a href="#growing-a-tree" id="toc-growing-a-tree">1.1.4. Growing a tree</a></li>
+<li><a href="#pruning-a-tree" id="toc-pruning-a-tree">1.1.5. Pruning a tree</a></li>
 </ul></li>
-<li><a href="#growing-trees-with-the-rpart-function"
-id="toc-growing-trees-with-the-rpart-function">1.2. Growing trees with
-the <code>rpart()</code> function</a>
+<li><a href="#growing-trees-with-the-rpart-function" id="toc-growing-trees-with-the-rpart-function">1.2. Growing trees with the <code>rpart()</code> function</a>
 <ul>
-<li><a href="#a-simple-example" id="toc-a-simple-example">1.2.1. A
-simple example</a></li>
-<li><a href="#tree-pruning-by-increasing-the-complexity-parameter"
-id="toc-tree-pruning-by-increasing-the-complexity-parameter">1.2.2. Tree
-pruning by increasing the complexity parameter</a></li>
+<li><a href="#a-simple-example" id="toc-a-simple-example">1.2.1. A simple example</a></li>
+<li><a href="#tree-pruning-by-increasing-the-complexity-parameter" id="toc-tree-pruning-by-increasing-the-complexity-parameter">1.2.2. Tree pruning by increasing the complexity parameter</a></li>
 </ul></li>
 </ul></li>
-<li><a
-href="#predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain"
-id="toc-predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain">2.
-Predicting a continuous outcome with a Decision Tree via
-<code>caret:train()</code></a></li>
-<li><a
-href="#predicting-a-binary-outcome-with-a-decision-tree-via-carettrain"
-id="toc-predicting-a-binary-outcome-with-a-decision-tree-via-carettrain">3.
-Predicting a binary outcome with a Decision Tree via
-<code>caret:train()</code></a></li>
+<li><a href="#predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain" id="toc-predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain">2. Predicting a continuous outcome with a Decision Tree via <code>caret:train()</code></a></li>
+<li><a href="#predicting-a-binary-outcome-with-a-decision-tree-via-carettrain" id="toc-predicting-a-binary-outcome-with-a-decision-tree-via-carettrain">3. Predicting a binary outcome with a Decision Tree via <code>caret:train()</code></a></li>
 </ul>
 </nav>
 </div>
@@ -2605,10 +2592,9 @@ Predicting a binary outcome with a Decision Tree via
 
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:07:28 ]</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:35:04 ]</p>
 <h1 id="decision-trees">1. Decision Trees</h1>
-<p>We will again consider the toy readability dataset (N=20) we used to
-predict a readability score from Feature 220 and Feature 166</p>
+<p>We will again consider the toy readability dataset (N=20) we used to predict a readability score from Feature 220 and Feature 166</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>'./data/readability_sub.csv'</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
@@ -2639,120 +2625,48 @@ predict a readability score from Feature 220 and Feature 166</p>
 </div>
 <h2 id="basics-of-a-decision-tree">1.1. Basics of a decision tree</h2>
 <h3 id="tree-structure">1.1.1. Tree Structure</h3>
-<p>Let’s imagine a simple tree model to predict readability scores from
-Feature 220.</p>
+<p>Let’s imagine a simple tree model to predict readability scores from Feature 220.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt1.PNG" width="744" style="display: block; margin: auto;" /></p>
 </div>
-<p>This model splits the sample into two pieces using a <strong>split
-point</strong> of 0.2 for the predictor variable (Feature 220). There
-are 11 observations with Feature 220 less than 0.2 and nine with Feature
-220 larger than 0.2. The top of the tree model is called <strong>root
-node</strong>, and the <span class="math inline">\(R_1\)</span> and
-<span class="math inline">\(R_2\)</span> in this model are called
-<strong>terminal nodes</strong>. This model has two terminal nodes.
-There is a number assigned to each terminal node. These numbers are the
-average values for the target outcome (readability score) for those
-observations in that specific node. It can be symbolically shown as</p>
-<p><span class="math display">\[\bar{Y_t} = \frac{1}{n_t}\sum_{i\epsilon
-R_t} Y_i,\]</span></p>
-<p>where <span class="math inline">\(n_t\)</span> is the number of
-observations in a terminal node, and <span
-class="math inline">\(R_t\)</span> represents the set of observations in
-the <span class="math inline">\(t_{th}\)</span> node.</p>
-<p>There is also a concept of <strong>depth</strong> of a tree. The root
-node is counted as depth 0, and each split increases the depth of the
-tree by one. In this case, we can say that this tree model has a depth
-of one.</p>
-<p>We can increase the complexity of our tree model by splitting the
-first node into two more nodes using a split point of 0. Now, our model
-has a depth of two and a total of three terminal nodes. Each terminal
-node is assigned a score by computing the average outcome for those
-observations in that node.</p>
+<p>This model splits the sample into two pieces using a <strong>split point</strong> of 0.2 for the predictor variable (Feature 220). There are 11 observations with Feature 220 less than 0.2 and nine with Feature 220 larger than 0.2. The top of the tree model is called <strong>root node</strong>, and the <span class="math inline">\(R_1\)</span> and <span class="math inline">\(R_2\)</span> in this model are called <strong>terminal nodes</strong>. This model has two terminal nodes. There is a number assigned to each terminal node. These numbers are the average values for the target outcome (readability score) for those observations in that specific node. It can be symbolically shown as</p>
+<p><span class="math display">\[\bar{Y_t} = \frac{1}{n_t}\sum_{i\epsilon R_t} Y_i,\]</span></p>
+<p>where <span class="math inline">\(n_t\)</span> is the number of observations in a terminal node, and <span class="math inline">\(R_t\)</span> represents the set of observations in the <span class="math inline">\(t_{th}\)</span> node.</p>
+<p>There is also a concept of <strong>depth</strong> of a tree. The root node is counted as depth 0, and each split increases the depth of the tree by one. In this case, we can say that this tree model has a depth of one.</p>
+<p>We can increase the complexity of our tree model by splitting the first node into two more nodes using a split point of 0. Now, our model has a depth of two and a total of three terminal nodes. Each terminal node is assigned a score by computing the average outcome for those observations in that node.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt2.PNG" width="868" style="display: block; margin: auto;" /></p>
 </div>
-<p>The tree model can have nodes from splitting another variable. For
-instance, the model below first splits the observations based on Feature
-220, then based on Feature 166, yielding a tree model with three nodes
-with a depth of two. This tree model’s complexity is the same as the
-previous one’s; the only difference is that we have nodes from two
-predictors instead of one.</p>
+<p>The tree model can have nodes from splitting another variable. For instance, the model below first splits the observations based on Feature 220, then based on Feature 166, yielding a tree model with three nodes with a depth of two. This tree model’s complexity is the same as the previous one’s; the only difference is that we have nodes from two predictors instead of one.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt3.PNG" width="974" style="display: block; margin: auto;" /></p>
 </div>
-<p>A final example is another tree model with increasing complexity and
-having a depth of three and four nodes. It first splits observations
-based on whether or not Feature 220 is less than 0.2, then splits
-observations based on whether or not Feature 220 is less than 0, and
-finally splits observations based on whether or not Feature 166 is less
-than 0.1.</p>
+<p>A final example is another tree model with increasing complexity and having a depth of three and four nodes. It first splits observations based on whether or not Feature 220 is less than 0.2, then splits observations based on whether or not Feature 220 is less than 0, and finally splits observations based on whether or not Feature 166 is less than 0.1.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt4.PNG" width="890" style="display: block; margin: auto;" /></p>
 </div>
 <h3 id="predictions">1.1.2. Predictions</h3>
-<p>Suppose you developed a tree model and decided to use this model to
-make predictions for new observations. Let’s assume our model is the
-below. How do we use this model to make predictions for new
-observations?</p>
+<p>Suppose you developed a tree model and decided to use this model to make predictions for new observations. Let’s assume our model is the below. How do we use this model to make predictions for new observations?</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt4.PNG" width="890" style="display: block; margin: auto;" /></p>
 </div>
-<p>Suppose that there is a new reading passage to predict the
-readability score based on this tree model. The value for Feature 220
-for this new reading passage is - 0.5, and the value for Feature 166 is
-0.</p>
-<p>To predict the readability score for this reading passage, we must
-decide which node this passage would belong to in this tree model. You
-can trace a path starting from the <strong>root node</strong> (top of
-the tree) and see where this reading passage will end.</p>
-<p>As you can see below, this reading passage would be in the first node
-based on the observed values for these two predictors, and so we predict
-that the readability score for this new reading passage is equal to
--2.016.</p>
+<p>Suppose that there is a new reading passage to predict the readability score based on this tree model. The value for Feature 220 for this new reading passage is - 0.5, and the value for Feature 166 is 0.</p>
+<p>To predict the readability score for this reading passage, we must decide which node this passage would belong to in this tree model. You can trace a path starting from the <strong>root node</strong> (top of the tree) and see where this reading passage will end.</p>
+<p>As you can see below, this reading passage would be in the first node based on the observed values for these two predictors, and so we predict that the readability score for this new reading passage is equal to -2.016.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt5.PNG" width="502" style="display: block; margin: auto;" /></p>
 </div>
-<p>If we have another new reading passage with the value for Feature 220
-as 0.1 and Feature 166 as 0, then it would end up in the second node and
-we would predict the readability score as -0.691.</p>
+<p>If we have another new reading passage with the value for Feature 220 as 0.1 and Feature 166 as 0, then it would end up in the second node and we would predict the readability score as -0.691.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt6.PNG" width="468" style="display: block; margin: auto;" /></p>
 </div>
 <h3 id="loss-function">1.1.3. Loss function</h3>
-<p>When we fit a tree model, the algorithm decides the best split that
-minimizes the sum of squared errors. The sum of squared error from a
-tree model can be shown as</p>
-<p><span class="math display">\[ SSE = \sum_{t=1}^{T} \sum_{i \epsilon
-R_t} (Y_i - \hat{Y}_{R_{t}})^2,\]</span></p>
-<p>where <span class="math inline">\(T\)</span> is the total number of
-terminal nodes in the tree model, and <span
-class="math inline">\(\hat{Y}_{R_{t}}\)</span> is the prediction for the
-observations in the <span class="math inline">\(t^{th}\)</span> node
-(average target outcome for those observations in the <span
-class="math inline">\(t^{th}\)</span> node).</p>
+<p>When we fit a tree model, the algorithm decides the best split that minimizes the sum of squared errors. The sum of squared error from a tree model can be shown as</p>
+<p><span class="math display">\[ SSE = \sum_{t=1}^{T} \sum_{i \epsilon R_t} (Y_i - \hat{Y}_{R_{t}})^2,\]</span></p>
+<p>where <span class="math inline">\(T\)</span> is the total number of terminal nodes in the tree model, and <span class="math inline">\(\hat{Y}_{R_{t}}\)</span> is the prediction for the observations in the <span class="math inline">\(t^{th}\)</span> node (average target outcome for those observations in the <span class="math inline">\(t^{th}\)</span> node).</p>
 <h3 id="growing-a-tree">1.1.4. Growing a tree</h3>
-<p>Deciding on a root node and then growing a tree model from that root
-node can become computationally exhaustive depending on the size of the
-dataset and the number of variables. The decision tree algorithm
-searches all variables designated as predictors in the dataset at all
-possible split points for these variables, calculates the SSE for all
-possible splits, and then finds the split that would reduce the
-prediction error the most. The search continues by growing the tree
-model sequentially until there is no more split left that would give
-better predictions.</p>
-<p>I will demonstrate the logic of this search process with the toy
-dataset (N=20) and two predictor variables: Feature 220 and Feature 166.
-Before we start our search process, we should come up with a baseline
-SSE to decide whether any future split will improve our predictions. We
-can imagine that a model with no split and using the mean of all 20
-observations to predict the target outcome is the simplest baseline
-model. So, if we compute the sum of squared residuals assuming that we
-predict every observation with the mean of these 20 observations, that
-could be a baseline measure. As you see below, if we use the mean target
-score as our prediction for the 20 observations, the sum of squared
-residuals would be 17.73. We will improve this number over the baseline
-by growing a tree model.</p>
+<p>Deciding on a root node and then growing a tree model from that root node can become computationally exhaustive depending on the size of the dataset and the number of variables. The decision tree algorithm searches all variables designated as predictors in the dataset at all possible split points for these variables, calculates the SSE for all possible splits, and then finds the split that would reduce the prediction error the most. The search continues by growing the tree model sequentially until there is no more split left that would give better predictions.</p>
+<p>I will demonstrate the logic of this search process with the toy dataset (N=20) and two predictor variables: Feature 220 and Feature 166. Before we start our search process, we should come up with a baseline SSE to decide whether any future split will improve our predictions. We can imagine that a model with no split and using the mean of all 20 observations to predict the target outcome is the simplest baseline model. So, if we compute the sum of squared residuals assuming that we predict every observation with the mean of these 20 observations, that could be a baseline measure. As you see below, if we use the mean target score as our prediction for the 20 observations, the sum of squared residuals would be 17.73. We will improve this number over the baseline by growing a tree model.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># average outcome</span></span>
@@ -2766,25 +2680,17 @@ by growing a tree model.</p>
 <pre><code>[1] 17.73309</code></pre>
 </div>
 <h4 id="find-the-root-node">Find the root node</h4>
-<p>The first step in building the tree model is to find the root node.
-In this case, we have two candidates for the root node: Feature 220 and
-Feature 166. We want to know which predictor should be the root node and
-what value we should use to split to improve the baseline SSE the most.
-The following is what the process would look</p>
+<p>The first step in building the tree model is to find the root node. In this case, we have two candidates for the root node: Feature 220 and Feature 166. We want to know which predictor should be the root node and what value we should use to split to improve the baseline SSE the most. The following is what the process would look</p>
 <ol type="1">
 <li><p>Pick a split point</p></li>
-<li><p>Divide 20 observations into two nodes based on the split
-point</p></li>
-<li><p>Calculate the average target outcome within each node as
-predictions for the observations in that node</p></li>
-<li><p>Calculate SSE within each node using the predictions from Step 3,
-and sum them all across two nodes.</p></li>
-<li><p>Repeat Steps 1 - 4 for every possible split point, and find the
-best split point with the minimum SSE</p></li>
+<li><p>Divide 20 observations into two nodes based on the split point</p></li>
+<li><p>Calculate the average target outcome within each node as predictions for the
+observations in that node</p></li>
+<li><p>Calculate SSE within each node using the predictions from Step 3, and sum them all across two nodes.</p></li>
+<li><p>Repeat Steps 1 - 4 for every possible split point, and find the best split point with the minimum SSE</p></li>
 <li><p>Repeat Steps 1 - 5 for every possible predictor.</p></li>
 </ol>
-<p>The code below implements Step 1 - Step 5 for the predictor
-<strong>Feature 220</strong>.</p>
+<p>The code below implements Step 1 - Step 5 for the predictor <strong>Feature 220</strong>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>splits1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>0.24</span>,<span class='fl'>0.56</span>,<span class='fl'>0.001</span><span class='op'>)</span></span>
@@ -2820,13 +2726,8 @@ best split point with the minimum SSE</p></li>
 </div>
 <pre><code>[1] 12.1976</code></pre>
 </div>
-<p>The search process indicates that the best split point for Feature
-220 is -0.026. If we divide the observations into two nodes based on
-Feature 220 using the split point -0.026, SSE would be equal to 12.20, a
-significant improvement over the baseline model.</p>
-<p>We will now repeat the same process for Feature 166. The code below
-implements Step 1 - Step 5 for the predictor <strong>Feature
-166</strong>.</p>
+<p>The search process indicates that the best split point for Feature 220 is -0.026. If we divide the observations into two nodes based on Feature 220 using the split point -0.026, SSE would be equal to 12.20, a significant improvement over the baseline model.</p>
+<p>We will now repeat the same process for Feature 166. The code below implements Step 1 - Step 5 for the predictor <strong>Feature 166</strong>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>splits2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span><span class='op'>-</span><span class='fl'>0.02</span>,<span class='fl'>0.22</span>,<span class='fl'>.001</span><span class='op'>)</span></span>
@@ -2862,38 +2763,24 @@ implements Step 1 - Step 5 for the predictor <strong>Feature
 </div>
 <pre><code>[1] 16.62429</code></pre>
 </div>
-<p>The search process indicates that the best split point for Feature
-166 is 0.19. If we divide the observations into two nodes based on
-Feature 166 using the split point 0.19, SSE would be equal to 16.62,
-also an improvement over the baseline model.</p>
-<p>We have two choices for the <strong>root node</strong> (because we
-assume we only have two predictors):</p>
+<p>The search process indicates that the best split point for Feature 166 is 0.19. If we divide the observations into two nodes based on Feature 166 using the split point 0.19, SSE would be equal to 16.62, also an improvement over the baseline model.</p>
+<p>We have two choices for the <strong>root node</strong> (because we assume we only have two predictors):</p>
 <ul>
 <li>Feature 220, Best split point = -0.026, SSE = 12.20</li>
 <li>Feature 166, Best split point = 0.189, SSE = 16.62</li>
 </ul>
-<p>Both options improve our predictions over the baseline (SSE = 17.73),
-but one is better. Therefore, our final decision to start growing our
-tree is to pick Feature 220 as our <strong>root node</strong> and split
-it at -0.07. Our tree model starts growing!</p>
+<p>Both options improve our predictions over the baseline (SSE = 17.73), but one is better. Therefore, our final decision to start growing our tree is to pick Feature 220 as our <strong>root node</strong> and split it at -0.07. Our tree model starts growing!</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt7.PNG" width="556" style="display: block; margin: auto;" /></p>
 </div>
-<p>Now, we have to decide if we should add another split to either one
-of these two nodes. There are now four possible split scenarios.</p>
+<p>Now, we have to decide if we should add another split to either one of these two nodes. There are now four possible split scenarios.</p>
 <ol type="1">
-<li><p>For the first terminal node on the left, we can split the
-observations based on Feature 220.</p></li>
-<li><p>For the first terminal node on the left, we can split the
-observations based on Feature 166.</p></li>
-<li><p>For the second terminal node on the right, we can split the
-observations based on Feature 220.</p></li>
-<li><p>For the second terminal node on the right, we can split the
-observations based on Feature 166.</p></li>
+<li><p>For the first terminal node on the left, we can split the observations based on Feature 220.</p></li>
+<li><p>For the first terminal node on the left, we can split the observations based on Feature 166.</p></li>
+<li><p>For the second terminal node on the right, we can split the observations based on Feature 220.</p></li>
+<li><p>For the second terminal node on the right, we can split the observations based on Feature 166.</p></li>
 </ol>
-<p>For each of these scenarios, we can implement Step 1 - Step 4,
-identifying the best split point and what SSE that split yields. The
-code below implements these steps for all four scenarios.</p>
+<p>For each of these scenarios, we can implement Step 1 - Step 4, identifying the best split point and what SSE that split yields. The code below implements these steps for all four scenarios.</p>
 <p><strong>Scenario 1:</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3054,71 +2941,32 @@ code below implements these steps for all four scenarios.</p>
 </div>
 <pre><code>[1] 9.964654</code></pre>
 </div>
-<p>Based on our search, the following splits provided the least
-SSEs:</p>
+<p>Based on our search, the following splits provided the least SSEs:</p>
 <ol type="1">
-<li><p>1st terminal node, Split variable: Feature220, Split Point:
--0.19, SSE = 8.01</p></li>
-<li><p>1st terminal node, Split variable: Feature166, Split Point:
-0.066, SSE = 8.01</p></li>
-<li><p>2nd terminal node, Split variable: Feature220, Split Point:
-0.178, SSE = 10.94</p></li>
-<li><p>2nd terminal node, Split variable: Feature166, Split Point:
-0.067, SSE = 9.96</p></li>
+<li><p>1st terminal node, Split variable: Feature220, Split Point: -0.19, SSE = 8.01</p></li>
+<li><p>1st terminal node, Split variable: Feature166, Split Point: 0.066, SSE = 8.01</p></li>
+<li><p>2nd terminal node, Split variable: Feature220, Split Point: 0.178, SSE = 10.94</p></li>
+<li><p>2nd terminal node, Split variable: Feature166, Split Point: 0.067, SSE = 9.96</p></li>
 </ol>
-<p>We can decide to continue with either Scenario 1 or 2 because they
-yield the minimum SSE. Assuming we decide Scenario 1, our tree model now
-looks like this.</p>
+<p>We can decide to continue with either Scenario 1 or 2 because they yield the minimum SSE. Assuming we decide Scenario 1, our tree model now looks like this.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/dt8.PNG" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <h4 id="termination-of-growth">Termination of Growth</h4>
-<p>The search process continues until a specific criterion is met to
-stop the algorithm. There may be several conditions where we may
-constrain the growth and force the algorithm to stop searching for
-additional growth in the tree model. Some of these are listed below:</p>
+<p>The search process continues until a specific criterion is met to stop the algorithm. There may be several conditions where we may constrain the growth and force the algorithm to stop searching for additional growth in the tree model. Some of these are listed below:</p>
 <ul>
-<li><p>Minimizing SSE: the algorithm stops when there is no potential
-split in any of the existing nodes that would reduce the sum of squared
-errors.</p></li>
-<li><p>The minimum number of observations to split: the algorithm does
-not attempt to split a node unless there is a certain number of
-observations in the node.</p></li>
-<li><p>Maximum depth: The algorithm stops searching when the tree
-reaches a certain depth.</p></li>
+<li><p>Minimizing SSE: the algorithm stops when there is no potential split in any of the existing nodes that would reduce the sum of squared errors.</p></li>
+<li><p>The minimum number of observations to split: the algorithm does not attempt to split a node unless there is a certain number of observations in the node.</p></li>
+<li><p>Maximum depth: The algorithm stops searching when the tree reaches a certain depth.</p></li>
 </ul>
 <h3 id="pruning-a-tree">1.1.5. Pruning a tree</h3>
-<p>Overfitting and underfitting also occur as one develops a tree model.
-When the depth of a tree becomes unnecessarily large, there is a risk of
-overfitting (increased variance in model predictions across samples,
-less generalizable). On the other hand, when the depth of a tree is
-small, there is a risk of underfitting (increased bias in model
-predictions, underperforming model).</p>
-<p>To balance the model variance and model bias, we considered
-penalizing significant coefficients in regression models yielding
-different types of penalty terms on the regression coefficients. There
-is a similar approach that can be applied to tree models. In the context
-of tree models, the loss function with a penalty term can be specified
-as</p>
-<p><span class="math display">\[ SSE = \sum_{t=1}^{T} \sum_{i \epsilon
-R_t} (Y_i - \hat{Y}_{R_{t}})^2 + \alpha T.\]</span></p>
-<p>The penalty term <span class="math inline">\(\alpha\)</span> is known
-as the <strong>cost complexity</strong> parameter. The product term
-<span class="math inline">\(\alpha T\)</span> increases as the number of
-terminal nodes increases in the model, so this term penalizes the
-increasing complexity of the tree model. By fine-tuning the value of
-<span class="math inline">\(\alpha\)</span> through cross-validation, we
-can find a balance between model variance and bias, as we did for
-regression models. The process is called pruning because the terminal
-nodes from the tree are eliminated in a nested way for increasing levels
-of <span class="math inline">\(\alpha\)</span>.</p>
-<h2 id="growing-trees-with-the-rpart-function">1.2. Growing trees with
-the <code>rpart()</code> function</h2>
+<p>Overfitting and underfitting also occur as one develops a tree model. When the depth of a tree becomes unnecessarily large, there is a risk of overfitting (increased variance in model predictions across samples, less generalizable). On the other hand, when the depth of a tree is small, there is a risk of underfitting (increased bias in model predictions, underperforming model).</p>
+<p>To balance the model variance and model bias, we considered penalizing significant coefficients in regression models yielding different types of penalty terms on the regression coefficients. There is a similar approach that can be applied to tree models. In the context of tree models, the loss function with a penalty term can be specified as</p>
+<p><span class="math display">\[ SSE = \sum_{t=1}^{T} \sum_{i \epsilon R_t} (Y_i - \hat{Y}_{R_{t}})^2 + \alpha T.\]</span></p>
+<p>The penalty term <span class="math inline">\(\alpha\)</span> is known as the <strong>cost complexity</strong> parameter. The product term <span class="math inline">\(\alpha T\)</span> increases as the number of terminal nodes increases in the model, so this term penalizes the increasing complexity of the tree model. By fine-tuning the value of <span class="math inline">\(\alpha\)</span> through cross-validation, we can find a balance between model variance and bias, as we did for regression models. The process is called pruning because the terminal nodes from the tree are eliminated in a nested way for increasing levels of <span class="math inline">\(\alpha\)</span>.</p>
+<h2 id="growing-trees-with-the-rpart-function">1.2. Growing trees with the <code>rpart()</code> function</h2>
 <h3 id="a-simple-example">1.2.1. A simple example</h3>
-<p>We can develop a tree model using the <code>rpart()</code> function
-from the <code>rpart</code> package. Also, we will use the
-<code>fancyRpartPlot</code> function from the <code>rattle</code>
-package to get a nice plot of a tree model.</p>
+<p>We can develop a tree model using the <code>rpart()</code> function from the <code>rpart</code> package. Also, we will use the <code>fancyRpartPlot</code> function from the <code>rattle</code> package to get a nice plot of a tree model.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'>#install.packages('rpart')</span></span>
@@ -3132,9 +2980,7 @@ package to get a nice plot of a tree model.</p>
 <span><span class='co'>#?fancyRpartPlot</span></span></code></pre>
 </div>
 </div>
-<p>Let’s first replicate our search above to build a tree model
-predicting the readability scores from Feature 220 and Feature 166 in
-the toy dataset.</p>
+<p>Let’s first replicate our search above to build a tree model predicting the readability scores from Feature 220 and Feature 166 in the toy dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>target</span> <span class='op'>~</span> <span class='va'>V220</span> <span class='op'>+</span> <span class='va'>V166</span>,</span>
@@ -3148,28 +2994,14 @@ the toy dataset.</p>
 </div>
 </div>
 <ul>
-<li><p>The <code>formula</code> argument works similarly as in the
-regression models. The variable name on the left side of <code>~</code>
-represents the outcome variable, and the variable names on the right
-side of <code>~</code> represent the predictor variables.</p></li>
-<li><p>The <code>data</code> argument provides the name of the dataset
-to find these variables specified in the formula.</p></li>
-<li><p>The <code>method</code> argument is set to <code>anova</code> to
-indicate that the outcome is a continuous variable and this is a
-regression problem.</p></li>
-<li><p>The <code>control</code> argument is a list object with several
-settings to be used during tree-building. For more information, check
-<code>?rpart.control</code>. You can accept the default values by not
-specifying it at all. Here, I specified a few important ones.</p></li>
-<li><p><code>minsplit=1</code> forces algorithm not to attempt to split
-a node unless there is at least one observation.</p></li>
-<li><p><code>minbucket=1</code> forces algorithm to have at least one
-observation for any node.</p></li>
-<li><p><code>maxdepth = 2</code> forces algorithm to stop when the depth
-of a tree reaches to 2.</p></li>
-<li><p><code>cp=0</code> indicates that we do not want to apply any
-penalty term (<span class="math inline">\(\lambda = 0\)</span>) during
-the model building process.</p></li>
+<li><p>The <code>formula</code> argument works similarly as in the regression models. The variable name on the left side of <code>~</code> represents the outcome variable, and the variable names on the right side of <code>~</code> represent the predictor variables.</p></li>
+<li><p>The <code>data</code> argument provides the name of the dataset to find these variables specified in the formula.</p></li>
+<li><p>The <code>method</code> argument is set to <code>anova</code> to indicate that the outcome is a continuous variable and this is a regression problem.</p></li>
+<li><p>The <code>control</code> argument is a list object with several settings to be used during tree-building. For more information, check <code>?rpart.control</code>. You can accept the default values by not specifying it at all. Here, I specified a few important ones.</p></li>
+<li><p><code>minsplit=1</code> forces algorithm not to attempt to split a node unless there is at least one observation.</p></li>
+<li><p><code>minbucket=1</code> forces algorithm to have at least one observation for any node.</p></li>
+<li><p><code>maxdepth = 2</code> forces algorithm to stop when the depth of a tree reaches to 2.</p></li>
+<li><p><code>cp=0</code> indicates that we do not want to apply any penalty term (<span class="math inline">\(\lambda = 0\)</span>) during the model building process.</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3181,12 +3013,8 @@ the model building process.</p></li>
 <span>  <span class='co'># check for a lot of settings for modifying this plot</span></span></code></pre>
 </div>
 </div>
-<p>As you can see, we got the same tree model we built in our search
-process in the earlier section. The algorithm went further and split the
-second node based on Feature 166.</p>
-<p>You can also ask for more specific information about the
-model-building process by running the <code>summary()</code>
-function.</p>
+<p>As you can see, we got the same tree model we built in our search process in the earlier section. The algorithm went further and split the second node based on Feature 166.</p>
+<p>You can also ask for more specific information about the model-building process by running the <code>summary()</code> function.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>dt</span><span class='op'>)</span></span></code></pre>
@@ -3240,15 +3068,8 @@ Node number 6: 4 observations
 Node number 7: 13 observations
   mean=-0.3412833, MSE=0.2567257 </code></pre>
 </div>
-<h3 id="tree-pruning-by-increasing-the-complexity-parameter">1.2.2. Tree
-pruning by increasing the complexity parameter</h3>
-<p>We will now expand the model by adding more predictors to be
-considered for the tree model. Suppose that we now have six different
-predictors to be considered for the tree model. We will provide the same
-settings with six predictors except for the complexity parameter. We
-will fit three models by setting the complexity parameter at 0, 0.05,
-and 0.1 to see what happens to the tree model as we increase the
-complexity parameter.</p>
+<h3 id="tree-pruning-by-increasing-the-complexity-parameter">1.2.2. Tree pruning by increasing the complexity parameter</h3>
+<p>We will now expand the model by adding more predictors to be considered for the tree model. Suppose that we now have six different predictors to be considered for the tree model. We will provide the same settings with six predictors except for the complexity parameter. We will fit three models by setting the complexity parameter at 0, 0.05, and 0.1 to see what happens to the tree model as we increase the complexity parameter.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dt</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>target</span> <span class='op'>~</span> <span class='va'>V78</span> <span class='op'>+</span> <span class='va'>V166</span> <span class='op'>+</span> <span class='va'>V220</span> <span class='op'>+</span> <span class='va'>V375</span> <span class='op'>+</span> <span class='va'>V562</span> <span class='op'>+</span> <span class='va'>V568</span>,</span>
@@ -3297,37 +3118,15 @@ complexity parameter.</p>
 </div>
 <p><img src="lecture-6b_files/figure-html5/unnamed-chunk-24-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
-<h1
-id="predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain">2.
-Predicting a continuous outcome with a Decision Tree via
-<code>caret:train()</code></h1>
-<p>Please review the following notebook that builds a prediction model
-using a decision tree algorithm for the readability dataset.</p>
-<p><a
-href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-a-decision-tree">Building
-a Prediction Model using a Decision Tree</a></p>
-<h1
-id="predicting-a-binary-outcome-with-a-decision-tree-via-carettrain">3.
-Predicting a binary outcome with a Decision Tree via
-<code>caret:train()</code></h1>
-<p>Developing the decision trees to predict a binary outcome follows a
-very similar approach. The only difference is that the loss function and
-the metric used while selecting the best split is different while
-growing the tree model. A more special metric (e.g., gini index or
-entropy) is used to decide the best split that improves the accuracy of
-predictions.</p>
-<p><a
-href="https://cran.r-project.org/web/packages/rpart/vignettes/longintro.pdf">This
-document</a> provides a detailed technical discussion of how
-<code>rpart</code> builds a decision tree.</p>
-<p>Please review the following notebook that builds a classification
-model using a decision tree algorithm for the full recidivism
-dataset.</p>
-<p><a
-href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm">Building
-a Classification Model using a Decision Tree</a></p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h1 id="predicting-a-continuous-outcome-with-a-decision-tree-via-carettrain">2. Predicting a continuous outcome with a Decision Tree via <code>caret:train()</code></h1>
+<p>Please review the following notebook that builds a prediction model using a decision tree algorithm for the readability dataset.</p>
+<p><a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-a-decision-tree">Building a Prediction Model using a Decision Tree</a></p>
+<h1 id="predicting-a-binary-outcome-with-a-decision-tree-via-carettrain">3. Predicting a binary outcome with a Decision Tree via <code>caret:train()</code></h1>
+<p>Developing the decision trees to predict a binary outcome follows a very similar approach. The only difference is that the loss function and the metric used while selecting the best split is different while growing the tree model. A more special metric (e.g., gini index or entropy) is used to decide the best split that improves the accuracy of predictions.</p>
+<p><a href="https://cran.r-project.org/web/packages/rpart/vignettes/longintro.pdf">This document</a> provides a detailed technical discussion of how <code>rpart</code> builds a decision tree.</p>
+<p>Please review the following notebook that builds a classification model using a decision tree algorithm for the full recidivism dataset.</p>
+<p><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-tree-algorithm">Building a Classification Model using a Decision Tree</a></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -3359,7 +3158,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

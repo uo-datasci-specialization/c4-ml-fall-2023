@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,8 +2406,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
-  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
   <script src="site_libs/plotly-binding-4.10.0/plotly.js"></script>
   <script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
   <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
@@ -2554,35 +2561,16 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#distance-between-two-vectors"
-id="toc-distance-between-two-vectors">1. Distance Between Two
-Vectors</a></li>
-<li><a href="#k-nearest-neighbors" id="toc-k-nearest-neighbors">2.
-K-Nearest Neighbors</a></li>
-<li><a href="#prediction-with-k-nearest-neighbors-do-it-yourself"
-id="toc-prediction-with-k-nearest-neighbors-do-it-yourself">3.
-Prediction with K-Nearest Neighbors (Do-It-Yourself)</a>
+<li><a href="#distance-between-two-vectors" id="toc-distance-between-two-vectors">1. Distance Between Two Vectors</a></li>
+<li><a href="#k-nearest-neighbors" id="toc-k-nearest-neighbors">2. K-Nearest Neighbors</a></li>
+<li><a href="#prediction-with-k-nearest-neighbors-do-it-yourself" id="toc-prediction-with-k-nearest-neighbors-do-it-yourself">3. Prediction with K-Nearest Neighbors (Do-It-Yourself)</a>
 <ul>
-<li><a href="#predicting-a-continuous-outcome-with-the-knn-algorithm"
-id="toc-predicting-a-continuous-outcome-with-the-knn-algorithm">3.1.
-Predicting a continuous outcome with the KNN algorithm</a></li>
-<li><a href="#predicting-a-binary-outcome-with-the-knn-algorithm"
-id="toc-predicting-a-binary-outcome-with-the-knn-algorithm">3.2.
-Predicting a binary outcome with the KNN algorithm</a></li>
+<li><a href="#predicting-a-continuous-outcome-with-the-knn-algorithm" id="toc-predicting-a-continuous-outcome-with-the-knn-algorithm">3.1. Predicting a continuous outcome with the KNN algorithm</a></li>
+<li><a href="#predicting-a-binary-outcome-with-the-knn-algorithm" id="toc-predicting-a-binary-outcome-with-the-knn-algorithm">3.2. Predicting a binary outcome with the KNN algorithm</a></li>
 </ul></li>
-<li><a href="#kernels-to-weight-the-neighbors"
-id="toc-kernels-to-weight-the-neighbors">4. Kernels to Weight the
-Neighbors</a></li>
-<li><a
-href="#predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain"
-id="toc-predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain">5.
-Predicting a continuous outcome with the KNN algorithm via
-<code>caret:train()</code></a></li>
-<li><a
-href="#predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain"
-id="toc-predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain">6.
-Predicting a binary outcome with the KNN algorithm via
-<code>caret:train()</code></a></li>
+<li><a href="#kernels-to-weight-the-neighbors" id="toc-kernels-to-weight-the-neighbors">4. Kernels to Weight the Neighbors</a></li>
+<li><a href="#predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain" id="toc-predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain">5. Predicting a continuous outcome with the KNN algorithm via <code>caret:train()</code></a></li>
+<li><a href="#predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain" id="toc-predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain">6. Predicting a binary outcome with the KNN algorithm via <code>caret:train()</code></a></li>
 </ul>
 </nav>
 </div>
@@ -2604,41 +2592,27 @@ Predicting a binary outcome with the KNN algorithm via
 
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:07:14 ]</p>
-<h1 id="distance-between-two-vectors">1. Distance Between Two
-Vectors</h1>
-<p>Measuring the distance between two data points is at the core of the
-K Nearest Neighbors (KNN) algorithm, and it is essential to understand
-the concept of distance between two vectors.</p>
-<p>Imagine that each observation in a dataset lives in a
-<em>P</em>-dimensional space, where <em>P</em> is the number of
-predictors.</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:34:34 ]</p>
+<h1 id="distance-between-two-vectors">1. Distance Between Two Vectors</h1>
+<p>Measuring the distance between two data points is at the core of the K Nearest Neighbors (KNN) algorithm, and it is essential to understand the concept of distance between two vectors.</p>
+<p>Imagine that each observation in a dataset lives in a <em>P</em>-dimensional space, where <em>P</em> is the number of predictors.</p>
 <ul>
-<li>Obsevation 1: <span class="math inline">\(\mathbf{A} = (A_1, A_2,
-A_3, ..., A_P)\)</span></li>
-<li>Obsevation 2: <span class="math inline">\(\mathbf{B} = (B_1, B_2,
-B_3, ..., B_P)\)</span></li>
+<li>Obsevation 1: <span class="math inline">\(\mathbf{A} = (A_1, A_2, A_3, ..., A_P)\)</span></li>
+<li>Obsevation 2: <span class="math inline">\(\mathbf{B} = (B_1, B_2, B_3, ..., B_P)\)</span></li>
 </ul>
-<p>A general definition of distance between two vectors is the
-<strong>Minkowski Distance</strong>. The Minkowski Distance can be
-defined as</p>
-<p><span class="math display">\[\left ( \sum_{i=1}^{P}|A_i-B_i|^q \right
-)^{\frac{1}{q}},\]</span> where <span class="math inline">\(q\)</span>
-can take any positive value.</p>
-<p>For simplicity, suppose that we have two observations and three
-predictors, and we observe the following values for the two observations
-on these three predictors.</p>
+<p>A general definition of distance between two vectors is the <strong>Minkowski Distance</strong>. The Minkowski Distance can be defined as</p>
+<p><span class="math display">\[\left ( \sum_{i=1}^{P}|A_i-B_i|^q \right )^{\frac{1}{q}},\]</span>
+where <span class="math inline">\(q\)</span> can take any positive value.</p>
+<p>For simplicity, suppose that we have two observations and three predictors, and we observe the following values for the two observations on these three predictors.</p>
 <ul>
 <li><p>Observation 1: (20,25,30)</p></li>
 <li><p>Observation 2: (80,90,75)</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-d69acca636e02b52a2de" style="width:800px;height:500px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-d69acca636e02b52a2de">{"x":{"visdat":{"33ac1d4ccdb":["function () ","plotlyVisDat"]},"cur_data":"33ac1d4ccdb","attrs":{"33ac1d4ccdb":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d69acca636e02b52a2de" style="width:800px;height:500px;" class="plotly html-widget "></div>
+<script type="application/json" data-for="htmlwidget-d69acca636e02b52a2de">{"x":{"visdat":{"c585ad17572":["function () ","plotlyVisDat"]},"cur_data":"c585ad17572","attrs":{"c585ad17572":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>If we assume that the <span class="math inline">\(q=1\)</span> for
-the Minkowski equation above, then we can calculate the distance as the
-following:</p>
+<p>If we assume that the <span class="math inline">\(q=1\)</span> for the Minkowski equation above, then we can calculate the distance as the following:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>,<span class='fl'>25</span>,<span class='fl'>30</span><span class='op'>)</span></span>
@@ -2649,17 +2623,12 @@ following:</p>
 </div>
 <pre><code>[1] 170</code></pre>
 </div>
-<p>When <span class="math inline">\(q\)</span> is equal to 1 for the
-Minkowski equation, it becomes a special case known as <strong>Manhattan
-Distance</strong>. Manhattan Distance between these two data points is
-visualized below.</p>
+<p>When <span class="math inline">\(q\)</span> is equal to 1 for the Minkowski equation, it becomes a special case known as <strong>Manhattan Distance</strong>. Manhattan Distance between these two data points is visualized below.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-54444caccfb69b29a2a4" style="width:800px;height:500px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-54444caccfb69b29a2a4">{"x":{"visdat":{"33ac2b831487":["function () ","plotlyVisDat"]},"cur_data":"33ac2b831487","attrs":{"33ac2b831487":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"33ac2b831487.1":{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"33ac2b831487.2":{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"33ac2b831487.3":{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-54444caccfb69b29a2a4" style="width:800px;height:500px;" class="plotly html-widget "></div>
+<script type="application/json" data-for="htmlwidget-54444caccfb69b29a2a4">{"x":{"visdat":{"c5866872b30":["function () ","plotlyVisDat"]},"cur_data":"c5866872b30","attrs":{"c5866872b30":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"c5866872b30.1":{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"c5866872b30.2":{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true},"c5866872b30.3":{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1.25,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,20],"y":[25,25],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,20],"y":[25,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[20,80],"y":[90,90],"z":[75,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>If we assume that the <span class="math inline">\(q=2\)</span> for
-the Minkowski equation above, then we can calculate the distance as the
-following:</p>
+<p>If we assume that the <span class="math inline">\(q=2\)</span> for the Minkowski equation above, then we can calculate the distance as the following:</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>,<span class='fl'>25</span>,<span class='fl'>30</span><span class='op'>)</span></span>
@@ -2670,27 +2639,14 @@ following:</p>
 </div>
 <pre><code>[1] 99.24717</code></pre>
 </div>
-<p>When <span class="math inline">\(q\)</span> is equal to 2 for the
-Minkowski equation, it is also a special case known as <strong>Euclidian
-Distance</strong>. The euclidian distance between these two data points
-is visualized below.</p>
+<p>When <span class="math inline">\(q\)</span> is equal to 2 for the Minkowski equation, it is also a special case known as <strong>Euclidian Distance</strong>. The euclidian distance between these two data points is visualized below.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-9d05580e235c45ab30d7" style="width:800px;height:500px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-9d05580e235c45ab30d7">{"x":{"visdat":{"33ac653f30ca":["function () ","plotlyVisDat"]},"cur_data":"33ac653f30ca","attrs":{"33ac653f30ca":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"33ac653f30ca.1":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-9d05580e235c45ab30d7" style="width:800px;height:500px;" class="plotly html-widget "></div>
+<script type="application/json" data-for="htmlwidget-9d05580e235c45ab30d7">{"x":{"visdat":{"c58681d6d37":["function () ","plotlyVisDat"]},"cur_data":"c58681d6d37","attrs":{"c58681d6d37":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"c58681d6d37.1":{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.25,"y":1,"z":0}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[20,80],"y":[25,90],"z":[30,75],"mode":"lines","type":"scatter3d","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <h1 id="k-nearest-neighbors">2. K-Nearest Neighbors</h1>
-<p>Given that there are <span class="math inline">\(N\)</span>
-observations in a dataset, a distance between any observation and <span
-class="math inline">\(N-1\)</span> remaining observations can be
-computed using Minkowski distance (with a user-defined choice of <span
-class="math inline">\(q\)</span> value). Then, for any given
-observation, we can rank order the remaining observations based on how
-close they are to the given observation and then decide the K nearest
-neighbors (<span class="math inline">\(K = 1, 2, 3, ..., N-1\)</span>),
-K observations closest to the given observation based on their
-distance.</p>
-<p>Suppose that there are ten observations measured on three predictor
-variables (X1, X2, and X3) with the following values.</p>
+<p>Given that there are <span class="math inline">\(N\)</span> observations in a dataset, a distance between any observation and <span class="math inline">\(N-1\)</span> remaining observations can be computed using Minkowski distance (with a user-defined choice of <span class="math inline">\(q\)</span> value). Then, for any given observation, we can rank order the remaining observations based on how close they are to the given observation and then decide the K nearest neighbors (<span class="math inline">\(K = 1, 2, 3, ..., N-1\)</span>), K observations closest to the given observation based on their distance.</p>
+<p>Suppose that there are ten observations measured on three predictor variables (X1, X2, and X3) with the following values.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x1 <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>,<span class='fl'>25</span>,<span class='fl'>30</span>,<span class='fl'>42</span>,<span class='fl'>10</span>,<span class='fl'>60</span>,<span class='fl'>65</span>,<span class='fl'>55</span>,<span class='fl'>80</span>,<span class='fl'>90</span><span class='op'>)</span>,</span>
@@ -2713,11 +2669,10 @@ variables (X1, X2, and X3) with the following values.</p>
 10 90 90 95     J</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-ffe39224bf3b2fdb7ec8" style="width:800px;height:500px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ffe39224bf3b2fdb7ec8">{"x":{"visdat":{"33ac3d877aeb":["function () ","plotlyVisDat"]},"cur_data":"33ac3d877aeb","attrs":{"33ac3d877aeb":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"33ac3d877aeb.1":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","marker":{"color":"orange"},"inherit":true},"33ac3d877aeb.2":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["A","B","C","D","E"],"inherit":true},"33ac3d877aeb.3":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["F","G","H","I","J"],"inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.5,"y":1,"z":1}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","type":"scatter3d","marker":{"color":"orange","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","type":"scatter3d","text":["A","B","C","D","E"],"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","type":"scatter3d","text":["F","G","H","I","J"],"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-ffe39224bf3b2fdb7ec8" style="width:800px;height:500px;" class="plotly html-widget "></div>
+<script type="application/json" data-for="htmlwidget-ffe39224bf3b2fdb7ec8">{"x":{"visdat":{"c58671791f":["function () ","plotlyVisDat"]},"cur_data":"c58671791f","attrs":{"c58671791f":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"},"c58671791f.1":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","marker":{"color":"orange"},"inherit":true},"c58671791f.2":{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["A","B","C","D","E"],"inherit":true},"c58671791f.3":{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d","text":["F","G","H","I","J"],"inherit":true}},"layout":{"width":800,"height":500,"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"range":[0,100],"title":"X1"},"yaxis":{"range":[0,100],"title":"X2"},"zaxis":{"range":[0,100],"title":"X3"},"camera":{"eye":{"x":1.5,"y":1,"z":1}}},"showlegend":false,"hovermode":"closest"},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"markers","type":"scatter3d","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"markers","type":"scatter3d","marker":{"color":"orange","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"frame":null},{"x":[20,25,30,42,10],"y":[10,15,12,20,45],"z":[25,30,35,20,40],"mode":"text","type":"scatter3d","text":["A","B","C","D","E"],"marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"frame":null},{"x":[60,65,55,80,90],"y":[75,70,80,85,90],"z":[80,85,90,92,95],"mode":"text","type":"scatter3d","text":["F","G","H","I","J"],"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<p>Given that there are ten observations, we can calculate the distance
-between all 45 pairs of observations (e.g., Euclidian distance).</p>
+<p>Given that there are ten observations, we can calculate the distance between all 45 pairs of observations (e.g., Euclidian distance).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dist</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/as.data.frame.html'>as.data.frame</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/t.html'>t</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/utils/combn.html'>combn</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>10</span>,<span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span><span class='op'>)</span></span>
@@ -2780,11 +2735,7 @@ between all 45 pairs of observations (e.g., Euclidian distance).</p>
 44  8 10  36.742346
 45  9 10  11.575837</code></pre>
 </div>
-<p>For instance, we can find the three closest observations to
-<strong>Point E</strong> (3-Nearest Neighbors). As seen below, the
-3-Nearest Neighbors for <strong>Point E</strong> in this dataset would
-be <strong>Point B</strong>, <strong>Point C</strong>, and <strong>Point
-A</strong>.</p>
+<p>For instance, we can find the three closest observations to <strong>Point E</strong> (3-Nearest Neighbors). As seen below, the 3-Nearest Neighbors for <strong>Point E</strong> in this dataset would be <strong>Point B</strong>, <strong>Point C</strong>, and <strong>Point A</strong>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Point E is the fifth observation in the dataset</span></span>
@@ -2811,21 +2762,8 @@ A</strong>.</p>
 <center style="color:black;">
 <strong>NOTE 1</strong>
 </center>
-<p>The <span class="math inline">\(q\)</span> in the Minkowski distance
-equation and <span class="math inline">\(K\)</span> in the K-nearest
-neighbor are user-defined hyperparameters in the KNN algorithm. As a
-researcher and model builder, you can pick any values for <span
-class="math inline">\(q\)</span> and <span
-class="math inline">\(K\)</span>. They can be tuned using a similar
-approach applied in earlier classes for regularized regression models.
-One can pick a set of values for these hyperparameters and apply a grid
-search to find the combination that provides the best predictive
-performance.</p>
-<p>It is typical to observe overfitting (high model variance, low model
-bias) for small values of K and underfitting (low model variance, high
-model bias) for large values of K. In general, people tend to focus
-their grid search for K around <span
-class="math inline">\(\sqrt{N}\)</span>.</p>
+<p>The <span class="math inline">\(q\)</span> in the Minkowski distance equation and <span class="math inline">\(K\)</span> in the K-nearest neighbor are user-defined hyperparameters in the KNN algorithm. As a researcher and model builder, you can pick any values for <span class="math inline">\(q\)</span> and <span class="math inline">\(K\)</span>. They can be tuned using a similar approach applied in earlier classes for regularized regression models. One can pick a set of values for these hyperparameters and apply a grid search to find the combination that provides the best predictive performance.</p>
+<p>It is typical to observe overfitting (high model variance, low model bias) for small values of K and underfitting (low model variance, high model bias) for large values of K. In general, people tend to focus their grid search for K around <span class="math inline">\(\sqrt{N}\)</span>.</p>
 </div>
 <hr />
 <hr />
@@ -2833,50 +2771,24 @@ class="math inline">\(\sqrt{N}\)</span>.</p>
 <center style="color:black;">
 <strong>NOTE 2</strong>
 </center>
-<p>It is essential to remember that the distance calculation between two
-observations is highly dependent on the scale of measurement for the
-predictor variables. If predictors are on different scales, the distance
-metric formula will favor the differences in predictors with larger
-scales, and it is not ideal. Therefore, it is essential to center and
-scale all predictors before the KNN algorithm so each predictor
-similarly contributes to the distance metric calculation.</p>
+<p>It is essential to remember that the distance calculation between two observations is highly dependent on the scale of measurement for the predictor variables. If predictors are on different scales, the distance metric formula will favor the differences in predictors with larger scales, and it is not ideal. Therefore, it is essential to center and scale all predictors before the KNN algorithm so each predictor similarly contributes to the distance metric calculation.</p>
 </div>
 <hr />
-<h1 id="prediction-with-k-nearest-neighbors-do-it-yourself">3.
-Prediction with K-Nearest Neighbors (Do-It-Yourself)</h1>
-<p>Given that we learned about distance calculation and how to identify
-K-nearest neighbors based on a distance metric, the prediction in KNN is
-straightforward.</p>
-<p>Below is a list of steps for predicting an outcome for a given
-observation.</p>
+<h1 id="prediction-with-k-nearest-neighbors-do-it-yourself">3. Prediction with K-Nearest Neighbors (Do-It-Yourself)</h1>
+<p>Given that we learned about distance calculation and how to identify K-nearest neighbors based on a distance metric, the prediction in KNN is straightforward.</p>
+<p>Below is a list of steps for predicting an outcome for a given observation.</p>
 <ol type="1">
-<li><p>Calculate the distance between the observation and the remaining
-<span class="math inline">\(N-1\)</span> observations in the data (with
-a user choice of <span class="math inline">\(q\)</span> in Minkowski
-distance).</p></li>
-<li><p>Rank order the observations based on the calculated distance, and
-choose the K-nearest neighbor. (with a user choice of <span
-class="math inline">\(K\)</span>)</p></li>
-<li><p>Calculate the mean of the observed outcome in the K-nearest
-neighbors as your prediction.</p></li>
+<li><p>Calculate the distance between the observation and the remaining <span class="math inline">\(N-1\)</span> observations in the data (with a user choice of <span class="math inline">\(q\)</span> in Minkowski distance).</p></li>
+<li><p>Rank order the observations based on the calculated distance, and choose the K-nearest neighbor. (with a user choice of <span class="math inline">\(K\)</span>)</p></li>
+<li><p>Calculate the mean of the observed outcome in the K-nearest neighbors as your prediction.</p></li>
 </ol>
-<p>Note that Step 3 applies regardless of the type of outcome. If the
-outcome variable is continuous, we calculate the average outcome for the
-K-nearest neighbors as our prediction. If the outcome variable is binary
-(e.g., 0 vs. 1), then the proportion of observing each class among the
-K-nearest neighbors yields predicted probabilities for each class.</p>
-<p>Below, I provide an example for both types of outcome using the
-Readability and Recidivism datasets.</p>
-<h2 id="predicting-a-continuous-outcome-with-the-knn-algorithm">3.1.
-Predicting a continuous outcome with the KNN algorithm</h2>
-<p>The code below is identical to the code we used in earlier classes
-for data preparation of the Readability datasets. Note that this is only
-to demonstrate the logic of model predictions in the context of
-K-nearest neighbors. So, we are using the whole dataset. In the next
-section, we will demonstrate the full workflow of model training and
-tuning with 10-fold cross-validation using the
-<code>caret::train()</code> function. 1. Import the data 2. Write a
-recipe for processing variables 3. Apply the recipe to the dataset</p>
+<p>Note that Step 3 applies regardless of the type of outcome. If the outcome variable is continuous, we calculate the average outcome for the K-nearest neighbors as our prediction. If the outcome variable is binary (e.g., 0 vs. 1), then the proportion of observing each class among the K-nearest neighbors yields predicted probabilities for each class.</p>
+<p>Below, I provide an example for both types of outcome using the Readability and Recidivism datasets.</p>
+<h2 id="predicting-a-continuous-outcome-with-the-knn-algorithm">3.1. Predicting a continuous outcome with the KNN algorithm</h2>
+<p>The code below is identical to the code we used in earlier classes for data preparation of the Readability datasets. Note that this is only to demonstrate the logic of model predictions in the context of K-nearest neighbors. So, we are using the whole dataset. In the next section, we will demonstrate the full workflow of model training and tuning with 10-fold cross-validation using the <code>caret::train()</code> function.
+1. Import the data
+2. Write a recipe for processing variables
+3. Apply the recipe to the dataset</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Import the dataset</span></span>
@@ -2901,13 +2813,7 @@ recipe for processing variables 3. Apply the recipe to the dataset</p>
 <span>  <span class='fu'><a href='https://recipes.tidymodels.org/reference/bake.html'>bake</a></span><span class='op'>(</span>new_data <span class='op'>=</span> <span class='va'>readability</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>Our final dataset (<code>baked_read</code>) has 2834 observations and
-769 columns (768 predictors; the last column is target outcome). Suppose
-we would like to predict the readability score for the first
-observation. The code below will calculate the Minkowski distance (with
-<span class="math inline">\(q=2\)</span>) between the first observation
-and each of the remaining 2833 observations by using the first 768
-columns of the dataset (predictors).</p>
+<p>Our final dataset (<code>baked_read</code>) has 2834 observations and 769 columns (768 predictors; the last column is target outcome). Suppose we would like to predict the readability score for the first observation. The code below will calculate the Minkowski distance (with <span class="math inline">\(q=2\)</span>) between the first observation and each of the remaining 2833 observations by using the first 768 columns of the dataset (predictors).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dist</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>obs <span class='op'>=</span> <span class='fl'>2</span><span class='op'>:</span><span class='fl'>2834</span>,dist <span class='op'>=</span> <span class='cn'>NA</span>,target<span class='op'>=</span><span class='cn'>NA</span><span class='op'>)</span></span>
@@ -2926,11 +2832,7 @@ columns of the dataset (predictors).</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>We now rank-order the observations from closest to the most distant
-and then choose the 20 nearest observations (K=20). Finally, we can
-calculate the average of the observed outcome for the 20 nearest
-neighbors, which will become our prediction of the readability score for
-the first observation.</p>
+<p>We now rank-order the observations from closest to the most distant and then choose the 20 nearest observations (K=20). Finally, we can calculate the average of the observed outcome for the 20 nearest neighbors, which will become our prediction of the readability score for the first observation.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Rank order the observations from closest to the most distant</span></span>
@@ -2979,10 +2881,8 @@ the first observation.</p>
 </div>
 <pre><code>[1] -0.3402591</code></pre>
 </div>
-<h2 id="predicting-a-binary-outcome-with-the-knn-algorithm">3.2.
-Predicting a binary outcome with the KNN algorithm</h2>
-<p>We can follow the same procedures to predict Recidivism in the second
-year after an individual’s initial release from prison.</p>
+<h2 id="predicting-a-binary-outcome-with-the-knn-algorithm">3.2. Predicting a binary outcome with the KNN algorithm</h2>
+<p>We can follow the same procedures to predict Recidivism in the second year after an individual’s initial release from prison.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Import data</span></span>
@@ -3079,14 +2979,7 @@ year after an individual’s initial release from prison.</p>
 <span>  <span class='fu'><a href='https://recipes.tidymodels.org/reference/bake.html'>bake</a></span><span class='op'>(</span>new_data <span class='op'>=</span> <span class='va'>recidivism</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p>The final dataset (<code>baked_recidivism</code>) has 18111
-observations and 144 columns (the first column is the outcome variable,
-the second column is the ID variable, and remaining 142 columns are
-predictors). Now, suppose that we would like to predict the probability
-of Recidivism for the first individual. The code below will calculate
-the Minkowski distance (with <span class="math inline">\(q=2\)</span>)
-between the first individual and each of the remaining 18,110
-individuals by using values of the 142 predictors in this dataset.</p>
+<p>The final dataset (<code>baked_recidivism</code>) has 18111 observations and 144 columns (the first column is the outcome variable, the second column is the ID variable, and remaining 142 columns are predictors). Now, suppose that we would like to predict the probability of Recidivism for the first individual. The code below will calculate the Minkowski distance (with <span class="math inline">\(q=2\)</span>) between the first individual and each of the remaining 18,110 individuals by using values of the 142 predictors in this dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dist2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>obs <span class='op'>=</span> <span class='fl'>2</span><span class='op'>:</span><span class='fl'>18111</span>,dist <span class='op'>=</span> <span class='cn'>NA</span>,target<span class='op'>=</span><span class='cn'>NA</span><span class='op'>)</span></span>
@@ -3105,12 +2998,7 @@ individuals by using values of the 142 predictors in this dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>We now rank-order the individuals from closest to the most distant
-and then choose the 100-nearest observations (K=100). Then, we calculate
-proportion of individuals who were recidivated (YES) and not recidivated
-(NO) among these 100-nearest neighbors. These proportions predict the
-probability of being recidivated or not recidivated for the first
-individual.</p>
+<p>We now rank-order the individuals from closest to the most distant and then choose the 100-nearest observations (K=100). Then, we calculate proportion of individuals who were recidivated (YES) and not recidivated (NO) among these 100-nearest neighbors. These proportions predict the probability of being recidivated or not recidivated for the first individual.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Rank order the observations from closest to the most distant</span></span>
@@ -3246,18 +3134,9 @@ individual.</p>
 </div>
 <pre><code>[1] 0</code></pre>
 </div>
-<h1 id="kernels-to-weight-the-neighbors">4. Kernels to Weight the
-Neighbors</h1>
-<p>In the previous section, we tried to understand how KNN predicts a
-target outcome by simply averaging the observed value for the target
-outcome from K-nearest neighbors. It was a simple average by equally
-weighing each neighbor.</p>
-<p>Another way of averaging the target outcome from K-nearest neighbors
-would be to weigh each neighbor according to its distance and calculate
-a weighted average. A simple way to weigh each neighbor is to use the
-inverse of the distance. For instance, consider the earlier example
-where we find the 20-nearest neighbor for the first observation in the
-readability dataset.</p>
+<h1 id="kernels-to-weight-the-neighbors">4. Kernels to Weight the Neighbors</h1>
+<p>In the previous section, we tried to understand how KNN predicts a target outcome by simply averaging the observed value for the target outcome from K-nearest neighbors. It was a simple average by equally weighing each neighbor.</p>
+<p>Another way of averaging the target outcome from K-nearest neighbors would be to weigh each neighbor according to its distance and calculate a weighted average. A simple way to weigh each neighbor is to use the inverse of the distance. For instance, consider the earlier example where we find the 20-nearest neighbor for the first observation in the readability dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>dist</span> <span class='op'>&lt;-</span> <span class='va'>dist</span><span class='op'>[</span><span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>dist</span><span class='op'>$</span><span class='va'>dist</span><span class='op'>)</span>,<span class='op'>]</span></span>
@@ -3288,9 +3167,7 @@ readability dataset.</p>
 2178 2179 27.04694 -1.0298868
 2016 2017 27.05989  0.1398929</code></pre>
 </div>
-<p>We can assign a weight to each neighbor by taking the inverse of
-their distance and rescaling them such that the sum of the weights
-equals 1.</p>
+<p>We can assign a weight to each neighbor by taking the inverse of their distance and rescaling them such that the sum of the weights equals 1.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>k_neighbors</span><span class='op'>$</span><span class='va'>weight</span> <span class='op'>&lt;-</span> <span class='fl'>1</span><span class='op'>/</span><span class='va'>k_neighbors</span><span class='op'>$</span><span class='va'>dist</span></span>
@@ -3321,8 +3198,7 @@ equals 1.</p>
 2178 2179 27.04694 -1.0298868 0.04812447
 2016 2017 27.05989  0.1398929 0.04810145</code></pre>
 </div>
-<p>Then, we can compute a weighted average of the target scores instead
-of a simple average.</p>
+<p>Then, we can compute a weighted average of the target scores instead of a simple average.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Weighted Mean target for the 20-nearest observations</span></span>
@@ -3331,13 +3207,7 @@ of a simple average.</p>
 </div>
 <pre><code>[1] -0.6525591</code></pre>
 </div>
-<p>Several kernel functions can be used to assign weight to K-nearest
-neighbors (e.g., epanechnikov, quartic, triweight, tricube, gaussian,
-cosine). For all of them, closest neighbors are assigned higher weights
-while the weight gets smaller as the distance increases, and they
-slightly differ the way they assign the weight. Below is a demonstration
-of how assigned weight changes as a function of distance for different
-kernel functions.</p>
+<p>Several kernel functions can be used to assign weight to K-nearest neighbors (e.g., epanechnikov, quartic, triweight, tricube, gaussian, cosine). For all of them, closest neighbors are assigned higher weights while the weight gets smaller as the distance increases, and they slightly differ the way they assign the weight. Below is a demonstration of how assigned weight changes as a function of distance for different kernel functions.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-6a_files/figure-html5/unnamed-chunk-25-1.png" width="768" style="display: block; margin: auto;" /></p>
 </div>
@@ -3346,32 +3216,16 @@ kernel functions.</p>
 <center style="color:black;">
 <strong>NOTE 3</strong>
 </center>
-<p>Which kernel function should we use for weighing the distance? The
-type of kernel function can also be considered a hyperparameter to
-tune.</p>
+<p>Which kernel function should we use for weighing the distance? The type of kernel function can also be considered a hyperparameter to tune.</p>
 </div>
 <hr />
-<h1
-id="predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain">5.
-Predicting a continuous outcome with the KNN algorithm via
-<code>caret:train()</code></h1>
-<p>Please review the following notebook that builds a prediction model
-using the K-nearest neighbor algorithm for the readability dataset.</p>
-<p><a
-href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn">Building
-a Prediction Model using KNN</a></p>
-<h1
-id="predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain">6.
-Predicting a binary outcome with the KNN algorithm via
-<code>caret:train()</code></h1>
-<p>Please review the following notebook that builds a classification
-model using the K-nearest neighbor algorithm for the full recidivism
-dataset.</p>
-<p><a
-href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn">Building
-a Classification Model using KNN</a></p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h1 id="predicting-a-continuous-outcome-with-the-knn-algorithm-via-carettrain">5. Predicting a continuous outcome with the KNN algorithm via <code>caret:train()</code></h1>
+<p>Please review the following notebook that builds a prediction model using the K-nearest neighbor algorithm for the readability dataset.</p>
+<p><a href="https://www.kaggle.com/code/uocoeeds/building-a-prediction-model-using-knn">Building a Prediction Model using KNN</a></p>
+<h1 id="predicting-a-binary-outcome-with-the-knn-algorithm-via-carettrain">6. Predicting a binary outcome with the KNN algorithm via <code>caret:train()</code></h1>
+<p>Please review the following notebook that builds a classification model using the K-nearest neighbor algorithm for the full recidivism dataset.</p>
+<p><a href="https://www.kaggle.com/code/uocoeeds/building-a-classification-model-using-knn">Building a Classification Model using KNN</a></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -3403,7 +3257,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

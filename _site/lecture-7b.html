@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2546,35 +2553,17 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a
-href="#understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals"
-id="toc-understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1.
-Understanding the Machinery of GBM with Sequential Development of Trees
-from Residuals</a>
+<li><a href="#understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals" id="toc-understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1. Understanding the Machinery of GBM with Sequential Development of Trees from Residuals</a>
 <ul>
 <li><a href="#iteration-0" id="toc-iteration-0">Iteration 0</a></li>
 <li><a href="#iteration-1" id="toc-iteration-1">Iteration 1</a></li>
 <li><a href="#iteration-2" id="toc-iteration-2">Iteration 2</a></li>
-<li><a href="#a-more-formal-introduction-of-gradient-boosting-trees"
-id="toc-a-more-formal-introduction-of-gradient-boosting-trees">2. A more
-formal introduction of Gradient Boosting Trees</a></li>
+<li><a href="#a-more-formal-introduction-of-gradient-boosting-trees" id="toc-a-more-formal-introduction-of-gradient-boosting-trees">2. A more formal introduction of Gradient Boosting Trees</a></li>
 </ul></li>
-<li><a href="#fitting-gradient-boosting-trees-using-the-gbm-package"
-id="toc-fitting-gradient-boosting-trees-using-the-gbm-package">3.
-Fitting Gradient Boosting Trees using the <code>gbm</code>
-package</a></li>
-<li><a
-href="#fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning"
-id="toc-fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4.
-Fitting Gradient Boosting Trees using the <code>caret</code> package and
-Hyperparameter Tuning</a></li>
-<li><a
-href="#predicting-readability-scores-using-gradient-boosting-trees"
-id="toc-predicting-readability-scores-using-gradient-boosting-trees">5.
-Predicting Readability Scores Using Gradient Boosting Trees</a></li>
-<li><a href="#predicting-recidivism-using-gradient-boosting-trees"
-id="toc-predicting-recidivism-using-gradient-boosting-trees">6.
-Predicting Recidivism Using Gradient Boosting Trees</a></li>
+<li><a href="#fitting-gradient-boosting-trees-using-the-gbm-package" id="toc-fitting-gradient-boosting-trees-using-the-gbm-package">3. Fitting Gradient Boosting Trees using the <code>gbm</code> package</a></li>
+<li><a href="#fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning" id="toc-fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4. Fitting Gradient Boosting Trees using the <code>caret</code> package and Hyperparameter Tuning</a></li>
+<li><a href="#predicting-readability-scores-using-gradient-boosting-trees" id="toc-predicting-readability-scores-using-gradient-boosting-trees">5. Predicting Readability Scores Using Gradient Boosting Trees</a></li>
+<li><a href="#predicting-recidivism-using-gradient-boosting-trees" id="toc-predicting-recidivism-using-gradient-boosting-trees">6. Predicting Recidivism Using Gradient Boosting Trees</a></li>
 </ul>
 </nav>
 </div>
@@ -2595,25 +2584,15 @@ Predicting Recidivism Using Gradient Boosting Trees</a></li>
 }
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:16:59 ]</p>
-<p>In Bagged Trees or Random Forests models, the trees are developed
-independently by taking a random sample of rows and columns from the
-dataset. The main difference between Gradient Boosting Trees and Bagged
-Trees or Random Forests is that the trees are developed sequentially,
-and each tree model is built upon the errors of the previous tree
-models. The sequential process of model building and predictions in
-gradient-boosted trees can be conceptually demonstrated below.</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:47:21 ]</p>
+<p>In Bagged Trees or Random Forests models, the trees are developed independently by taking a random sample of rows and columns from the dataset. The main difference between Gradient Boosting Trees and Bagged Trees or Random Forests is that the trees are developed sequentially, and each tree model is built upon the errors of the previous tree models. The sequential process of model building and predictions in gradient-boosted trees can be conceptually demonstrated below.</p>
 <p><br></p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/boosting.PNG" width="353" style="display: block; margin: auto;" /></p>
 </div>
 <p><br></p>
-<h1
-id="understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1.
-Understanding the Machinery of GBM with Sequential Development of Trees
-from Residuals</h1>
-<p>Let’s try to implement this idea in a toy dataset we use to predict a
-readability score from the number of sentences.</p>
+<h1 id="understanding-the-machinery-of-gbm-with-sequential-development-of-trees-from-residuals">1. Understanding the Machinery of GBM with Sequential Development of Trees from Residuals</h1>
+<p>Let’s try to implement this idea in a toy dataset we use to predict a readability score from the number of sentences.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/utils/read.table.html'>read.csv</a></span><span class='op'>(</span><span class='st'>'./data/readability_sub.csv'</span>,header<span class='op'>=</span><span class='cn'>TRUE</span><span class='op'>)</span></span>
@@ -2643,10 +2622,7 @@ readability score from the number of sentences.</p>
 20  0.34523284  0.09299514 -0.67548411</code></pre>
 </div>
 <h2 id="iteration-0">Iteration 0</h2>
-<p>We start with a simple model that uses the average target outcome to
-predict the readability for all observations in this toy dataset. We
-calculate the predictions and residuals from this initial
-<strong>intercept-only</strong> model.</p>
+<p>We start with a simple model that uses the average target outcome to predict the readability for all observations in this toy dataset. We calculate the predictions and residuals from this initial <strong>intercept-only</strong> model.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred0</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>target</span><span class='op'>)</span></span>
@@ -2684,10 +2660,7 @@ calculate the predictions and residuals from this initial
 <pre><code>[1] 17.73309</code></pre>
 </div>
 <h2 id="iteration-1">Iteration 1</h2>
-<p>Now, we fit a tree model to predict the residuals of Iteration 0 from
-the two predictors (Features V220 and V166). Notice that we fix the
-value of specific parameters while fitting the tree model (e.g.,
-<code>cp</code>, <code>minsplit</code>,<code>maxdepth</code>).</p>
+<p>Now, we fit a tree model to predict the residuals of Iteration 0 from the two predictors (Features V220 and V166). Notice that we fix the value of specific parameters while fitting the tree model (e.g., <code>cp</code>, <code>minsplit</code>,<code>maxdepth</code>).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/bethatkinson/rpart'>rpart</a></span><span class='op'>)</span></span>
@@ -2722,8 +2695,7 @@ value of specific parameters while fitting the tree model (e.g.,
         19         20 
 -0.4323615  0.4220391 </code></pre>
 </div>
-<p>Now, let’s add the predicted residuals from Iteration 1 to the
-predictions from Iteration 0 to obtain the new predictions.</p>
+<p>Now, let’s add the predicted residuals from Iteration 1 to the predictions from Iteration 0 to obtain the new predictions.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred1</span>  <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred0</span> <span class='op'>+</span> <span class='va'>pr.res</span></span>
@@ -2763,8 +2735,7 @@ predictions from Iteration 0 to obtain the new predictions.</p>
 <p><img src="lecture-7b_files/figure-html5/unnamed-chunk-7-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
 <h2 id="iteration-2">Iteration 2</h2>
-<p>We repeat Iteration 1, but the only difference is that we now fit a
-tree model to predict the residuals at the end of Iteration 1.</p>
+<p>We repeat Iteration 1, but the only difference is that we now fit a tree model to predict the residuals at the end of Iteration 1.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>model2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/rpart/man/rpart.html'>rpart</a></span><span class='op'>(</span>formula <span class='op'>=</span> <span class='va'>res1</span> <span class='op'>~</span>  <span class='va'>V166</span> <span class='op'>+</span> <span class='va'>V220</span>,</span>
@@ -2796,8 +2767,7 @@ tree model to predict the residuals at the end of Iteration 1.</p>
         19         20 
  0.8912203  0.1295162 </code></pre>
 </div>
-<p>Now, add the predicted residuals from Iteration 2 to the predictions
-from Iteration 1 to obtain the new predictions.</p>
+<p>Now, add the predicted residuals from Iteration 2 to the predictions from Iteration 1 to obtain the new predictions.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred2</span>  <span class='op'>&lt;-</span> <span class='va'>readability_sub</span><span class='op'>$</span><span class='va'>pred1</span> <span class='op'>+</span> <span class='va'>pr.res</span></span>
@@ -2839,109 +2809,41 @@ from Iteration 1 to obtain the new predictions.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-7b_files/figure-html5/unnamed-chunk-11-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<p>We can keep iterating and add tree models as long as we find a tree
-model that improves our predictions (minimizing SSE).</p>
-<h2 id="a-more-formal-introduction-of-gradient-boosting-trees">2. A more
-formal introduction of Gradient Boosting Trees</h2>
-<p>Let <span class="math inline">\(\mathbf{x}_i =
-(x_{i1},x_{i2},x_{i3},...,x_{ij})\)</span> represent a vector of
-observed values for the <span class="math inline">\(i^{th}\)</span>
-observation on <span class="math inline">\(j\)</span> predictor
-variables, and <span class="math inline">\(y_i\)</span> is the value of
-the target outcome for the <span class="math inline">\(i^{th}\)</span>
-observation. A gradient-boosted tree model is an ensemble of <span
-class="math inline">\(T\)</span> different tree models sequentially
-developed, and the final prediction of the outcome is obtained by using
-an additive function as</p>
-<p><span class="math display">\[ \hat{y_i} =
-\sum_{t=1}^{T}f_t(\mathbf{x}_i),\]</span></p>
-<p>where <span class="math inline">\(f_t\)</span> is a tree model
-obtained at Iteration <span class="math inline">\(t\)</span> from the
-residuals at Iteration <span class="math inline">\(t-1\)</span>.</p>
-<p>The algorithm optimizes an objective function <span
-class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span>
-in an additive manner. This objective loss function can be defined as
-the sum of squared errors when the outcome is continuous or logistic
-loss when the outcome is categorical.</p>
-<p>The algorithm starts with a constant prediction. For instance, we
-start with the average outcome in the above example. Then, a new tree
-model that minimizes the objective loss function is searched and added
-at each iteration.</p>
-<p><span class="math display">\[\hat{y}_{i}^{(0)} = \bar{y}\]</span>
-<span class="math display">\[\hat{y}_{i}^{(1)} = \hat{y}_{i}^{(0)} +
-\alpha f_1(\mathbf{x}_i)\]</span></p>
-<p><span class="math display">\[\hat{y}_{i}^{(2)} = \hat{y}_{i}^{(1)} +
-\alpha f_2(\mathbf{x}_i)\]</span> <span
-class="math display">\[.\]</span> <span
-class="math display">\[.\]</span> <span
-class="math display">\[.\]</span> <span
-class="math display">\[\hat{y}_{i}^{(t)} = \hat{y}_{i}^{(t-1)} + \alpha
-f_t(\mathbf{x}_i)\]</span></p>
-<p>Notice that I added a multiplier, <span
-class="math inline">\(\alpha\)</span> while adding our predictions at
-each iteration. In the above example, we fixed this multiplier to 1,
-<span class="math inline">\(\alpha = 1\)</span>, as we added a whole new
-prediction to the previous prediction. This multiplier in machine
-learning literature is called the <strong>learning rate</strong>. We
-could also choose to add only a fraction of new predictions (e.g., <span
-class="math inline">\(\alpha = 0.1,0.05,0.01,0.001\)</span>) at each
-iteration.</p>
-<p>The smaller the learning rate, the more iterations (more tree models)
-we will need to achieve the same level of performance. So, the number of
-iterations (number of tree models, <span
-class="math inline">\(T\)</span>) and the learning rate (<span
-class="math inline">\(\alpha\)</span>) play in tandem. These two
-parameters are known as the <strong>boosting hyperparameters</strong>
-and need to be tuned.</p>
-<p>Think about choosing a <strong>learning rate</strong> as choosing
-your speed on a highway and <strong>number of trees</strong> as the time
-it takes to arrive at your destination. Suppose you are traveling from
-Eugene to Portland on I-5. If you drive 40 miles/hour, you are less
-likely to involve in an accident because you are more aware of your
-surroundings, but it will take 3-4 hours to arrive at your destination.
-If you are 200 miles/hour, it will only take an hour to arrive at your
-destination, assuming you will not have an accident on the way (which is
-very likely). So, you try to find a speed level that is fast enough to
-arrive at your destination and safe enough not to have an accident.</p>
+<p>We can keep iterating and add tree models as long as we find a tree model that improves our predictions (minimizing SSE).</p>
+<h2 id="a-more-formal-introduction-of-gradient-boosting-trees">2. A more formal introduction of Gradient Boosting Trees</h2>
+<p>Let <span class="math inline">\(\mathbf{x}_i = (x_{i1},x_{i2},x_{i3},...,x_{ij})\)</span> represent a vector of observed values for the <span class="math inline">\(i^{th}\)</span> observation on <span class="math inline">\(j\)</span> predictor variables, and <span class="math inline">\(y_i\)</span> is the value of the target outcome for the <span class="math inline">\(i^{th}\)</span> observation. A gradient-boosted tree model is an ensemble of <span class="math inline">\(T\)</span> different tree models sequentially developed, and the final prediction of the outcome is obtained by using an additive function as</p>
+<p><span class="math display">\[ \hat{y_i} = \sum_{t=1}^{T}f_t(\mathbf{x}_i),\]</span></p>
+<p>where <span class="math inline">\(f_t\)</span> is a tree model obtained at Iteration <span class="math inline">\(t\)</span> from the residuals at Iteration <span class="math inline">\(t-1\)</span>.</p>
+<p>The algorithm optimizes an objective function <span class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span> in an additive manner. This objective loss function can be defined as the sum of squared errors when the outcome is continuous or logistic loss when the outcome is categorical.</p>
+<p>The algorithm starts with a constant prediction. For instance, we start with the average outcome in the above example. Then, a new tree model that minimizes the objective loss function is searched and added at each iteration.</p>
+<p><span class="math display">\[\hat{y}_{i}^{(0)} = \bar{y}\]</span> <span class="math display">\[\hat{y}_{i}^{(1)} = \hat{y}_{i}^{(0)} + \alpha f_1(\mathbf{x}_i)\]</span></p>
+<p><span class="math display">\[\hat{y}_{i}^{(2)} = \hat{y}_{i}^{(1)} + \alpha f_2(\mathbf{x}_i)\]</span> <span class="math display">\[.\]</span> <span class="math display">\[.\]</span> <span class="math display">\[.\]</span> <span class="math display">\[\hat{y}_{i}^{(t)} = \hat{y}_{i}^{(t-1)} + \alpha f_t(\mathbf{x}_i)\]</span></p>
+<p>Notice that I added a multiplier, <span class="math inline">\(\alpha\)</span> while adding our predictions at each iteration. In the above example, we fixed this multiplier to 1, <span class="math inline">\(\alpha = 1\)</span>, as we added a whole new prediction to the previous prediction. This multiplier in machine learning literature is called the <strong>learning rate</strong>. We could also choose to add only a fraction of new predictions (e.g., <span class="math inline">\(\alpha = 0.1,0.05,0.01,0.001\)</span>) at each iteration.</p>
+<p>The smaller the learning rate, the more iterations (more tree models) we will need to achieve the same level of performance. So, the number of iterations (number of tree models, <span class="math inline">\(T\)</span>) and the learning rate (<span class="math inline">\(\alpha\)</span>) play in tandem. These two parameters are known as the <strong>boosting hyperparameters</strong> and need to be tuned.</p>
+<p>Think about choosing a <strong>learning rate</strong> as choosing your speed on a highway and <strong>number of trees</strong> as the time it takes to arrive at your destination. Suppose you are traveling from Eugene to Portland on I-5. If you drive 40 miles/hour, you are less likely to involve in an accident because you are more aware of your surroundings, but it will take 3-4 hours to arrive at your destination. If you are 200 miles/hour, it will only take an hour to arrive at your destination, assuming you will not have an accident on the way (which is very likely). So, you try to find a speed level that is fast enough to arrive at your destination and safe enough not to have an accident.</p>
 <hr />
 <div id="infobox">
 <center style="color:black;">
 <p><strong>TECHNICAL NOTE</strong></p>
 </center>
-<p>Why do people call it <strong>Gradient</strong> Boosting? It turns
-out that the updates at each iteration based on the residuals from a
-previous model are related to the concept of negative gradient (first
-derivative) of the objective loss function with respect to the predicted
-values from the previous step.</p>
-<p><span class="math display">\[-g_i^t = -\frac{\partial
-\mathfrak{L}(y_i,\hat{y}_i^{t-1})}{\partial \hat{y}_i^{t-1}} =
-\hat{y}_{i}^{(t)} - \hat{y}_{i}^{(t-1)} \]</span></p>
+<p>Why do people call it <strong>Gradient</strong> Boosting? It turns out that the updates at each iteration based on the residuals from a previous model are related to the concept of negative gradient (first derivative) of the objective loss function with respect to the predicted values from the previous step.</p>
+<p><span class="math display">\[-g_i^t = -\frac{\partial \mathfrak{L}(y_i,\hat{y}_i^{t-1})}{\partial \hat{y}_i^{t-1}} = \hat{y}_{i}^{(t)} - \hat{y}_{i}^{(t-1)} \]</span></p>
 <p>The general logic of gradient boosting works as</p>
 <ul>
-<li><p>take a differentiable loss function, <span
-class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span>,
-that summarizes the distance between observed and predicted
-values,</p></li>
-<li><p>start with an initial model to obtain initial predictions, <span
-class="math inline">\(f_0(\mathbf{x}_i)\)</span>,</p></li>
+<li><p>take a differentiable loss function, <span class="math inline">\(\mathfrak{L}(\mathbf{y},\mathbf{\hat{y}})\)</span>, that summarizes the distance between observed and predicted values,</p></li>
+<li><p>start with an initial model to obtain initial predictions, <span class="math inline">\(f_0(\mathbf{x}_i)\)</span>,</p></li>
 <li><p>iterate until termination:</p>
 <ul>
-<li><p>calculate the negative gradients of the loss function with
-respect to predictions from the previous step</p></li>
+<li><p>calculate the negative gradients of the loss function with respect to predictions from the previous step</p></li>
 <li><p>fit a tree model to the negative gradients</p></li>
-<li><p>update the predictions (with a multiplier, a.k.a learning
-rate).</p></li>
+<li><p>update the predictions (with a multiplier, a.k.a learning rate).</p></li>
 </ul></li>
 </ul>
-<p>Most software uses mathematical approximations and computational
-hocus pocus to do these computations for faster implementation.</p>
+<p>Most software uses mathematical approximations and computational hocus pocus to do these computations for faster implementation.</p>
 </div>
 <hr />
-<h1 id="fitting-gradient-boosting-trees-using-the-gbm-package">3.
-Fitting Gradient Boosting Trees using the <code>gbm</code> package</h1>
-<p>The gradient boosting trees can be fitted using the <code>gbm</code>
-function from the `gbm package. The code below tries to replicate our
-example above using the toy dataset.</p>
+<h1 id="fitting-gradient-boosting-trees-using-the-gbm-package">3. Fitting Gradient Boosting Trees using the <code>gbm</code> package</h1>
+<p>The gradient boosting trees can be fitted using the <code>gbm</code> function from the `gbm package. The code below tries to replicate our example above using the toy dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/gbm-developers/gbm'>gbm</a></span><span class='op'>)</span></span>
@@ -2960,50 +2862,25 @@ example above using the toy dataset.</p>
 </div>
 <p><strong>Model and Data:</strong></p>
 <ul>
-<li><p><code>formula</code>, a description of the outcome and predictive
-variables in the model using column names</p></li>
-<li><p><code>data</code>, the name of the data object to look for the
-variables in the formula statement</p></li>
-<li><p><code>distribution</code>, a character to specify the type of
-objective loss function to optimize. ‘gaussian’ is typically used for
-continuous outcomes(minimize the squared error), and ‘bernoulli’ is
-typically used for the binary outcomes (minimizes the logistic
-loss)</p></li>
+<li><p><code>formula</code>, a description of the outcome and predictive variables in the model using column names</p></li>
+<li><p><code>data</code>, the name of the data object to look for the variables in the formula statement</p></li>
+<li><p><code>distribution</code>, a character to specify the type of objective loss function to optimize. ‘gaussian’ is typically used for continuous outcomes(minimize the squared error), and ‘bernoulli’ is typically used for the binary outcomes (minimizes the logistic loss)</p></li>
 </ul>
 <p><strong>Hyperparameters:</strong></p>
 <ul>
-<li><p><code>n.trees</code>, number of trees to fit (the number of
-iterations)</p></li>
+<li><p><code>n.trees</code>, number of trees to fit (the number of iterations)</p></li>
 <li><p><code>shrinkage</code>, learning rate.</p></li>
-<li><p><code>interaction.depth</code>, the maximum depth of each tree
-developed at each iteration</p></li>
-<li><p><code>n.minobsinnode</code>, the minimum number of observations
-in each terminal note of tree models at each iteration</p></li>
+<li><p><code>interaction.depth</code>, the maximum depth of each tree developed at each iteration</p></li>
+<li><p><code>n.minobsinnode</code>, the minimum number of observations in each terminal note of tree models at each iteration</p></li>
 </ul>
 <p><strong>Stochastic Gradient Boosting:</strong></p>
 <ul>
-<li><code>bag.fraction</code>, the proportion of observations to be
-randomly selected for developing a new tree at each iteration.</li>
+<li><code>bag.fraction</code>, the proportion of observations to be randomly selected for developing a new tree at each iteration.</li>
 </ul>
-<p>In Gradient Boosting Trees, we use all observations (100% of rows)
-when we develop a new tree model at each iteration. So, we can set
-<code>bag.fraction=1</code>, and <code>gbm</code> fits a gradient
-boosting tree model. On the other hand, adding a random component may
-help yield better performance. You can think about this as a marriage of
-Bagging and Boosting. So, we may want to take a random sample of
-observations to develop a tree model at each iteration. For instance, if
-you set <code>bag.fraction=.9</code>, the algorithm will randomly sample
-90% of the observations at each iteration before fitting the new tree
-model to residuals from the previous step. When
-<code>bag.fraction</code> is lower than 1, this is called
-<strong>Stochastic Gradient Boosting Trees</strong>.
-<code>bag.fraction</code> can also be considered a hyperparameter to
-tune by trying different values to find an optimal value, or it can be
-fixed to a certain number.</p>
+<p>In Gradient Boosting Trees, we use all observations (100% of rows) when we develop a new tree model at each iteration. So, we can set <code>bag.fraction=1</code>, and <code>gbm</code> fits a gradient boosting tree model. On the other hand, adding a random component may help yield better performance. You can think about this as a marriage of Bagging and Boosting. So, we may want to take a random sample of observations to develop a tree model at each iteration. For instance, if you set <code>bag.fraction=.9</code>, the algorithm will randomly sample 90% of the observations at each iteration before fitting the new tree model to residuals from the previous step. When <code>bag.fraction</code> is lower than 1, this is called <strong>Stochastic Gradient Boosting Trees</strong>. <code>bag.fraction</code> can also be considered a hyperparameter to tune by trying different values to find an optimal value, or it can be fixed to a certain number.</p>
 <p><strong>Cross-validation:</strong></p>
 <ul>
-<li><code>cv.folds</code>, number of cross-validation folds to
-perform.</li>
+<li><code>cv.folds</code>, number of cross-validation folds to perform.</li>
 </ul>
 <p><strong>Parallel Processing:</strong></p>
 <ul>
@@ -3030,12 +2907,8 @@ perform.</li>
 </div>
 <p><img src="lecture-7b_files/figure-html5/unnamed-chunk-13-2.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<h1
-id="fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4.
-Fitting Gradient Boosting Trees using the <code>caret</code> package and
-Hyperparameter Tuning</h1>
-<p>The <code>gbm</code> algorithm is available in the <code>caret</code>
-package. Let’s check the hyperparameters available to tune.</p>
+<h1 id="fitting-gradient-boosting-trees-using-the-caret-package-and-hyperparameter-tuning">4. Fitting Gradient Boosting Trees using the <code>caret</code> package and Hyperparameter Tuning</h1>
+<p>The <code>gbm</code> algorithm is available in the <code>caret</code> package. Let’s check the hyperparameters available to tune.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/topepo/caret/'>caret</a></span><span class='op'>)</span></span>
@@ -3048,47 +2921,22 @@ package. Let’s check the hyperparameters available to tune.</p>
 3         shrinkage numeric               Shrinkage
 4    n.minobsinnode numeric Min. Terminal Node Size</code></pre>
 </div>
-<p>The four most critical parameters are all available to tune. It is
-very challenging to find the best combination of values for all these
-four hyperparameters unless you implement a full grid search which may
-take a very long time. You may apply a general sub-optimal strategy to
-tune the hyperparameters step by step, either in pairs or one by one.
-Below is one way to implement such a strategy:</p>
+<p>The four most critical parameters are all available to tune. It is very challenging to find the best combination of values for all these four hyperparameters unless you implement a full grid search which may take a very long time. You may apply a general sub-optimal strategy to tune the hyperparameters step by step, either in pairs or one by one. Below is one way to implement such a strategy:</p>
 <ol type="1">
-<li><p>Fix the <code>interaction.depth</code> and
-<code>n.minobsinnode</code> to a certain value (e.g., interaction.depth
-= 5, n.minobsinnode = 10),</p></li>
-<li><p>Pick a small value of learning rate (<code>shrinkage</code>),
-such as 0.05 or 0.1,</p></li>
-<li><p>Do a grid search and find the optimal number of trees
-(<code>n.trees</code>) using the fixed values at #1 and #2,</p></li>
-<li><p>Fix the <code>n.trees</code> at its optimal value from #3, keep
-<code>shrinkage</code> the same as in #2, and do a two-dimensional grid
-search for <code>interaction.depth</code> and
-<code>n.minobsinnode</code> and find the optimal number of depth and
-minimum observation in a terminal node,</p></li>
-<li><p>Fix the <code>interaction.depth</code> and `n.minobsinnode’at
-their optimal values from #4, lower the learning rate and increase the
-number of trees to see if the model performance can be further
-improved.</p></li>
-<li><p>Fix <code>interaction.depth</code>,<code>n.minobsinnode</code>,
-<code>shrinkage</code>, and <code>n.trees</code> at their optimal values
-from previus steps, and do a grid search for
-<code>bag.fraction</code>.</p></li>
+<li><p>Fix the <code>interaction.depth</code> and <code>n.minobsinnode</code> to a certain value (e.g., interaction.depth = 5, n.minobsinnode = 10),</p></li>
+<li><p>Pick a small value of learning rate (<code>shrinkage</code>), such as 0.05 or 0.1,</p></li>
+<li><p>Do a grid search and find the optimal number of trees (<code>n.trees</code>) using the fixed values at #1 and #2,</p></li>
+<li><p>Fix the <code>n.trees</code> at its optimal value from #3, keep <code>shrinkage</code> the same as in #2, and do a two-dimensional grid search for <code>interaction.depth</code> and <code>n.minobsinnode</code> and find the optimal number of depth and minimum observation in a terminal node,</p></li>
+<li><p>Fix the <code>interaction.depth</code> and `n.minobsinnode’at their optimal values from #4, lower the learning rate and increase the number of trees to see if the model performance can be further improved.</p></li>
+<li><p>Fix <code>interaction.depth</code>,<code>n.minobsinnode</code>, <code>shrinkage</code>, and <code>n.trees</code> at their optimal values from previus steps, and do a grid search for <code>bag.fraction</code>.</p></li>
 </ol>
-<p>You will find an interactive app you can play at the link below to
-understand the dynamics among these hyperparameters and optimize them in
-toy examples.</p>
-<p><a
-href="http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html"
-class="uri">http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html</a></p>
-<h1 id="predicting-readability-scores-using-gradient-boosting-trees">5.
-Predicting Readability Scores Using Gradient Boosting Trees</h1>
+<p>You will find an interactive app you can play at the link below to understand the dynamics among these hyperparameters and optimize them in toy examples.</p>
+<p><a href="http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html" class="uri">http://arogozhnikov.github.io/2016/07/05/gradient_boosting_playground.html</a></p>
+<h1 id="predicting-readability-scores-using-gradient-boosting-trees">5. Predicting Readability Scores Using Gradient Boosting Trees</h1>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>First, we import and prepare data for modeling. Then, we split the
-data into training and test pieces.</p>
+<p>First, we import and prepare data for modeling. Then, we split the data into training and test pieces.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/tidymodels/recipes'>recipes</a></span><span class='op'>)</span></span>
@@ -3162,14 +3010,7 @@ data into training and test pieces.</p>
 </div>
 </div>
 <p><strong>Step 1: Tune the number of trees</strong></p>
-<p>Now, we will fix the learning rate at 0.1
-(<code>shrinkage=0.1</code>), interaction depth at 5
-(<code>interaction.depth=5</code>), and the minimum number of
-observations at 10 (<code>n.minobsinnode = 10</code>). We will do a grid
-search for the number of trees from 1 to 500
-(<code>n.trees = 1:500</code>). Note that I fix the bag fraction at one
-and passed it as an argument in the <code>caret::train</code> function
-because it is not allowed in the hyperparameter grid.</p>
+<p>Now, we will fix the learning rate at 0.1 (<code>shrinkage=0.1</code>), interaction depth at 5 (<code>interaction.depth=5</code>), and the minimum number of observations at 10 (<code>n.minobsinnode = 10</code>). We will do a grid search for the number of trees from 1 to 500 (<code>n.trees = 1:500</code>). Note that I fix the bag fraction at one and passed it as an argument in the <code>caret::train</code> function because it is not allowed in the hyperparameter grid.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Grid Settings  </span></span>
@@ -3203,28 +3044,17 @@ $final
 $prediction
 [1] NA NA NA</code></pre>
 </div>
-<p>It took about 3 minutes to run. We can now look at the plot and
-examine how the cross-validated RMSE changes as a function of the number
-of trees.</p>
+<p>It took about 3 minutes to run. We can now look at the plot and examine how the cross-validated RMSE changes as a function of the number of trees.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm1</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span></code></pre>
 </div>
 <p><img src="lecture-7b_files/figure-html5/unnamed-chunk-22-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<p>It indicates there is not much improvement after 300 trees with these
-settings (this is just eyeballing, there is nothing specific about how
-to come up with this number). So, I will fix the number of trees to 300
-for the next step.</p>
-<p><strong>Step 2: Tune the interaction depth and minimum number of
-observations</strong></p>
-<p>Now, we will fix the number of trees at 300
-(<code>n.trees = 300</code>) and the learning rate at 0.1
-(<code>shrinkage=0.1</code>).</p>
-<p>Then, we will do a grid search by assigning values for the
-interaction depth from 1 to 15 and values for the minimum number of
-observations at 5, 10, 20, 30, 40, and 50. We still keep the bag
-fraction as 1.</p>
+<p>It indicates there is not much improvement after 300 trees with these settings (this is just eyeballing, there is nothing specific about how to come up with this number). So, I will fix the number of trees to 300 for the next step.</p>
+<p><strong>Step 2: Tune the interaction depth and minimum number of observations</strong></p>
+<p>Now, we will fix the number of trees at 300 (<code>n.trees = 300</code>) and the learning rate at 0.1 (<code>shrinkage=0.1</code>).</p>
+<p>Then, we will do a grid search by assigning values for the interaction depth from 1 to 15 and values for the minimum number of observations at 5, 10, 20, 30, 40, and 50. We still keep the bag fraction as 1.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
@@ -3256,10 +3086,7 @@ $final
 $prediction
 [1] NA NA NA</code></pre>
 </div>
-<p>This search took about 1 hour and 10 minutes. If we look at the
-cross-validates RMSE for all these 90 possible conditions, we see that
-the best result comes out when the interaction depth is equal to 9, and
-the minimum number of observations is equal to 50.</p>
+<p>This search took about 1 hour and 10 minutes. If we look at the cross-validates RMSE for all these 90 possible conditions, we see that the best result comes out when the interaction depth is equal to 9, and the minimum number of observations is equal to 50.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>gbm2</span>,type<span class='op'>=</span><span class='st'>'l'</span><span class='op'>)</span></span></code></pre>
@@ -3278,14 +3105,8 @@ the minimum number of observations is equal to 50.</p>
     Rsquared       MAE     RMSESD RsquaredSD      MAESD
 54 0.6904758 0.4582852 0.02670278 0.03351747 0.02441325</code></pre>
 </div>
-<p><strong>Step 3: Lower the learning rate and increase the number of
-trees</strong></p>
-<p>Now, we will fix the interaction depth at 9
-(<code>interaction.depth = 9</code>) and the minimum number of
-observations at 50 (<code>n.minobsinnode = 50</code>). We will lower the
-learning rate to 0.01 (<code>shrinkage=0.01</code>) and increase the
-number of trees to 8000 (<code>n.trees = 1:8000</code>) to explore if a
-lower learning rate improves the performance.</p>
+<p><strong>Step 3: Lower the learning rate and increase the number of trees</strong></p>
+<p>Now, we will fix the interaction depth at 9 (<code>interaction.depth = 9</code>) and the minimum number of observations at 50 (<code>n.minobsinnode = 50</code>). We will lower the learning rate to 0.01 (<code>shrinkage=0.01</code>) and increase the number of trees to 8000 (<code>n.trees = 1:8000</code>) to explore if a lower learning rate improves the performance.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
@@ -3335,21 +3156,11 @@ $prediction
       Rsquared      MAE     RMSESD RsquaredSD      MAESD
 7948 0.6990292 0.453076 0.02218744 0.02806958 0.01829231</code></pre>
 </div>
-<p>This run took about another 40 minutes. The best performance was
-obtained with a model of 7948 trees, and yielded an RMSE value of
-0.5685. We can stop here and decide that this is our final model. Or, we
-can play with <code>bag.fraction</code> and see if we can improve the
-performance a little more.</p>
+<p>This run took about another 40 minutes. The best performance was obtained with a model of 7948 trees, and yielded an RMSE value of 0.5685. We can stop here and decide that this is our final model. Or, we can play with <code>bag.fraction</code> and see if we can improve the performance a little more.</p>
 <p><strong>Step 4: Tune Bag Fraction</strong></p>
-<p>To play with the <code>bag.fraction</code>, we should write our own
-syntax as <code>caret::train</code> does not allow it to be manipulated
-as a hyperparameter.</p>
-<p>Notice that I fixed the values of <code>shrinkage</code>,
-<code>n.trees</code>,<code>interaction.depth</code>,<code>n.minobsinnode</code>
-at their optimal values.</p>
-<p>Then, I write a <code>for</code> loop to iterate over different
-values of <code>bag.fraction</code> from 0.1 to 1 with increments of
-0.05. I save the model object from each iteration in a list object.</p>
+<p>To play with the <code>bag.fraction</code>, we should write our own syntax as <code>caret::train</code> does not allow it to be manipulated as a hyperparameter.</p>
+<p>Notice that I fixed the values of <code>shrinkage</code>, <code>n.trees</code>,<code>interaction.depth</code>,<code>n.minobsinnode</code> at their optimal values.</p>
+<p>Then, I write a <code>for</code> loop to iterate over different values of <code>bag.fraction</code> from 0.1 to 1 with increments of 0.05. I save the model object from each iteration in a list object.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
@@ -3376,8 +3187,7 @@ values of <code>bag.fraction</code> from 0.1 to 1 with increments of
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>It took about 17 hours to complete with ten cores. Let’s check if it
-improved the performance.</p>
+<p>It took about 17 hours to complete with ten cores. Let’s check if it improved the performance.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>cv.rmse</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='op'>)</span></span>
@@ -3395,10 +3205,8 @@ improved the performance.</p>
 </div>
 <p><img src="lecture-7b_files/figure-html5/unnamed-chunk-31-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<p>The best performance was obtained when <code>bag.fr</code> is equal
-to 0.40.</p>
-<p>Finally, we can check the performance of the final model with these
-settings on the test dataset and compare it to other methods.</p>
+<p>The best performance was obtained when <code>bag.fr</code> is equal to 0.40.</p>
+<p>Finally, we can check the performance of the final model with these settings on the test dataset and compare it to other methods.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>final.gbm</span> <span class='op'>&lt;-</span> <span class='va'>my.models</span><span class='op'>[[</span><span class='fl'>7</span><span class='op'>]</span><span class='op'>]</span></span>
@@ -3485,14 +3293,11 @@ settings on the test dataset and compare it to other methods.</p>
 </tr>
 </tbody>
 </table>
-<h1 id="predicting-recidivism-using-gradient-boosting-trees">6.
-Predicting Recidivism Using Gradient Boosting Trees</h1>
+<h1 id="predicting-recidivism-using-gradient-boosting-trees">6. Predicting Recidivism Using Gradient Boosting Trees</h1>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p>The code below implements a similar strategy and demonstrates how to
-fit a Gradient Boosting Tree model for the Recidivism dataset to predict
-recidivism in Year 2.</p>
+<p>The code below implements a similar strategy and demonstrates how to fit a Gradient Boosting Tree model for the Recidivism dataset to predict recidivism in Year 2.</p>
 <p><strong>Import the dataset and initial data preparation</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3625,13 +3430,8 @@ recidivism in Year 2.</p>
 <span>                     summaryFunction <span class='op'>=</span> <span class='va'>mnLogLoss</span><span class='op'>)</span></span></code></pre>
 </div>
 </div>
-<p><strong>Step 1: Initial model fit to tune the number of
-trees</strong></p>
-<p>We fix the learning rate at 0.1 (<code>shrinkage=0.1</code>),
-interaction depth at 5 (interaction.depth=5), and the minimum number of
-observations at 10 (<code>n.minobsinnode = 10</code>). We do a grid
-search for the optimal number of trees from 1 to 1000
-(<code>n.trees = 1:1000</code>).</p>
+<p><strong>Step 1: Initial model fit to tune the number of trees</strong></p>
+<p>We fix the learning rate at 0.1 (<code>shrinkage=0.1</code>), interaction depth at 5 (interaction.depth=5), and the minimum number of observations at 10 (<code>n.minobsinnode = 10</code>). We do a grid search for the optimal number of trees from 1 to 1000 (<code>n.trees = 1:1000</code>).</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
@@ -3658,14 +3458,9 @@ search for the optimal number of trees from 1 to 1000
 <pre><code>    n.trees interaction.depth shrinkage n.minobsinnode
 178     178                 5       0.1             10</code></pre>
 </div>
-<p>It indicates that a model with 178 trees is optimal at the initial
-search.</p>
-<p><strong>Step 2: Tune the interaction depth and minimum number of
-observations</strong></p>
-<p>We fix the number of trees at 178 (<code>n.trees = 178</code>) and
-the learning rate at 0.1 (<code>shrinkage=0.1</code>). Then, we do a
-grid search by assigning values for the interaction depth from 1 to 15
-and the minimum number of observations at 5, 10, 20, 30, 40, and 50.</p>
+<p>It indicates that a model with 178 trees is optimal at the initial search.</p>
+<p><strong>Step 2: Tune the interaction depth and minimum number of observations</strong></p>
+<p>We fix the number of trees at 178 (<code>n.trees = 178</code>) and the learning rate at 0.1 (<code>shrinkage=0.1</code>). Then, we do a grid search by assigning values for the interaction depth from 1 to 15 and the minimum number of observations at 5, 10, 20, 30, 40, and 50.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.1</span>,</span>
@@ -3691,17 +3486,9 @@ and the minimum number of observations at 5, 10, 20, 30, 40, and 50.</p>
 <pre><code>   n.trees interaction.depth shrinkage n.minobsinnode
 41     178                 7       0.1             40</code></pre>
 </div>
-<p>The search indicates that the best performance is obtained when the
-interaction depth equals 7 and the minimum number of observations equals
-40.</p>
-<p><strong>Step 3: Lower the learning rate and increase the number of
-trees</strong></p>
-<p>We fix the interaction depth at 7
-(<code>interaction.depth = 4</code>) and the minimum number of
-observations at 40 (<code>n.minobsinnode = 40</code>). We will lower the
-learning rate to 0.01 (shrinkage=0.01) and increase the number of trees
-to 10000 (<code>n.trees = 1:10000</code>) to explore if a lower learning
-rate improves the performance.</p>
+<p>The search indicates that the best performance is obtained when the interaction depth equals 7 and the minimum number of observations equals 40.</p>
+<p><strong>Step 3: Lower the learning rate and increase the number of trees</strong></p>
+<p>We fix the interaction depth at 7 (<code>interaction.depth = 4</code>) and the minimum number of observations at 40 (<code>n.minobsinnode = 40</code>). We will lower the learning rate to 0.01 (shrinkage=0.01) and increase the number of trees to 10000 (<code>n.trees = 1:10000</code>) to explore if a lower learning rate improves the performance.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>grid</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/expand.grid.html'>expand.grid</a></span><span class='op'>(</span>shrinkage         <span class='op'>=</span> <span class='fl'>0.01</span>,</span>
@@ -3772,8 +3559,7 @@ rate improves the performance.</p>
 </div>
 <pre><code>[1] 0.7</code></pre>
 </div>
-<p>The best result is obtained when the bag fraction is 0.7. So, we will
-proceed with that as our final model.</p>
+<p>The best result is obtained when the bag fraction is 0.7. So, we will proceed with that as our final model.</p>
 <p><strong>Step 5: Final Predictions on Test Set</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3958,8 +3744,7 @@ proceed with that as our final model.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb35"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -3991,7 +3776,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

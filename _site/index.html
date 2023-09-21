@@ -789,6 +789,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1861,15 +1862,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2068,7 +2075,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2201,40 +2208,21 @@ Assignments
 <h1>Applied Machine Learning for Educational Data Science</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>The fourth course in the Educational Data Science specialization
-at the University of Oregon</p></p>
+<p><p>The fourth course in the Educational Data Science specialization at the University of Oregon</p></p>
 </div>
 
 
 <div class="d-article">
-<p>This course focuses on applied machine learning (ML), with an
-emphasis on supervised This course is the fourth in a sequence of
-courses on educational data science (EDS), taught using free and
-open-source statistical programming languages. EDLD 654: Machine
-Learning for Educational Data Science aims to teach how to apply several
-predictive modeling approaches to educational and social science
-datasets, emphasizing supervised learning methods that have emerged over
-the last several decades. The primary goal of these methods is to create
-models capable of making accurate predictions, which generally implies
-less emphasis on statistical inference.</p>
+<p>This course focuses on applied machine learning (ML), with an emphasis on supervised This course is the fourth in a sequence of courses on educational data science (EDS), taught using free and open-source statistical programming languages. EDLD 654: Machine Learning for Educational Data Science aims to teach how to apply several predictive modeling approaches to educational and social science datasets, emphasizing supervised learning methods that have emerged over the last several decades. The primary goal of these methods is to create models capable of making accurate predictions, which generally implies less emphasis on statistical inference.</p>
 <p>By the end of this course, students will be able to</p>
 <ul>
-<li><p>pre-process continuous, categorical, and text data to extract
-meaningful features to include in a predictive model,</p></li>
-<li><p>describe the framework of supervised learning methods, modeling
-process, and how it differs from standard inferential
-statistics,</p></li>
-<li><p>construct various supervised learning models for both
-classification- and regression-based problems, including linear and
-logistic regression (for prediction rather than inference), penalized
-regression (ridge/lasso), various decision tree models (including bagged
-trees and random forests), and k-nearest neighbor models,</p></li>
-<li><p>discuss the bias-variance tradeoff in supervised learning and
-apply the concept in making decisions about model selection,</p></li>
+<li><p>pre-process continuous, categorical, and text data to extract meaningful features to include in a predictive model,</p></li>
+<li><p>describe the framework of supervised learning methods, modeling process, and how it differs from standard inferential statistics,</p></li>
+<li><p>construct various supervised learning models for both classification- and regression-based problems, including linear and logistic regression (for prediction rather than inference), penalized regression (ridge/lasso), various decision tree models (including bagged trees and random forests), and k-nearest neighbor models,</p></li>
+<li><p>discuss the bias-variance tradeoff in supervised learning and apply the concept in making decisions about model selection,</p></li>
 <li><p>measure and contrast the performance of various models.</p></li>
 </ul>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -2257,7 +2245,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2546,32 +2553,17 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#the-concept-of-bootstrap-aggregation-bagging"
-id="toc-the-concept-of-bootstrap-aggregation-bagging">1. The Concept of
-Bootstrap Aggregation (BAGGING)</a>
+<li><a href="#the-concept-of-bootstrap-aggregation-bagging" id="toc-the-concept-of-bootstrap-aggregation-bagging">1. The Concept of Bootstrap Aggregation (BAGGING)</a>
 <ul>
-<li><a href="#bagging-do-it-yourself-with-the-rpart-package"
-id="toc-bagging-do-it-yourself-with-the-rpart-package">1.1. BAGGING: Do
-It Yourself with the <code>rpart</code> package</a></li>
-<li><a href="#bagging-with-the-ranger-and-carettrain-packages"
-id="toc-bagging-with-the-ranger-and-carettrain-packages">1.2. BAGGING
-with the <code>ranger</code> and <code>caret::train()</code>
-packages</a></li>
-<li><a href="#tuning-the-number-of-tree-models-in-bagging"
-id="toc-tuning-the-number-of-tree-models-in-bagging">1.3. Tuning the
-Number of Tree Models in Bagging</a></li>
+<li><a href="#bagging-do-it-yourself-with-the-rpart-package" id="toc-bagging-do-it-yourself-with-the-rpart-package">1.1. BAGGING: Do It Yourself with the <code>rpart</code> package</a></li>
+<li><a href="#bagging-with-the-ranger-and-carettrain-packages" id="toc-bagging-with-the-ranger-and-carettrain-packages">1.2. BAGGING with the <code>ranger</code> and <code>caret::train()</code> packages</a></li>
+<li><a href="#tuning-the-number-of-tree-models-in-bagging" id="toc-tuning-the-number-of-tree-models-in-bagging">1.3. Tuning the Number of Tree Models in Bagging</a></li>
 </ul></li>
-<li><a href="#random-forests" id="toc-random-forests">2. Random
-Forests</a></li>
-<li><a
-href="#predicting-recidivism-using-bagges-trees-and-random-forests"
-id="toc-predicting-recidivism-using-bagges-trees-and-random-forests">3.
-Predicting Recidivism using Bagges Trees and Random Forests</a>
+<li><a href="#random-forests" id="toc-random-forests">2. Random Forests</a></li>
+<li><a href="#predicting-recidivism-using-bagges-trees-and-random-forests" id="toc-predicting-recidivism-using-bagges-trees-and-random-forests">3. Predicting Recidivism using Bagges Trees and Random Forests</a>
 <ul>
-<li><a href="#bagged-trees" id="toc-bagged-trees">3.1. Bagged
-Trees</a></li>
-<li><a href="#random-forests-1" id="toc-random-forests-1">3.2. Random
-Forests</a></li>
+<li><a href="#bagged-trees" id="toc-bagged-trees">3.1. Bagged Trees</a></li>
+<li><a href="#random-forests-1" id="toc-random-forests-1">3.2. Random Forests</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -2593,23 +2585,11 @@ Forests</a></li>
 }
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:10:08 ]</p>
-<h1 id="the-concept-of-bootstrap-aggregation-bagging">1. The Concept of
-Bootstrap Aggregation (BAGGING)</h1>
-<p>The concept of bagging is based on the idea that predictions from an
-ensemble of models are better than any single model predictions. Suppose
-we randomly draw multiple samples from a population and then develop a
-prediction model for an outcome using each sample. The aggregated
-predictions from these multiple models would perform better due to the
-reduced model variance (aggregation would reduce noise due to
-sampling).</p>
-<p>Due to the lack of access to the population (even if we assume there
-is a well-defined population), we can mimic the sampling from a
-population by replacing it with <strong>bootstrapping</strong>. A
-<strong>Bootstrap sample</strong> is a random sample with replacement
-from the sample data.</p>
-<p>Suppose there is sample data with ten observations and three
-predictors. Below are five bootstrap samples from this sample data.</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:37:03 ]</p>
+<h1 id="the-concept-of-bootstrap-aggregation-bagging">1. The Concept of Bootstrap Aggregation (BAGGING)</h1>
+<p>The concept of bagging is based on the idea that predictions from an ensemble of models are better than any single model predictions. Suppose we randomly draw multiple samples from a population and then develop a prediction model for an outcome using each sample. The aggregated predictions from these multiple models would perform better due to the reduced model variance (aggregation would reduce noise due to sampling).</p>
+<p>Due to the lack of access to the population (even if we assume there is a well-defined population), we can mimic the sampling from a population by replacing it with <strong>bootstrapping</strong>. A <strong>Bootstrap sample</strong> is a random sample with replacement from the sample data.</p>
+<p>Suppose there is sample data with ten observations and three predictors. Below are five bootstrap samples from this sample data.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>x1 <span class='op'>=</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>20</span>,<span class='fl'>25</span>,<span class='fl'>30</span>,<span class='fl'>42</span>,<span class='fl'>10</span>,<span class='fl'>60</span>,<span class='fl'>65</span>,<span class='fl'>55</span>,<span class='fl'>80</span>,<span class='fl'>90</span><span class='op'>)</span>,</span>
@@ -2713,26 +2693,14 @@ predictors. Below are five bootstrap samples from this sample data.</p>
 9   80 85 92     I
 8.1 55 80 90     H</code></pre>
 </div>
-<p>The process of bagging is building separate models for each bootstrap
-sample and then applying all these models to a new observation for
-predicting the outcome. Finally, these predictions are aggregated in
-some form (e.g., taking the average) to obtain a final prediction for
-the new observation. The idea of bagging can technically be applied to
-any prediction model (e.g., CNN’s, regression models). During the model
-process from each bootstrap sample, no regularization was applied, and
-models were developed to their full complexity. So, we obtain so many
-unbiased models. While each model has a significant sample variance, we
-hope to reduce this sampling variance by aggregating the predictions
-from all these models at the end.</p>
-<p>   </p>
+<p>The process of bagging is building separate models for each bootstrap sample and then applying all these models to a new observation for predicting the outcome. Finally, these predictions are aggregated in some form (e.g., taking the average) to obtain a final prediction for the new observation. The idea of bagging can technically be applied to any prediction model (e.g., CNN’s, regression models). During the model process from each bootstrap sample, no regularization was applied, and models were developed to their full complexity. So, we obtain so many unbiased models. While each model has a significant sample variance, we hope to reduce this sampling variance by aggregating the predictions from all these models at the end.</p>
+<p> 
+ </p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/bagging.PNG" width="403" style="display: block; margin: auto;" /></p>
 </div>
-<h2 id="bagging-do-it-yourself-with-the-rpart-package">1.1. BAGGING: Do
-It Yourself with the <code>rpart</code> package</h2>
-<p>In this section, we will apply the bagging idea to decision trees to
-predict the readability scores. First, we import and prepare data for
-modeling. Then, we split the data into training and test pieces.</p>
+<h2 id="bagging-do-it-yourself-with-the-rpart-package">1.1. BAGGING: Do It Yourself with the <code>rpart</code> package</h2>
+<p>In this section, we will apply the bagging idea to decision trees to predict the readability scores. First, we import and prepare data for modeling. Then, we split the data into training and test pieces.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Import the dataset</span></span>
@@ -2807,9 +2775,7 @@ modeling. Then, we split the data into training and test pieces.</p>
 <span><span class='op'>}</span></span></code></pre>
 </div>
 </div>
-<p>Now, we will use each of these models to predict the readability
-score for the test data. We will also average these predictions. Then,
-we will save the predictions in a matrix form to compare.</p>
+<p>Now, we will use each of these models to predict the readability score for the test data. We will also average these predictions. Then, we will save the predictions in a matrix form to compare.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -2847,8 +2813,7 @@ we will save the predictions in a matrix form to compare.</p>
 5 -1.024  -1.125  -1.120
 6 -0.252  -0.894  -0.554</code></pre>
 </div>
-<p>Now, let’s compute the RMSE for each model’s predicted scores and the
-RMSE for the average of predicted scores from all ten tree models.</p>
+<p>Now, let’s compute the RMSE for each model’s predicted scores and the RMSE for the average of predicted scores from all ten tree models.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>p1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/MathFun.html'>sqrt</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='op'>(</span><span class='va'>preds</span><span class='op'>$</span><span class='va'>obs</span> <span class='op'>-</span> <span class='va'>preds</span><span class='op'>$</span><span class='va'>model1</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span></span>
@@ -2883,14 +2848,9 @@ RMSE for the average of predicted scores from all ten tree models.</p>
 </div>
 <p><img src="lecture-7a_files/figure-html5/unnamed-chunk-7-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<p>As it is evident, the bagging of 10 different tree models
-significantly improved the predictions on the test dataset.</p>
-<h2 id="bagging-with-the-ranger-and-carettrain-packages">1.2. BAGGING
-with the <code>ranger</code> and <code>caret::train()</code>
-packages</h2>
-<p>Instead of writing your code to implement the idea of bagging for
-decision trees, we can use the <code>ranger</code> method via
-<code>caret::train()</code>.</p>
+<p>As it is evident, the bagging of 10 different tree models significantly improved the predictions on the test dataset.</p>
+<h2 id="bagging-with-the-ranger-and-carettrain-packages">1.2. BAGGING with the <code>ranger</code> and <code>caret::train()</code> packages</h2>
+<p>Instead of writing your code to implement the idea of bagging for decision trees, we can use the <code>ranger</code> method via <code>caret::train()</code>.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/imbs-hl/ranger'>ranger</a></span><span class='op'>)</span></span>
@@ -2902,20 +2862,11 @@ decision trees, we can use the <code>ranger</code> method via
 2     splitrule character                Splitting Rule
 3 min.node.size   numeric             Minimal Node Size</code></pre>
 </div>
-<p>The <code>caret::train()</code> allows us manipulate three parameters
-while using the <code>ranger</code> method:</p>
+<p>The <code>caret::train()</code> allows us manipulate three parameters while using the <code>ranger</code> method:</p>
 <ul>
-<li><p><em>splitrule</em>: set this to ‘variance’ for regression
-problems with continuous outcome. Other alternatives are
-<code>extratrees</code>, <code>maxstat</code>, and
-<code>beta</code>.</p></li>
-<li><p><em>min.node.size.</em>: this is identical to
-<code>minbucket</code> argument in the <code>rpart</code> method and
-indicates the minimum number of observations for each node.</p></li>
-<li><p><em>mtry</em>: this is the most critical parameter for this
-method and indicates the number of predictors to consider for developing
-tree models. For bagged decision trees, you can set this to the number
-of all predictors in your model</p></li>
+<li><p><em>splitrule</em>: set this to ‘variance’ for regression problems with continuous outcome. Other alternatives are <code>extratrees</code>, <code>maxstat</code>, and <code>beta</code>.</p></li>
+<li><p><em>min.node.size.</em>: this is identical to <code>minbucket</code> argument in the <code>rpart</code> method and indicates the minimum number of observations for each node.</p></li>
+<li><p><em>mtry</em>: this is the most critical parameter for this method and indicates the number of predictors to consider for developing tree models. For bagged decision trees, you can set this to the number of all predictors in your model</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -2966,41 +2917,17 @@ of all predictors in your model</p></li>
       RMSESD RsquaredSD      MAESD
 1 0.02011178 0.02586802 0.01373682</code></pre>
 </div>
-<p>The performance is very similar to what we got in our DIY
-demonstration.</p>
+<p>The performance is very similar to what we got in our DIY demonstration.</p>
 <p>A couple of things to note:</p>
 <ul>
-<li><p>When you set <code>max.depth=</code> argument within the
-<code>caret::train</code> function, it passes this to the
-<code>ranger</code> function. Try to set this number to as large as
-possible, so you develop each tree to its full capacity.</p></li>
-<li><p>The penalty term is technically zero (<code>cp</code> parameter
-in the <code>rpart</code> function) while building each tree model. In
-Bagging, we deal with the model variance differently. Instead of
-applying a penalty term, we ensemble many unpenalized tree models to
-reduce the model variance.</p></li>
-<li><p>It is a little tricky to obtain reproducible results from this
-procedure. See <a
-href="https://github.com/topepo/caret/issues/1036">this link</a> to
-learn more about accomplishing that.</p></li>
-<li><p>The number of trees (bootstrap samples) is a hyperparameter to
-tune. Conceptually, the model performance will improve as you increase
-the number of tree models used in Bagging; however, the performance will
-stabilize at some point. It is a tuning process to find the minimum
-number of tree models in Bagging to obtain the maximal model
-performance.</p></li>
+<li><p>When you set <code>max.depth=</code> argument within the <code>caret::train</code> function, it passes this to the <code>ranger</code> function. Try to set this number to as large as possible, so you develop each tree to its full capacity.</p></li>
+<li><p>The penalty term is technically zero (<code>cp</code> parameter in the <code>rpart</code> function) while building each tree model. In Bagging, we deal with the model variance differently. Instead of applying a penalty term, we ensemble many unpenalized tree models to reduce the model variance.</p></li>
+<li><p>It is a little tricky to obtain reproducible results from this procedure. See <a href="https://github.com/topepo/caret/issues/1036">this link</a> to learn more about accomplishing that.</p></li>
+<li><p>The number of trees (bootstrap samples) is a hyperparameter to tune. Conceptually, the model performance will improve as you increase the number of tree models used in Bagging; however, the performance will stabilize at some point. It is a tuning process to find the minimum number of tree models in Bagging to obtain the maximal model performance.</p></li>
 </ul>
-<h2 id="tuning-the-number-of-tree-models-in-bagging">1.3. Tuning the
-Number of Tree Models in Bagging</h2>
-<p>Unfortunately, <code>caret::train</code> does not let us define the
-<code>num.trees</code> argument as a hyperparameter in the grid search.
-So, the only way to search for the optimal number of trees is to use the
-<code>ranger</code> method via <code>caret::train</code> function and
-iterate over a set of values for the <code>num.trees</code> argument.
-Then, compare the model performance and pick the optimal number of tree
-models.</p>
-<p>The code below implements this idea and saves the results from each
-iteration in a list object.</p>
+<h2 id="tuning-the-number-of-tree-models-in-bagging">1.3. Tuning the Number of Tree Models in Bagging</h2>
+<p>Unfortunately, <code>caret::train</code> does not let us define the <code>num.trees</code> argument as a hyperparameter in the grid search. So, the only way to search for the optimal number of trees is to use the <code>ranger</code> method via <code>caret::train</code> function and iterate over a set of values for the <code>num.trees</code> argument. Then, compare the model performance and pick the optimal number of tree models.</p>
+<p>The code below implements this idea and saves the results from each iteration in a list object.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Run the bagged trees by iterating over num.trees using the </span></span>
@@ -3027,8 +2954,7 @@ iteration in a list object.</p>
 <span>    <span class='co'># This can take a few hours to run.</span></span></code></pre>
 </div>
 </div>
-<p>Let’s check the cross-validated RMSE for the bagged tree models with
-different number of trees.</p>
+<p>Let’s check the cross-validated RMSE for the bagged tree models with different number of trees.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3055,9 +2981,7 @@ different number of trees.</p>
 </div>
 <pre><code>[1] 180</code></pre>
 </div>
-<p>It indicates that the RMSE stabilizes after roughly 60 tree models.
-We can see that a bagged tree model with 180 trees gave the best result.
-Let’s see how well this model performs on the test data.</p>
+<p>It indicates that the RMSE stabilizes after roughly 60 tree models. We can see that a bagged tree model with 180 trees gave the best result. Let’s see how well this model performs on the test data.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Predictions from a Bagged tree model with 180 trees</span></span>
@@ -3082,8 +3006,7 @@ Let’s see how well this model performs on the test data.</p>
 </div>
 <pre><code>[1] 0.6646118</code></pre>
 </div>
-<p>Now, we can add this to our comparison list to remember how well this
-performs compared to other methods.</p>
+<p>Now, we can add this to our comparison list to remember how well this performs compared to other methods.</p>
 <table>
 <thead>
 <tr class="header">
@@ -3139,32 +3062,12 @@ performs compared to other methods.</p>
 </tbody>
 </table>
 <h1 id="random-forests">2. Random Forests</h1>
-<p>Random Forests is an idea very similar to Bagging with an extra
-feature. In Random Forests, while we take a bootstrap sample of
-observations (a random sample of rows in training data with
-replacement), we also take a random sample of columns for each split
-while developing a tree model. It allows us to develop tree models more
-independently of each other.</p>
-<p>When specific important predictors are related to the outcome, the
-tree models developed using all predictors will be very similar,
-particularly at the top nodes, although we take bootstrap samples. These
-trees will be correlated to each other, which may reduce the efficiency
-of BAGGING in reducing the variance. We can diversify the tree models by
-randomly sampling a certain number of predictors while developing each
-tree. It turns out that a diverse group of tree models does much better
-in predicting the outcome than a group of tree models similar to each
-other.</p>
+<p>Random Forests is an idea very similar to Bagging with an extra feature. In Random Forests, while we take a bootstrap sample of observations (a random sample of rows in training data with replacement), we also take a random sample of columns for each split while developing a tree model. It allows us to develop tree models more independently of each other.</p>
+<p>When specific important predictors are related to the outcome, the tree models developed using all predictors will be very similar, particularly at the top nodes, although we take bootstrap samples. These trees will be correlated to each other, which may reduce the efficiency of BAGGING in reducing the variance. We can diversify the tree models by randomly sampling a certain number of predictors while developing each tree. It turns out that a diverse group of tree models does much better in predicting the outcome than a group of tree models similar to each other.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="figs/randomforest.png" width="1122" style="display: block; margin: auto;" /></p>
 </div>
-<p>We can use the same <code>ranger</code> package to fit the random
-forests models by only changing the <code>mtry</code> argument in our
-grid. Below, we will fit a random forests model with ten trees by
-randomly sampling from rows for each tree. In addition, when we develop
-each tree model, we will also randomly sample 300 predictors. I set
-<code>mtry=300</code> in the <code>grid</code> object, indicating that
-it will randomly sample 300 predictors to consider for each split when
-developing each tree.</p>
+<p>We can use the same <code>ranger</code> package to fit the random forests models by only changing the <code>mtry</code> argument in our grid. Below, we will fit a random forests model with ten trees by randomly sampling from rows for each tree. In addition, when we develop each tree model, we will also randomly sample 300 predictors. I set <code>mtry=300</code> in the <code>grid</code> object, indicating that it will randomly sample 300 predictors to consider for each split when developing each tree.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Grid, randomly sample 300 predictors</span></span>
@@ -3189,11 +3092,11 @@ developing each tree.</p>
 </div>
 <pre><code>$everything
    user  system elapsed 
- 177.76    1.08  133.97 
+ 167.84    1.12  128.98 
 
 $final
    user  system elapsed 
-  15.87    0.05   11.38 
+  15.23    0.04   11.30 
 
 $prediction
 [1] NA NA NA</code></pre>
@@ -3210,18 +3113,10 @@ $prediction
 </div>
 <p>For random forests, there are two hyperparameters to tune:</p>
 <ul>
-<li><p><code>mtry</code>, the number of predictors to choose for each
-split during the tree model development</p></li>
+<li><p><code>mtry</code>, the number of predictors to choose for each split during the tree model development</p></li>
 <li><p><code>num.trees</code>, the number of trees.</p></li>
 </ul>
-<p>As mentioned before, unfortunately, the <code>caret::train</code>
-only allows <code>mtry</code> in the grid search. For the number of
-trees, one should embed it in a <code>for</code> loop to iterate over a
-set of values. The code below hypothetically implements this idea by
-trying ten different <code>mtry</code> values
-(100,150,200,250,300,350,400,450,500,550) and saves the results from
-each iteration in a list object. However, I haven’t run it, which may
-take a long time.</p>
+<p>As mentioned before, unfortunately, the <code>caret::train</code> only allows <code>mtry</code> in the grid search. For the number of trees, one should embed it in a <code>for</code> loop to iterate over a set of values. The code below hypothetically implements this idea by trying ten different <code>mtry</code> values (100,150,200,250,300,350,400,450,500,550) and saves the results from each iteration in a list object. However, I haven’t run it, which may take a long time.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Grid Settings  </span></span>
@@ -3247,9 +3142,7 @@ take a long time.</p>
 <span>    <span class='op'>}</span></span></code></pre>
 </div>
 </div>
-<p>Instead, I run this by fixing <code>mtry=300</code> and then
-iterating over the number of trees for values of 5, 20, 40, 60, 80, …,
-200 (as we did for bagged trees).</p>
+<p>Instead, I run this by fixing <code>mtry=300</code> and then iterating over the number of trees for values of 5, 20, 40, 60, 80, …, 200 (as we did for bagged trees).</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3276,8 +3169,7 @@ iterating over the number of trees for values of 5, 20, 40, 60, 80, …,
 </div>
 <pre><code>[1] 160</code></pre>
 </div>
-<p>RMSE similarly stabilized after roughly 60 trees. Let’s see how well
-the model with 200 trees perform.</p>
+<p>RMSE similarly stabilized after roughly 60 trees. Let’s see how well the model with 200 trees perform.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Predictions from a Random Forest model with 160 trees</span></span>
@@ -3302,10 +3194,7 @@ the model with 200 trees perform.</p>
 </div>
 <pre><code>[1] 0.6690829</code></pre>
 </div>
-<p>Below is our comparison table with Random Forests added. As you see,
-there is a slight improvement over Bagged Trees, and we can improve this
-a little more by trying different values of <code>mtry</code> and
-finding an optimal number.</p>
+<p>Below is our comparison table with Random Forests added. As you see, there is a slight improvement over Bagged Trees, and we can improve this a little more by trying different values of <code>mtry</code> and finding an optimal number.</p>
 <table>
 <thead>
 <tr class="header">
@@ -3366,12 +3255,9 @@ finding an optimal number.</p>
 </tr>
 </tbody>
 </table>
-<h1 id="predicting-recidivism-using-bagges-trees-and-random-forests">3.
-Predicting Recidivism using Bagges Trees and Random Forests</h1>
-<p>In this section, I provide the R code to predict recidivism using
-Bagged Trees and Random Forests.</p>
-<p><strong>Import the recidivism dataset and pre-process the
-variables</strong></p>
+<h1 id="predicting-recidivism-using-bagges-trees-and-random-forests">3. Predicting Recidivism using Bagges Trees and Random Forests</h1>
+<p>In this section, I provide the R code to predict recidivism using Bagged Trees and Random Forests.</p>
+<p><strong>Import the recidivism dataset and pre-process the variables</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># Import data</span></span>
@@ -3944,8 +3830,7 @@ variables</strong></p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb38"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -3968,7 +3853,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

@@ -790,6 +790,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1862,15 +1863,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        if ($(this).children()[0].nodeName == "D-FOOTNOTE") {
-          var fn = $(this).children()[0]
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
           $(this).html(fn.shadowRoot.querySelector("sup"))
           $(this).id = fn.id
           fn.remove()
         }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -2399,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2546,49 +2553,27 @@ Assignments
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#scales-of-measurement-and-types-of-variables"
-id="toc-scales-of-measurement-and-types-of-variables">1. Scales of
-Measurement and Types of Variables</a></li>
-<li><a href="#processing-categorical-variables"
-id="toc-processing-categorical-variables">2. Processing Categorical
-Variables</a>
+<li><a href="#scales-of-measurement-and-types-of-variables" id="toc-scales-of-measurement-and-types-of-variables">1. Scales of Measurement and Types of Variables</a></li>
+<li><a href="#processing-categorical-variables" id="toc-processing-categorical-variables">2. Processing Categorical Variables</a>
 <ul>
-<li><a href="#one-hot-encoding-dummy-variables"
-id="toc-one-hot-encoding-dummy-variables">2.1 One-hot encoding (Dummy
-Variables)</a></li>
-<li><a href="#label-encoding" id="toc-label-encoding">2.2. Label
-encoding</a></li>
-<li><a href="#polynomial-contrasts" id="toc-polynomial-contrasts">2.3.
-Polynomial Contrasts</a></li>
+<li><a href="#one-hot-encoding-dummy-variables" id="toc-one-hot-encoding-dummy-variables">2.1 One-hot encoding (Dummy Variables)</a></li>
+<li><a href="#label-encoding" id="toc-label-encoding">2.2. Label encoding</a></li>
+<li><a href="#polynomial-contrasts" id="toc-polynomial-contrasts">2.3. Polynomial Contrasts</a></li>
 </ul></li>
-<li><a href="#processing-cyclic-variables"
-id="toc-processing-cyclic-variables">3. Processing Cyclic
-Variables</a></li>
-<li><a href="#processing-continuous-variables"
-id="toc-processing-continuous-variables">4. Processing Continuous
-Variables</a>
+<li><a href="#processing-cyclic-variables" id="toc-processing-cyclic-variables">3. Processing Cyclic Variables</a></li>
+<li><a href="#processing-continuous-variables" id="toc-processing-continuous-variables">4. Processing Continuous Variables</a>
 <ul>
-<li><a href="#centering-and-scaling-standardization"
-id="toc-centering-and-scaling-standardization">4.1. Centering and
-Scaling (Standardization)</a></li>
-<li><a href="#box-cox-transformation"
-id="toc-box-cox-transformation">4.2. Box-Cox transformation</a></li>
-<li><a href="#logit-transformation" id="toc-logit-transformation">4.3.
-Logit Transformation</a></li>
-<li><a href="#basis-expansions" id="toc-basis-expansions">4.4. Basis
-Expansions</a></li>
+<li><a href="#centering-and-scaling-standardization" id="toc-centering-and-scaling-standardization">4.1. Centering and Scaling (Standardization)</a></li>
+<li><a href="#box-cox-transformation" id="toc-box-cox-transformation">4.2. Box-Cox transformation</a></li>
+<li><a href="#logit-transformation" id="toc-logit-transformation">4.3. Logit Transformation</a></li>
+<li><a href="#basis-expansions" id="toc-basis-expansions">4.4. Basis Expansions</a></li>
 </ul></li>
-<li><a href="#handling-missing-data" id="toc-handling-missing-data">5.
-Handling Missing Data</a>
+<li><a href="#handling-missing-data" id="toc-handling-missing-data">5. Handling Missing Data</a>
 <ul>
-<li><a href="#creating-an-indicator-variable-for-missingness"
-id="toc-creating-an-indicator-variable-for-missingness">5.1. Creating an
-indicator variable for missingness</a></li>
+<li><a href="#creating-an-indicator-variable-for-missingness" id="toc-creating-an-indicator-variable-for-missingness">5.1. Creating an indicator variable for missingness</a></li>
 <li><a href="#imputation" id="toc-imputation">5.2. Imputation</a></li>
 </ul></li>
-<li><a href="#wrapping-up-using-the-recipes-package"
-id="toc-wrapping-up-using-the-recipes-package">6. Wrapping-up using the
-<code>recipes</code> package</a></li>
+<li><a href="#wrapping-up-using-the-recipes-package" id="toc-wrapping-up-using-the-recipes-package">6. Wrapping-up using the <code>recipes</code> package</a></li>
 </ul>
 </nav>
 </div>
@@ -2609,49 +2594,14 @@ id="toc-wrapping-up-using-the-recipes-package">6. Wrapping-up using the
 }
 
 </style>
-<p>[Updated: Sun, Nov 27, 2022 - 14:04:09 ]</p>
-<h1 id="scales-of-measurement-and-types-of-variables">1. Scales of
-Measurement and Types of Variables</h1>
-<p>It is important to understand the nature of variables and how they
-were measured and represented in a dataset. In social sciences, in
-particular psychology, there is a methodological consensus about the
-framework provided by <a
-href="https://www.jstor.org/stable/1671815">Stevens (1946)</a>, also see
-<a href="https://doi.org/10.1080/00049530210001706563">Michell
-(2002)</a> for an in-depth discussion. According to Stevens’ definition,
-there are four levels of measurement: nominal, ordinal, interval, and
-ratio. Whether a variable has a nominal, ordinal, interval, or ratio
-scale depends on the character of the empirical operations performed
-while constructing the variable.</p>
+<p>[Updated: Wed, Sep 20, 2023 - 17:30:54 ]</p>
+<h1 id="scales-of-measurement-and-types-of-variables">1. Scales of Measurement and Types of Variables</h1>
+<p>It is important to understand the nature of variables and how they were measured and represented in a dataset. In social sciences, in particular psychology, there is a methodological consensus about the framework provided by <a href="https://www.jstor.org/stable/1671815">Stevens (1946)</a>, also see <a href="https://doi.org/10.1080/00049530210001706563">Michell (2002)</a> for an in-depth discussion. According to Stevens’ definition, there are four levels of measurement: nominal, ordinal, interval, and ratio. Whether a variable has a nominal, ordinal, interval, or ratio scale depends on the character of the empirical operations performed while constructing the variable.</p>
 <ul>
-<li><p>Nominal scale: Variables with a nominal scale cannot be
-meaningfully added, subtracted, divided, or multiplied. Also, there is
-no hierarchical order among the assigned values. Most variables
-containing labels for individual observations can be considered nominal,
-e.g., hair color, city, state, and ethnicity.</p></li>
-<li><p>Ordinal scale: Variables with an ordinal scale also represent
-labels; however, there is a meaningful hierarchy among the assigned
-values. For instance, if a variable is coded as Low, Medium, and High,
-they are simply labels. Still, we know that High represents something
-more than Medium and Medium represents something higher than Low (High
-&gt; Medium &gt; Low). On the other hand, the distance between the
-assigned values does not necessarily represent the same amount of
-difference. Other examples of variables that can be considered as
-ordinal are letter grades (A-F), scores from Likert type items (Strongly
-agree, agree, disagree, strongly disagree), education status(high
-school, college, master’s, Ph.D.), cancer stage (stage1, stage2,
-stage3), order of finish in a competition (1st, 2nd, 3rd).</p></li>
-<li><p>Interval scale: Variables with an ordinal scale represent
-quantities with equal measurement units but don’t have an absolute zero
-point. For instance, a typical example of an interval scale is
-temperature measured on the Fahrenheit scale. The difference between 20F
-and 30F is the same as between 60F and 70F. However, 0F does not
-indicate the absence of heat.</p></li>
-<li><p>Ratio scale: Variables with a ratio scale represent quantities
-with equal measurement units and have an absolute zero. Due to the
-existence of an absolute zero point that represents ‘nothing,’ the ratio
-of measurements is also meaningful. Typical examples are height, mass,
-distance, and length.</p></li>
+<li><p>Nominal scale: Variables with a nominal scale cannot be meaningfully added, subtracted, divided, or multiplied. Also, there is no hierarchical order among the assigned values. Most variables containing labels for individual observations can be considered nominal, e.g., hair color, city, state, and ethnicity.</p></li>
+<li><p>Ordinal scale: Variables with an ordinal scale also represent labels; however, there is a meaningful hierarchy among the assigned values. For instance, if a variable is coded as Low, Medium, and High, they are simply labels. Still, we know that High represents something more than Medium and Medium represents something higher than Low (High &gt; Medium &gt; Low). On the other hand, the distance between the assigned values does not necessarily represent the same amount of difference. Other examples of variables that can be considered as ordinal are letter grades (A-F), scores from Likert type items (Strongly agree, agree, disagree, strongly disagree), education status(high school, college, master’s, Ph.D.), cancer stage (stage1, stage2, stage3), order of finish in a competition (1st, 2nd, 3rd).</p></li>
+<li><p>Interval scale: Variables with an ordinal scale represent quantities with equal measurement units but don’t have an absolute zero point. For instance, a typical example of an interval scale is temperature measured on the Fahrenheit scale. The difference between 20F and 30F is the same as between 60F and 70F. However, 0F does not indicate the absence of heat.</p></li>
+<li><p>Ratio scale: Variables with a ratio scale represent quantities with equal measurement units and have an absolute zero. Due to the existence of an absolute zero point that represents ‘nothing,’ the ratio of measurements is also meaningful. Typical examples are height, mass, distance, and length.</p></li>
 </ul>
 <p>Below table provides a summary of properties for each scale.</p>
 <table>
@@ -2702,31 +2652,12 @@ distance, and length.</p></li>
 </tr>
 </tbody>
 </table>
-<p>In this class, we classify the variables in two types:
-<strong>Categorical</strong> and <strong>Continuous</strong>. The
-variables with a nominal or ordinal scale are considered as
-<strong>Categorical</strong> and the variables with an interval or ratio
-scale are considered as <strong>Continuous</strong>.</p>
-<h1 id="processing-categorical-variables">2. Processing Categorical
-Variables</h1>
-<p>When categorical predictors are in a dataset, it is essential to
-transform them into numerical codes. When encoding categorical
-predictors, we try to preserve as much information as possible from
-their labels. Therefore, different strategies may be used for
-categorical variables with different ordinal scales.</p>
-<h2 id="one-hot-encoding-dummy-variables">2.1 One-hot encoding (Dummy
-Variables)</h2>
-<p>A dummy variable is a synthetic variable with two outcomes (0 and 1)
-representing a group membership. When there is a nominal variable with
-<em>N</em> levels, it is typical to create <em>N</em> dummy variables to
-represent the information in the nominal variable. Each dummy variable
-represents membership to one of the levels in the nominal variable.
-These dummy variables can be used as features in predictive models.</p>
-<p>In its simplest case, consider the variable <code>Race</code> in the
-Recidivism dataset with two levels: Black and White. We can create two
-dummy variables: the first dummy variable represents whether or not an
-individual is Black, and the second dummy variable represents whether or
-not the individual is White.</p>
+<p>In this class, we classify the variables in two types: <strong>Categorical</strong> and <strong>Continuous</strong>. The variables with a nominal or ordinal scale are considered as <strong>Categorical</strong> and the variables with an interval or ratio scale are considered as <strong>Continuous</strong>.</p>
+<h1 id="processing-categorical-variables">2. Processing Categorical Variables</h1>
+<p>When categorical predictors are in a dataset, it is essential to transform them into numerical codes. When encoding categorical predictors, we try to preserve as much information as possible from their labels. Therefore, different strategies may be used for categorical variables with different ordinal scales.</p>
+<h2 id="one-hot-encoding-dummy-variables">2.1 One-hot encoding (Dummy Variables)</h2>
+<p>A dummy variable is a synthetic variable with two outcomes (0 and 1) representing a group membership. When there is a nominal variable with <em>N</em> levels, it is typical to create <em>N</em> dummy variables to represent the information in the nominal variable. Each dummy variable represents membership to one of the levels in the nominal variable. These dummy variables can be used as features in predictive models.</p>
+<p>In its simplest case, consider the variable <code>Race</code> in the Recidivism dataset with two levels: Black and White. We can create two dummy variables: the first dummy variable represents whether or not an individual is Black, and the second dummy variable represents whether or not the individual is White.</p>
 <table>
 <thead>
 <tr class="header">
@@ -2748,10 +2679,7 @@ not the individual is White.</p>
 </tr>
 </tbody>
 </table>
-<p>Let’s consider another example from the Recidivism dataset. Variable
-<code>Prison_Offense</code> has five categories: Violent/Sex,
-Violent/Non-Sex, Property, Drug, and Other. We can create five dummy
-variables using the following coding scheme.</p>
+<p>Let’s consider another example from the Recidivism dataset. Variable <code>Prison_Offense</code> has five categories: Violent/Sex, Violent/Non-Sex, Property, Drug, and Other. We can create five dummy variables using the following coding scheme.</p>
 <table style="width:100%;">
 <colgroup>
 <col style="width: 16%" />
@@ -2814,11 +2742,7 @@ variables using the following coding scheme.</p>
 </tr>
 </tbody>
 </table>
-<p>Note that <code>Prison_Offence</code> is missing for several
-observations. You can fill in the missing values before creating dummy
-variables using one of the methods we will discuss later. Alternatively,
-we can define Missing as the sixth category to preserve that
-information.</p>
+<p>Note that <code>Prison_Offence</code> is missing for several observations. You can fill in the missing values before creating dummy variables using one of the methods we will discuss later. Alternatively, we can define Missing as the sixth category to preserve that information.</p>
 <table style="width:100%;">
 <colgroup>
 <col style="width: 14%" />
@@ -2897,80 +2821,23 @@ information.</p>
 </tr>
 </tbody>
 </table>
-<p>In some cases, when you have a geographical location with a
-reasonable number of categories (e.g., counties or cities in a state,
-schools in a district), you can also create dummy variables to represent
-this information. In our case, the Recidivism dataset has a variable
-called <code>Residence_PUMA</code> indicating <a
-href="https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html">Public
-Use Microdata Area (PUMA)</a> for the residence address at the time
-individual was released. This variable has 25 unique codes (1-25);
-however, these numbers are just labels. So, one can create 25 different
-dummy variables to represent 25 different PUMAs.</p>
+<p>In some cases, when you have a geographical location with a reasonable number of categories (e.g., counties or cities in a state, schools in a district), you can also create dummy variables to represent this information. In our case, the Recidivism dataset has a variable called <code>Residence_PUMA</code> indicating <a href="https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html">Public Use Microdata Area (PUMA)</a> for the residence address at the time individual was released. This variable has 25 unique codes (1-25); however, these numbers are just labels. So, one can create 25 different dummy variables to represent 25 different PUMAs.</p>
 <hr />
 <div id="infobox">
 <center style="color:black;">
 <strong>NOTE</strong>
 </center>
-<p>When you fit a typical regression model without regularization using
-ordinary least-squares (OLS), a typical practice is to drop a dummy
-variable for one of the levels. So, for instance, if there are
-<em>N</em> levels for a nominal variable, you only have to create
-<em>(N-1)</em> dummy variables, as the Nth one has redundant
-information. The information regarding the excluded category is
-represented in the intercept term. It creates a problem when you put all
-<em>N</em> dummy variables into the model because the OLS procedure
-tries to invert a singular matrix, and you will likely get an error
-message.</p>
-<p>On the other hand, this is not an issue when you fit a regularized
-regression model, which will be the case in this class. Therefore, you
-do not need to drop one of the dummy variables and can include all of
-them in the analysis. In fact, it may be beneficial to keep the dummy
-variables for all categories in the model when regularization is used in
-the regression. Otherwise, the model may produce different predictions
-depending on which category is excluded.</p>
+<p>When you fit a typical regression model without regularization using ordinary least-squares (OLS), a typical practice is to drop a dummy variable for one of the levels. So, for instance, if there are <em>N</em> levels for a nominal variable, you only have to create <em>(N-1)</em> dummy variables, as the Nth one has redundant information. The information regarding the excluded category is represented in the intercept term. It creates a problem when you put all <em>N</em> dummy variables into the model because the OLS procedure tries to invert a singular matrix, and you will likely get an error message.</p>
+<p>On the other hand, this is not an issue when you fit a regularized regression model, which will be the case in this class. Therefore, you do not need to drop one of the dummy variables and can include all of them in the analysis. In fact, it may be beneficial to keep the dummy variables for all categories in the model when regularization is used in the regression. Otherwise, the model may produce different predictions depending on which category is excluded.</p>
 </div>
 <hr />
 <h2 id="label-encoding">2.2. Label encoding</h2>
-<p>When the variable of interest is ordinal, and there is a hierarchy
-among the levels, we can still use one-hot encoding to create a set of
-dummy variables to represent the information in the ordinal variable.
-However, dummy variables will not provide information regarding the
-categories’ hierarchy.</p>
-<p>For instance, consider the variable <code>Age_At_Release</code> in
-the Recidivism dataset. It is coded as 7 different age intervals in the
-dataset: 18-22, 23-27, 28-32, 33-37, 38-42, 43-47, 48 or older. One can
-create seven dummy variables to represent each category in this
-variable. Alternatively, one can assign a numeric variable to each
-category that may represent the information in these categories. For
-instance, one can assign numbers from 1 to 7, respectively. Or, one can
-choose the midpoint of each interval to represent each category (e.g.,
-20,25,31,35,40,45,60).</p>
-<p>Another example would be the variable <code>Education Level</code> in
-the Recidivism dataset. It has three levels: At least some college, High
-School Diploma, and Less than a High School diploma. One can create
-three dummy variables to represent each level. Alternatively, one can
-assign 1, 2, and 3, respectively. Or, one can assign a number for the
-approximate years of schooling for each level, such as 9, 12, and
-15.</p>
+<p>When the variable of interest is ordinal, and there is a hierarchy among the levels, we can still use one-hot encoding to create a set of dummy variables to represent the information in the ordinal variable. However, dummy variables will not provide information regarding the categories’ hierarchy.</p>
+<p>For instance, consider the variable <code>Age_At_Release</code> in the Recidivism dataset. It is coded as 7 different age intervals in the dataset: 18-22, 23-27, 28-32, 33-37, 38-42, 43-47, 48 or older. One can create seven dummy variables to represent each category in this variable. Alternatively, one can assign a numeric variable to each category that may represent the information in these categories. For instance, one can assign numbers from 1 to 7, respectively. Or, one can choose the midpoint of each interval to represent each category (e.g., 20,25,31,35,40,45,60).</p>
+<p>Another example would be the variable <code>Education Level</code> in the Recidivism dataset. It has three levels: At least some college, High School Diploma, and Less than a High School diploma. One can create three dummy variables to represent each level. Alternatively, one can assign 1, 2, and 3, respectively. Or, one can assign a number for the approximate years of schooling for each level, such as 9, 12, and 15.</p>
 <h2 id="polynomial-contrasts">2.3. Polynomial Contrasts</h2>
-<p>Another way of encoding an ordinal variable is to use polynomial
-contrasts. The polynomial contrasts may be helpful if one wants to
-explore whether or not there is a linear, quadratic, cubic, etc., the
-relationship between the predictor variable and outcome variable. You
-can use the <code>stat::poly()</code> function in R to obtain the set of
-polynomial contrasts. If there are <em>N</em> levels in an ordinal
-variable, you can get polynomials up to degree <em>N-1</em>.</p>
-<p>For instance, suppose you have an ordinal variable with three levels:
-Low, Medium, and High. Then, <code>stat::poly(x=1:3,degree=2)</code>
-will return the polynomial contrasts for the linear and quadratic terms.
-Notice that the input for the <code>poly</code> function is a vector of
-numeric values corresponding to the ordinal variable levels and the
-degree of the requested polynomial terms. For this example, it creates
-two sets of vectors to represent this ordinal variable. Note that the
-sum of the squares within each column equals 1, and the dot product of
-the contrast vectors equals 0. In other words, the polynomial terms
-represent a set of <strong>orthonormal vectors</strong>.</p>
+<p>Another way of encoding an ordinal variable is to use polynomial contrasts. The polynomial contrasts may be helpful if one wants to explore whether or not there is a linear, quadratic, cubic, etc., the relationship between the predictor variable and outcome variable. You can use the <code>stat::poly()</code> function in R to obtain the set of polynomial contrasts. If there are <em>N</em> levels in an ordinal variable, you can get polynomials up to degree <em>N-1</em>.</p>
+<p>For instance, suppose you have an ordinal variable with three levels: Low, Medium, and High. Then, <code>stat::poly(x=1:3,degree=2)</code> will return the polynomial contrasts for the linear and quadratic terms. Notice that the input for the <code>poly</code> function is a vector of numeric values corresponding to the ordinal variable levels and the degree of the requested polynomial terms. For this example, it creates two sets of vectors to represent this ordinal variable. Note that the sum of the squares within each column equals 1, and the dot product of the contrast vectors equals 0. In other words, the polynomial terms represent a set of <strong>orthonormal vectors</strong>.</p>
 <table>
 <thead>
 <tr class="header">
@@ -3033,9 +2900,7 @@ attr(,&quot;class&quot;)
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-2-1.png" width="624" style="display: block; margin: auto;" /></p>
 </div>
-<p>If we consider the variable <code>Age_At_Release</code> with 7
-different levels, then we can have polynomial terms up to the 6th
-degree.</p>
+<p>If we consider the variable <code>Age_At_Release</code> with 7 different levels, then we can have polynomial terms up to the 6th degree.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>ctr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/poly.html'>poly</a></span><span class='op'>(</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>7</span>,<span class='fl'>6</span><span class='op'>)</span></span>
@@ -3070,19 +2935,8 @@ attr(,&quot;class&quot;)
 <center style="color:black;">
 <strong>NOTE</strong>
 </center>
-<p>There are other ways of encoding nominal and ordinal variables (e.g.,
-Helmert contrasts), or one can come up with their own set of contrast
-values. When the goal of analysis is inference and you run analysis to
-respond to a specific research question, your research question
-typically dictates the type of encoding to use. You choose a coding
-scheme that provides you the most interpretable coefficients to respond
-to your research question.</p>
-<p>On the other hand, when the goal of analysis is prediction, how you
-encode your categorical variable does not make much difference. In fact,
-they provide very similar predictions. Below, I provide an example using
-Age_at_Release variable to predict the outcome using different coding
-schemes and report the average squared error of predictions from a
-logistic regression model.</p>
+<p>There are other ways of encoding nominal and ordinal variables (e.g., Helmert contrasts), or one can come up with their own set of contrast values. When the goal of analysis is inference and you run analysis to respond to a specific research question, your research question typically dictates the type of encoding to use. You choose a coding scheme that provides you the most interpretable coefficients to respond to your research question.</p>
+<p>On the other hand, when the goal of analysis is prediction, how you encode your categorical variable does not make much difference. In fact, they provide very similar predictions. Below, I provide an example using Age_at_Release variable to predict the outcome using different coding schemes and report the average squared error of predictions from a logistic regression model.</p>
 <center>
 <table>
 <thead>
@@ -3115,29 +2969,14 @@ logistic regression model.</p>
 </tbody>
 </table>
 </center>
-<p>Notice that one-hot encoding, polynomial contrasts, and helmert
-contrasts have identical performance. In fact, they yield the exact same
-predicted value for observations. Moreover, a simple label encoding with
-a single constructed variable does (almost) as well as other encoding
-types with multiple constructed variables.</p>
+<p>Notice that one-hot encoding, polynomial contrasts, and helmert contrasts have identical performance. In fact, they yield the exact same predicted value for observations. Moreover, a simple label encoding with a single constructed variable does (almost) as well as other encoding types with multiple constructed variables.</p>
 </div>
 <hr />
 <h1 id="processing-cyclic-variables">3. Processing Cyclic Variables</h1>
-<p>There are sometimes variables that are cyclic by nature (e.g.,
-months, days, hour), and a type of encoding that represents their cyclic
-nature may be the most meaningful way to represent them instead of
-numerical or categorical encoding. One way to achieve this is to create
-two new variables using a sine and cosine transformation as the
-following:</p>
-<p><span class="math display">\[x_{1} = sin(\frac{2 \pi
-x}{max(x)}),\]</span> <span class="math display">\[x_{2} = cos(\frac{2
-\pi x}{max(x)}).\]</span></p>
-<p>For instance, suppose one of the variables in a dataset is the day of
-the week. We can represent its cyclic nature using the two variables as
-defined the following. Once the corresponding coordinates are calculated
-for each day of the week, the single variable that represents days in
-the data can be replaced with these two variables representing their
-coordinates in a unit circle.</p>
+<p>There are sometimes variables that are cyclic by nature (e.g., months, days, hour), and a type of encoding that represents their cyclic nature may be the most meaningful way to represent them instead of numerical or categorical encoding. One way to achieve this is to create two new variables using a sine and cosine transformation as the following:</p>
+<p><span class="math display">\[x_{1} = sin(\frac{2 \pi x}{max(x)}),\]</span>
+<span class="math display">\[x_{2} = cos(\frac{2 \pi x}{max(x)}).\]</span></p>
+<p>For instance, suppose one of the variables in a dataset is the day of the week. We can represent its cyclic nature using the two variables as defined the following. Once the corresponding coordinates are calculated for each day of the week, the single variable that represents days in the data can be replaced with these two variables representing their coordinates in a unit circle.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>days <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'Mon'</span>,<span class='st'>'Tue'</span>,<span class='st'>'Wed'</span>,<span class='st'>'Thu'</span>,<span class='st'>'Fri'</span>,<span class='st'>'Sat'</span>,<span class='st'>'Sun'</span><span class='op'>)</span>,</span>
@@ -3160,8 +2999,7 @@ coordinates in a unit circle.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-6-1.png" width="576" style="display: block; margin: auto;" /></p>
 </div>
-<p>We can apply the same concept to any cyclic variable. Here is another
-example for the time of day.</p>
+<p>We can apply the same concept to any cyclic variable. Here is another example for the time of day.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>d</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>hour <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>24</span><span class='op'>)</span></span>
@@ -3200,51 +3038,26 @@ example for the time of day.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-8-1.png" width="576" style="display: block; margin: auto;" /></p>
 </div>
-<h1 id="processing-continuous-variables">4. Processing Continuous
-Variables</h1>
-<h2 id="centering-and-scaling-standardization">4.1. Centering and
-Scaling (Standardization)</h2>
-<p>Centering a variable is done by subtracting the variable’s mean from
-every variable’s value, ensuring that the mean of the centered variable
-equals zero. Scaling a variable is dividing the value of each
-observation by the variable’s standard deviation. When centering and
-scaling are both applied, it is called standardization.</p>
-<p>When we standardize a variable, we ensure that its mean is equal to
-zero and variance is equal to 1. Standardizing outcome and predictor
-variables may be critical and necessary for specific models (e.g.,
-K-nearest neighbor, support vector machines, penalized regression), but
-it is not always necessary for other models (e.g., decision tree
-models).</p>
+<h1 id="processing-continuous-variables">4. Processing Continuous Variables</h1>
+<h2 id="centering-and-scaling-standardization">4.1. Centering and Scaling (Standardization)</h2>
+<p>Centering a variable is done by subtracting the variable’s mean from every variable’s value, ensuring that the mean of the centered variable equals zero. Scaling a variable is dividing the value of each observation by the variable’s standard deviation. When centering and scaling are both applied, it is called standardization.</p>
+<p>When we standardize a variable, we ensure that its mean is equal to zero and variance is equal to 1. Standardizing outcome and predictor variables may be critical and necessary for specific models (e.g., K-nearest neighbor, support vector machines, penalized regression), but it is not always necessary for other models (e.g., decision tree models).</p>
 <hr />
 <div id="infobox">
 <center style="color:black;">
 <strong>NOTE</strong>
 </center>
-<p>Standardizing a variable only changes the first and second moments of
-a distribution (mean and variance); however, it doesn’t change the third
-and fourth moments of a distribution (skewness and kurtosis). Notice
-that the skewness and kurtosis for both the original and the
-standardized variable are 3.64 and 18.24, respectively. We only change
-the mean to zero and variance to one by standardizing a variable.</p>
+<p>Standardizing a variable only changes the first and second moments of a distribution (mean and variance); however, it doesn’t change the third and fourth moments of a distribution (skewness and kurtosis). Notice that the skewness and kurtosis for both the original and the standardized variable are 3.64 and 18.24, respectively. We only change the mean to zero and variance to one by standardizing a variable.</p>
 </div>
 <hr />
 <h2 id="box-cox-transformation">4.2. Box-Cox transformation</h2>
-<p>Variables with extreme skewness and kurtosis may deteriorate the
-model performance for certain types of models. Therefore, it may
-sometimes be useful to transform a variable with extreme skewness and
-kurtosis such that its distribution approximates to a normal
-distribution. Box-Cox transformation is a method to find an optimal
-parameter of <span class="math inline">\(\lambda\)</span> to apply the
-following transformation:</p>
+<p>Variables with extreme skewness and kurtosis may deteriorate the model performance for certain types of models. Therefore, it may sometimes be useful to transform a variable with extreme skewness and kurtosis such that its distribution approximates to a normal distribution. Box-Cox transformation is a method to find an optimal parameter of <span class="math inline">\(\lambda\)</span> to apply the following transformation:</p>
 <p><span class="math display">\[y^{(\lambda)}=\left\{\begin{matrix}
 \frac{y^{\lambda}-1}{\lambda} &amp; , \lambda \neq 0 \\
 &amp; \\
 ln(y) &amp; , \lambda = 0
 \end{matrix}\right.\]</span></p>
-<p>Below is an example of transforming the a right-skewed variable using
-the <code>boxcox</code> function from the <code>bestNormalize</code>
-package. Notice that the skewness and the kurtosis for the transformed
-variable are 0 and -0.02, respectively.</p>
+<p>Below is an example of transforming the a right-skewed variable using the <code>boxcox</code> function from the <code>bestNormalize</code> package. Notice that the skewness and the kurtosis for the transformed variable are 0 and -0.02, respectively.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>require</a></span><span class='op'>(</span><span class='va'><a href='https://petersonr.github.io/bestNormalize/'>bestNormalize</a></span><span class='op'>)</span></span>
@@ -3258,25 +3071,25 @@ variable are 0 and -0.02, respectively.</p>
 </div>
 <pre><code>Non-Standardized Box Cox Transformation with 1000 nonmissing obs.:
  Estimated statistics:
- - lambda = 0.2492177 
- - mean (before standardization) = -3.36775 
- - sd (before standardization) = 0.186852 </code></pre>
+ - lambda = 0.235008 
+ - mean (before standardization) = -3.490312 
+ - sd (before standardization) = 0.20037 </code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>new</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/predict.html'>predict</a></span><span class='op'>(</span><span class='va'>fit</span><span class='op'>)</span></span>
 <span> </span>
 <span><span class='fu'><a href='https://rdrr.io/pkg/psych/man/describe.html'>describe</a></span><span class='op'>(</span><span class='va'>old</span><span class='op'>)</span></span></code></pre>
 </div>
 <pre><code>   vars    n mean sd median trimmed mad min  max range skew kurtosis
-X1    1 1000    0  0      0       0   0   0 0.01  0.01 2.31     8.54
+X1    1 1000    0  0      0       0   0   0 0.01  0.01 2.85    15.94
    se
 X1  0</code></pre>
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/pkg/psych/man/describe.html'>describe</a></span><span class='op'>(</span><span class='va'>new</span><span class='op'>)</span></span></code></pre>
 </div>
-<pre><code>   vars    n  mean   sd median trimmed  mad   min   max range  skew
-X1    1 1000 -3.37 0.19  -3.37   -3.37 0.19 -3.89 -2.75  1.13 -0.03
+<pre><code>   vars    n  mean  sd median trimmed mad   min   max range  skew
+X1    1 1000 -3.49 0.2  -3.49   -3.49 0.2 -4.11 -2.74  1.37 -0.01
    kurtosis   se
-X1    -0.22 0.01</code></pre>
+X1    -0.09 0.01</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-10-1.png" width="960" style="display: block; margin: auto;" /></p>
@@ -3286,54 +3099,18 @@ X1    -0.22 0.01</code></pre>
 <center style="color:black;">
 <strong>NOTE</strong>
 </center>
-<p>Box-Cox transformation can be used only for variables with positive
-values. Therefore, it is a good idea to first implement the Box-Cox
-transformation, and then standardize a variable if both procedures will
-be applied to a variable. If there is a variable with negative values or
-a mix of both positive and negative values, the Yeo-Johnson
-transformation is available as an extension of the Box-Cox
-transformation. See <a
-href="https://www.stat.umn.edu/arc/yjpower.pdf">this link</a> for more
-information. The function <code>yeojohnson</code> is available in the
-<code>bestNormalizer</code> package to implement the Yeo-Johnson
-transformation (See, <a
-href="https://rdrr.io/cran/bestNormalize/man/yeojohnson.html">?bestNormalizer::yeojohnson</a>).</p>
+<p>Box-Cox transformation can be used only for variables with positive values. Therefore, it is a good idea to first implement the Box-Cox transformation, and then standardize a variable if both procedures will be applied to a variable. If there is a variable with negative values or a mix of both positive and negative values, the Yeo-Johnson transformation is available as an extension of the Box-Cox transformation. See <a href="https://www.stat.umn.edu/arc/yjpower.pdf">this link</a> for more information. The function <code>yeojohnson</code> is available in the <code>bestNormalizer</code> package to implement the Yeo-Johnson transformation (See, <a href="https://rdrr.io/cran/bestNormalize/man/yeojohnson.html">?bestNormalizer::yeojohnson</a>).</p>
 </div>
 <hr />
 <h2 id="logit-transformation">4.3. Logit Transformation</h2>
-<p>When a variable is a proportion bounded between 0 and 1, the logit
-transformation can be applied such that</p>
-<p><span class="math display">\[\pi^{*} =
-ln(\frac{\pi}{1-\pi}),\]</span></p>
-<p>where <span class="math inline">\(\pi\)</span> represents a
-proportion. This may be particularly useful when your outcome variable
-is a proportion bounded between 0 and 1. When a linear model is used to
-model an outcome bounded between 0 and 1, the model predictions may
-exceed the reasonable range of values (predictions equal to less than
-zero or greater than one). Logit transformation scales variables such
-that the range of values becomes <span
-class="math inline">\(-\infty\)</span> and <span
-class="math inline">\(\infty\)</span> on the logit scale. One can build
-a model to predict logit (<span class="math inline">\(\pi^*\)</span>)
-instead of proportion (<span class="math inline">\(\pi\)</span>) and
-then ensure that the model predictions are bounded between 0 and 1 on
-the original proportion scale after a simple reverse operation for
-predicted values.</p>
-<p><span class="math display">\[\pi = \frac{e^{\pi^*}}{1+e^{\pi^*}}
-\]</span></p>
-<p>One caveat of using logit transformation is that it is not defined
-for 0 and 1. So, when you have values in the dataset exactly equal to 0
-or 1, logit transformation will return either <span
-class="math inline">\(-\infty\)</span> and <span
-class="math inline">\(\infty\)</span>. In these situations, we may add
-or substract a very tiny constant (e.g., .0001) to force the
-transformation to return a numerical value.</p>
-<p><span class="math display">\[\pi^{*} = ln(\frac{\pi}{1-\pi}) =
-ln(\frac{0}{1-0}) = -\infty\]</span> <span
-class="math display">\[\pi^{*} = ln(\frac{\pi}{1-\pi}) =
-ln(\frac{1}{1-1}) = \infty\]</span></p>
-<p>Below is an example of logit transformation for a randomly generated
-variable.</p>
+<p>When a variable is a proportion bounded between 0 and 1, the logit transformation can be applied such that</p>
+<p><span class="math display">\[\pi^{*} = ln(\frac{\pi}{1-\pi}),\]</span></p>
+<p>where <span class="math inline">\(\pi\)</span> represents a proportion. This may be particularly useful when your outcome variable is a proportion bounded between 0 and 1. When a linear model is used to model an outcome bounded between 0 and 1, the model predictions may exceed the reasonable range of values (predictions equal to less than zero or greater than one). Logit transformation scales variables such that the range of values becomes <span class="math inline">\(-\infty\)</span> and <span class="math inline">\(\infty\)</span> on the logit scale. One can build a model to predict logit (<span class="math inline">\(\pi^*\)</span>) instead of proportion (<span class="math inline">\(\pi\)</span>) and then ensure that the model predictions are bounded between 0 and 1 on the original proportion scale after a simple reverse operation for predicted values.</p>
+<p><span class="math display">\[\pi = \frac{e^{\pi^*}}{1+e^{\pi^*}} \]</span></p>
+<p>One caveat of using logit transformation is that it is not defined for 0 and 1. So, when you have values in the dataset exactly equal to 0 or 1, logit transformation will return either <span class="math inline">\(-\infty\)</span> and <span class="math inline">\(\infty\)</span>. In these situations, we may add or substract a very tiny constant (e.g., .0001) to force the transformation to return a numerical value.</p>
+<p><span class="math display">\[\pi^{*} = ln(\frac{\pi}{1-\pi}) = ln(\frac{0}{1-0}) = -\infty\]</span>
+<span class="math display">\[\pi^{*} = ln(\frac{\pi}{1-\pi}) = ln(\frac{1}{1-1}) = \infty\]</span></p>
+<p>Below is an example of logit transformation for a randomly generated variable.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>old</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/Beta.html'>rbeta</a></span><span class='op'>(</span><span class='fl'>1000</span>,<span class='fl'>1</span>,<span class='fl'>1000</span><span class='op'>)</span></span>
@@ -3345,22 +3122,9 @@ variable.</p>
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-12-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
 <h2 id="basis-expansions">4.4. Basis Expansions</h2>
-<p>Basis expansions are useful to address nonlinearity between a
-continuous predictor variable and outcome variable. Using the basis
-expansions, one can create a set of feature variables using a nonlinear
-function of a variable <em>x</em>, <span
-class="math inline">\(\phi(x)\)</span>. One simply replaces the original
-variable <em>x</em> with the new variables obtained from <span
-class="math inline">\(\phi(x)\)</span>. For continuous predictors, the
-most commonly used expansions are polynomial basis expansions. The <span
-class="math inline">\(n^{th}\)</span> degree polynomial basis expansion
-can be represented by</p>
-<p><span class="math display">\[\phi(x) = \beta_1x + \beta_2x^2 +
-\beta_3x^3 + ... + \beta_nx^n .\]</span></p>
-<p>Suppose we have 100 observation from a random normal variable
-<em>x</em>. The third degree polynomial basis expansion (cubic basis
-expansion) can be found using the <code>poly</code> function as the
-following.</p>
+<p>Basis expansions are useful to address nonlinearity between a continuous predictor variable and outcome variable. Using the basis expansions, one can create a set of feature variables using a nonlinear function of a variable <em>x</em>, <span class="math inline">\(\phi(x)\)</span>. One simply replaces the original variable <em>x</em> with the new variables obtained from <span class="math inline">\(\phi(x)\)</span>. For continuous predictors, the most commonly used expansions are polynomial basis expansions. The <span class="math inline">\(n^{th}\)</span> degree polynomial basis expansion can be represented by</p>
+<p><span class="math display">\[\phi(x) = \beta_1x + \beta_2x^2 + \beta_3x^3 + ... + \beta_nx^n .\]</span></p>
+<p>Suppose we have 100 observation from a random normal variable <em>x</em>. The third degree polynomial basis expansion (cubic basis expansion) can be found using the <code>poly</code> function as the following.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>654</span><span class='op'>)</span></span>
@@ -3382,30 +3146,14 @@ following.</p>
 [5,]  0.022936731 -0.05256865 -0.063289287
 [6,]  0.101772051  0.04942613 -0.034439696</code></pre>
 </div>
-<p>So, one can use these three new variables representing a linear,
-quadratic, and cubic trend in our prediction model instead of the
-original variable <em>x</em>. See below the relationship between the
-original variable <em>x</em> and the new polynomial features to replace
-it.</p>
+<p>So, one can use these three new variables representing a linear, quadratic, and cubic trend in our prediction model instead of the original variable <em>x</em>. See below the relationship between the original variable <em>x</em> and the new polynomial features to replace it.</p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="lecture-2a_files/figure-html5/unnamed-chunk-14-1.png" width="960" style="display: block; margin: auto;" /></p>
 </div>
-<p>For continuous predictors, there is no limit for the degree of
-polynomial. The higher the degree of polynomial, the more flexible the
-model becomes, and there is a higher chance of overfitting. Typically,
-polynomial terms up to the 3rd or 4th degree are more than enough.</p>
+<p>For continuous predictors, there is no limit for the degree of polynomial. The higher the degree of polynomial, the more flexible the model becomes, and there is a higher chance of overfitting. Typically, polynomial terms up to the 3rd or 4th degree are more than enough.</p>
 <h1 id="handling-missing-data">5. Handling Missing Data</h1>
-<p>Missing data deserves a course of its own. For a comprehensive review
-of how to handle and impute missing data. For certain types of models
-such as gradient boosting, missing data is not a problem, and one can
-leave them as is without any processing. On the other hand, some models
-such as regularized regression models require complete data and one have
-to deal with missing data before modeling data. It is always a good idea
-to run some simple descriptive analysis to understand the scope of
-missing values in your dataset.</p>
-<p>The <code>ff_glimpse()</code> function from the <code>finalfit</code>
-package is a useful to get a quick look at the missing values in your
-dataset. See an example for the recidivism dataset</p>
+<p>Missing data deserves a course of its own. For a comprehensive review of how to handle and impute missing data. For certain types of models such as gradient boosting, missing data is not a problem, and one can leave them as is without any processing. On the other hand, some models such as regularized regression models require complete data and one have to deal with missing data before modeling data. It is always a good idea to run some simple descriptive analysis to understand the scope of missing values in your dataset.</p>
+<p>The <code>ff_glimpse()</code> function from the <code>finalfit</code> package is a useful to get a quick look at the missing values in your dataset. See an example for the recidivism dataset</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3524,28 +3272,10 @@ Prison_Offense          15820            12.6
 Prison_Years            18111             0.0</code></pre>
 </div>
 <p>We will focus a few ideas about how to handle missing data.</p>
-<h2 id="creating-an-indicator-variable-for-missingness">5.1. Creating an
-indicator variable for missingness</h2>
-<p>We can create a binary indicator variable for every variable to
-indicate missingness (0: not missing, 1: missing). It doesn’t solve the
-missing data problem because we may still have to impute the missing
-values for modeling; however, an indicator variable about whether or not
-a variable is missing may sometimes provide some information in
-predicting the outcome. Suppose the missingness is not random, and there
-is a systematic relationship between outcome and whether or not values
-are missing for a variable. In that case, this may provide vital
-information to bring into the model. This indicator variable would be
-meaningless for variables that don’t have any missing value. Therefore,
-one can remove them from any further consideration.</p>
+<h2 id="creating-an-indicator-variable-for-missingness">5.1. Creating an indicator variable for missingness</h2>
+<p>We can create a binary indicator variable for every variable to indicate missingness (0: not missing, 1: missing). It doesn’t solve the missing data problem because we may still have to impute the missing values for modeling; however, an indicator variable about whether or not a variable is missing may sometimes provide some information in predicting the outcome. Suppose the missingness is not random, and there is a systematic relationship between outcome and whether or not values are missing for a variable. In that case, this may provide vital information to bring into the model. This indicator variable would be meaningless for variables that don’t have any missing value. Therefore, one can remove them from any further consideration.</p>
 <h2 id="imputation">5.2. Imputation</h2>
-<p>A common approach to missing data is to impute missing values. Each
-predictor becomes an outcome of interest in imputation, and then the
-remaining predictors are used to build an imputation model to predict
-the missing values. Below is a very naive example of how it would work
-if we have an outcome variable (Y) and three predictors (X1, X2, X3).
-First, missing values are estimated and replaced for each predictor
-using an imputation model, and then the primary outcome of interest is
-predicted using the imputed X1, X2, and X3.</p>
+<p>A common approach to missing data is to impute missing values. Each predictor becomes an outcome of interest in imputation, and then the remaining predictors are used to build an imputation model to predict the missing values. Below is a very naive example of how it would work if we have an outcome variable (Y) and three predictors (X1, X2, X3). First, missing values are estimated and replaced for each predictor using an imputation model, and then the primary outcome of interest is predicted using the imputed X1, X2, and X3.</p>
 <table>
 <thead>
 <tr class="header">
@@ -3590,40 +3320,16 @@ predicted using the imputed X1, X2, and X3.</p>
 </tr>
 </tbody>
 </table>
-<p>An imputation model can be as simple as an intercept-only model (mean
-imputation). For numeric variables, missing values can be replaced with
-a simple mean, median, or mode of the observed data. For categorical
-variables, missing values can be replaced with a value randomly drawn
-from a binomial or multinomial distribution with the observed
-probabilities.</p>
-<p>An imputation model can also be as complex as desired using a
-regularized regression model, a decision tree model, or a K-nearest
-neighbors model. The main idea of a more complex prediction model is to
-find other observations similar to observations with a missing value in
-terms of other predictors and use data from these similar observations
-to predict the missing values. We will rely on some built-in functions
-in R to impute values using such complex models. For more information
-about its theoretical foundations, <a
-href="http://www.appliedmissingdata.com/">Applied Missing Data Analysis
-by Craig Enders</a> provides comprehensive coverage of this topic.</p>
-<h1 id="wrapping-up-using-the-recipes-package">6. Wrapping-up using the
-<code>recipes</code> package</h1>
-<p>We can manually pre-process all the variables in the dataset using
-the approaches discussed earlier. However, this would be a tedious job.
-It may be overwhelming to apply all the procedures simultaneously to
-different versions of the datasets (e.g., training, test, future).
-Instead, we can use the <code>recipes</code> package to implement these
-approaches in a more organized and efficient way.</p>
-<p>Before using the <code>recipes</code> package, there are a few things
-to do for this dataset.</p>
+<p>An imputation model can be as simple as an intercept-only model (mean imputation). For numeric variables, missing values can be replaced with a simple mean, median, or mode of the observed data. For categorical variables, missing values can be replaced with a value randomly drawn from a binomial or multinomial distribution with the observed probabilities.</p>
+<p>An imputation model can also be as complex as desired using a regularized regression model, a decision tree model, or a K-nearest neighbors model. The main idea of a more complex prediction model is to find other observations similar to observations with a missing value in terms of other predictors and use data from these similar observations to predict the missing values. We will rely on some built-in functions in R to impute values using such complex models. For more information about its theoretical foundations, <a href="http://www.appliedmissingdata.com/">Applied Missing Data Analysis by Craig Enders</a> provides comprehensive coverage of this topic.</p>
+<h1 id="wrapping-up-using-the-recipes-package">6. Wrapping-up using the <code>recipes</code> package</h1>
+<p>We can manually pre-process all the variables in the dataset using the approaches discussed earlier. However, this would be a tedious job. It may be overwhelming to apply all the procedures simultaneously to different versions of the datasets (e.g., training, test, future). Instead, we can use the <code>recipes</code> package to implement these approaches in a more organized and efficient way.</p>
+<p>Before using the <code>recipes</code> package, there are a few things to do for this dataset.</p>
 <ol type="1">
 <li><p>Read the original data</p></li>
-<li><p>Make a list of variables with different characteristics
-(categorical, continuous, proportions, etc.)</p></li>
-<li><p>Make sure the type of all categorical variables is either
-<code>character</code> or <code>factor</code>.</p></li>
-<li><p>For variables that represent proportions, add/subtract a small
-number to 0s/1s for logit transformation</p></li>
+<li><p>Make a list of variables with different characteristics (categorical, continuous, proportions, etc.)</p></li>
+<li><p>Make sure the type of all categorical variables is either <code>character</code> or <code>factor</code>.</p></li>
+<li><p>For variables that represent proportions, add/subtract a small number to 0s/1s for logit transformation</p></li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3764,52 +3470,27 @@ number to 0s/1s for logit transformation</p></li>
 <span>  <span class='op'>}</span></span></code></pre>
 </div>
 </div>
-<p>Now, we can apply certain transformations to different types of
-variables. We will use the <code>step_***()</code> functions from the
-<code>recipes</code> package to implement different procedures. Below is
-a list of functions for most procedures discussed earlier in this
-lecture. A more detailed list of <code>step_***()</code> functions can
-be found the in <a
-href="https://cran.r-project.org/web/packages/recipes/recipes.pdf">the
-package manual</a>.</p>
+<p>Now, we can apply certain transformations to different types of variables. We will use the <code>step_***()</code> functions from the <code>recipes</code> package to implement different procedures. Below is a list of functions for most procedures discussed earlier in this lecture. A more detailed list of <code>step_***()</code> functions can be found the in <a href="https://cran.r-project.org/web/packages/recipes/recipes.pdf">the package manual</a>.</p>
 <ul>
-<li><code>step_dummy()</code>: creates dummy variables for one-hot
-encoding of categorical variables</li>
-<li><code>step_indicate_na()</code> creates an indicator variable for
-missingness</li>
-<li><code>step_impute_bag()</code>, <code>step_impute_knn()</code>,
-<code>step_impute_linear()</code>, and <code>step_impute_mean()</code>:
-imputes missing values using an imputation model</li>
-<li><code>step_BoxCox()</code>: transforms non-negative data using
-Box-Cox method</li>
-<li><code>step_poly</code>,<code>step_bs()</code>, and
-<code>step_ns()</code> : creates basis expansions</li>
+<li><code>step_dummy()</code>: creates dummy variables for one-hot encoding of categorical variables</li>
+<li><code>step_indicate_na()</code> creates an indicator variable for missingness</li>
+<li><code>step_impute_bag()</code>, <code>step_impute_knn()</code>, <code>step_impute_linear()</code>, and <code>step_impute_mean()</code>: imputes missing values using an imputation model</li>
+<li><code>step_BoxCox()</code>: transforms non-negative data using Box-Cox method</li>
+<li><code>step_poly</code>,<code>step_bs()</code>, and <code>step_ns()</code> : creates basis expansions</li>
 <li><code>step_logit</code>: applies logit transformation</li>
 <li><code>step_zv</code>: removes variables with zero variance</li>
-<li><code>step_normalize</code>: standardize variables to have a mean of
-zero and standard deviation of one</li>
+<li><code>step_normalize</code>: standardize variables to have a mean of zero and standard deviation of one</li>
 </ul>
-<p>Note that the order of procedures applied to variables is important.
-For instance, there would be no meaning of using
-<code>step_indicate_na()</code> after using
-<code>step_impute_bag()</code> (Why?). Or, there will be a problem when
-you first standardize variables using ’step_normalize()` and then apply
-a Box-Cox transformation (Why?).</p>
+<p>Note that the order of procedures applied to variables is important. For instance, there would be no meaning of using <code>step_indicate_na()</code> after using <code>step_impute_bag()</code> (Why?). Or, there will be a problem when you first standardize variables using ’step_normalize()` and then apply a Box-Cox transformation (Why?).</p>
 <p>For this dataset, we will implement the following steps:</p>
 <ol type="1">
-<li>Create an indicator variable of missingness for all predictors
-(<code>step_indicate_na</code>)</li>
+<li>Create an indicator variable of missingness for all predictors (<code>step_indicate_na</code>)</li>
 <li>Remove the variables with zero variance (<code>step_zv</code>)</li>
-<li>Impute the missing values for all predictor variables using a mean
-or mode (<code>step_impute_mean</code> and
-<code>step_impute_mode</code>)</li>
-<li>Logit transform the variables that represent
-proportions(<code>step_logit</code>)</li>
-<li>Create polynomial terms up to the 2nf degree term for all numeric
-variables (<code>step_poly</code>)</li>
+<li>Impute the missing values for all predictor variables using a mean or mode (<code>step_impute_mean</code> and <code>step_impute_mode</code>)</li>
+<li>Logit transform the variables that represent proportions(<code>step_logit</code>)</li>
+<li>Create polynomial terms up to the 2nf degree term for all numeric variables (<code>step_poly</code>)</li>
 <li>Standardize numeric features</li>
-<li>One-hot encoding of all categorical variables
-(<code>step_dummy</code>)</li>
+<li>One-hot encoding of all categorical variables (<code>step_dummy</code>)</li>
 </ol>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
@@ -3878,15 +3559,7 @@ Orthogonal polynomials on all_of(numeric), all_of(props)
 Centering and scaling for paste0(numeric, &quot;_poly_1&quot;), paste0(nu...
 Dummy variables from all_of(categorical)</code></pre>
 </div>
-<p>Once the recipe is ready, we can train the blueprint on training
-data. When we say ‘train’, it means that weights or statistics for
-certain types of operations (e.g., standardization) are calculated based
-on training data and saved for later use. For instance, the mean and
-standard deviation of variable X from training data is calculated and
-later used to standardize the same variable X in testing data or future
-datasets. For now, we will train the blueprint using the whole dataset.
-In future lectures, we will split data into different subsets (training
-vs. test), and use the training dataset to apply the blueprint.</p>
+<p>Once the recipe is ready, we can train the blueprint on training data. When we say ‘train’, it means that weights or statistics for certain types of operations (e.g., standardization) are calculated based on training data and saved for later use. For instance, the mean and standard deviation of variable X from training data is calculated and later used to standardize the same variable X in testing data or future datasets. For now, we will train the blueprint using the whole dataset. In future lectures, we will split data into different subsets (training vs. test), and use the training dataset to apply the blueprint.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>prepare</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://recipes.tidymodels.org/reference/prep.html'>prep</a></span><span class='op'>(</span><span class='va'>blueprint</span>, </span>
@@ -3915,8 +3588,7 @@ Orthogonal polynomials on Supervision_Risk_Score_First, De... [trained]
 Centering and scaling for Supervision_Risk_Score_First_poly_1, ... [trained]
 Dummy variables from Residence_PUMA, Prison_Offense, Age_at_Release,... [trained]</code></pre>
 </div>
-<p>Finally, we can apply this recipe to our dataset to obtain processed
-variables according to the recipe.</p>
+<p>Finally, we can apply this recipe to our dataset to obtain processed variables according to the recipe.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>baked_recidivism</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://recipes.tidymodels.org/reference/bake.html'>bake</a></span><span class='op'>(</span><span class='va'>prepare</span>, new_data <span class='op'>=</span> <span class='va'>recidivism</span><span class='op'>)</span></span>
@@ -3924,30 +3596,27 @@ variables according to the recipe.</p>
 <span><span class='va'>baked_recidivism</span></span></code></pre>
 </div>
 <pre><code># A tibble: 18,111 x 144
-   Recidivism_Arrest_Year2    ID na_ind_Prison_Offen~ na_ind_Supervis~
-                     &lt;int&gt; &lt;int&gt;                &lt;int&gt;            &lt;int&gt;
- 1                       0     1                    0                0
- 2                       0     2                    0                0
- 3                       1     3                    0                0
- 4                       0     4                    0                0
- 5                       0     6                    0                0
- 6                       0     7                    1                0
- 7                       0     8                    0                0
- 8                       1    11                    0                0
- 9                       0    13                    0                0
-10                       0    15                    0                0
-# ... with 18,101 more rows, and 140 more variables:
-#   na_ind_Gang_Affiliated &lt;int&gt;,
-#   na_ind_Supervision_Risk_Score_First &lt;int&gt;,
-#   na_ind_Avg_Days_per_DrugTest &lt;int&gt;, na_ind_Jobs_Per_Year &lt;int&gt;,
+   Recidivism_~1    ID na_in~2 na_in~3 na_in~4 na_in~5 na_in~6 na_in~7
+           &lt;int&gt; &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;   &lt;int&gt;
+ 1             0     1       0       0       0       0       0       0
+ 2             0     2       0       0       0       0       0       0
+ 3             1     3       0       0       0       0       0       0
+ 4             0     4       0       0       0       0       0       0
+ 5             0     6       0       0       0       0       0       0
+ 6             0     7       1       0       0       0       0       0
+ 7             0     8       0       0       0       0       0       0
+ 8             1    11       0       0       0       0       0       0
+ 9             0    13       0       0       0       0       1       1
+10             0    15       0       0       0       0       0       0
+# ... with 18,101 more rows, 136 more variables:
 #   na_ind_DrugTests_THC_Positive &lt;int&gt;,
 #   na_ind_DrugTests_Cocaine_Positive &lt;int&gt;,
-#   na_ind_DrugTests_Meth_Positive &lt;int&gt;, ...</code></pre>
+#   na_ind_DrugTests_Meth_Positive &lt;int&gt;,
+#   na_ind_DrugTests_Other_Positive &lt;int&gt;,
+#   na_ind_Percent_Days_Employed &lt;int&gt;,
+#   Supervision_Risk_Score_First_poly_1 &lt;dbl&gt;, ...</code></pre>
 </div>
-<p>Notice that there are 144 variables (one outcome, one ID, and 142
-predictors) in the new processed dataset. In the original dataset, there
-were 48 predictors. Below is a breakdown of where these 142 variables
-come from.</p>
+<p>Notice that there are 144 variables (one outcome, one ID, and 142 predictors) in the new processed dataset. In the original dataset, there were 48 predictors. Below is a breakdown of where these 142 variables come from.</p>
 <table>
 <colgroup>
 <col style="width: 38%" />
@@ -4009,24 +3678,21 @@ come from.</p>
 <td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
-<td
-style="text-align: center;">Prior_Conviction_Episodes_PPViolationCharges</td>
+<td style="text-align: center;">Prior_Conviction_Episodes_PPViolationCharges</td>
 <td style="text-align: center;">Binary</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">One-hot encoding</td>
 <td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
-<td
-style="text-align: center;">Prior_Conviction_Episodes_DomesticViolenceCharges</td>
+<td style="text-align: center;">Prior_Conviction_Episodes_DomesticViolenceCharges</td>
 <td style="text-align: center;">Binary</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">One-hot encoding</td>
 <td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
-<td
-style="text-align: center;">Prior_Conviction_Episodes_GunCharges</td>
+<td style="text-align: center;">Prior_Conviction_Episodes_GunCharges</td>
 <td style="text-align: center;">Binary</td>
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">One-hot encoding</td>
@@ -4243,8 +3909,7 @@ style="text-align: center;">Prior_Conviction_Episodes_GunCharges</td>
 <td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
-<td
-style="text-align: center;">Prior_Arrest_Episodes_PPViolationCharges</td>
+<td style="text-align: center;">Prior_Arrest_Episodes_PPViolationCharges</td>
 <td style="text-align: center;">Numeric</td>
 <td style="text-align: center;"></td>
 <td style="text-align: center;">Polynomials, Standardization</td>
@@ -4392,8 +4057,7 @@ style="text-align: center;">Prior_Arrest_Episodes_PPViolationCharges</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
@@ -4425,7 +4089,7 @@ class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"><
 <p> Cengiz Zopluoglu, cengiz@uoregon.edu </p>
 <p> Made using <a href="https://rstudio.github.io/distill/website.html"> the Distill for R Markdown</a> in 
 <a href = "https://www.rstudio.com"> RStudio.</a></p>
-<p>Copyright &copy; 2022 Cengiz Zopluoglu. All rights reserved.</p>
+<p>Copyright &copy; 2023-2024 Cengiz Zopluoglu. All rights reserved.</p>
 </center>
 </div>
 <!--/radix_placeholder_navigation_after_body-->

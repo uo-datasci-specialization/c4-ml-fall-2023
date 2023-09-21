@@ -3,7 +3,7 @@ title: "Introduction to K-Nearest Neighbors Algorithm"
 subtitle: ""
 author: "Cengiz Zopluoglu"
 institute: "College of Education, University of Oregon"
-date: "Nov 21, 2022 <br> Eugene, OR"
+#date: "Nov 21, 2022 <br> Eugene, OR"
 output:
   xaringan::moon_reader:
     css: ['default', 'uo', 'ki-fonts', 'my_custom.css', 'xaringanthemer.css']
