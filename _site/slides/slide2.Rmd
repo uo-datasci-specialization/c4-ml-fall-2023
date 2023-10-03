@@ -1336,9 +1336,9 @@ model
 
 ---
 
-- Each model has a limit for the number of characters they can process. 
+- Each model has a limit for the number of **tokens** they can process. 
 
-- For instance, RoBERTa can handle a text sequence with a maximum number of 512 characters. 
+- For instance, RoBERTa can handle a text sequence with a maximum number of 512 tokens. 
 
 .indent[
 .single[
@@ -1350,7 +1350,7 @@ model$get_max_seq_length()
 ]
 ]
 
-- If we submit any text with more than 512 characters, it will only process the first 512 characters.
+- If we submit any text with more than 512 tokens, it will only process the first tokens.
 
 - Another essential characteristic is the length of the output vector when a language model returns numerical embeddings. 
 
@@ -1366,7 +1366,7 @@ model$get_sentence_embedding_dimension()
 ]
 ]
 
-- RoBERTa can take any text sequence up to 512 characters as input and then return a numerical vector with a length of 768 that represent this text sequence. This process is also called **encoding**.
+- RoBERTa can take any text sequence up to 512 tokens as input and then return a numerical vector with a length of 768 that represent this text sequence. This process is also called **encoding**.
 
 ---
 
@@ -1424,3 +1424,5 @@ dim(embeddings)
 Make sure you review the following notebook to see how to process 2834 reading excerpts in the CommonLit Readability dataset and obtain a 2834 x 768 matrix of numerical embeddings using the [AllenAI Longformer model](https://huggingface.co/allenai/longformer-base-4096). 
 
 [https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii](https://www.kaggle.com/code/uocoeeds/lecture-2b-data-preprocessing-ii)
+
+We will use the output of this notebook (a 2834 x 768 matrix of numerical embeddings, **readability_features.csv**) in the following weeks to build a prediction model for readability scores.
